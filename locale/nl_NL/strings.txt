@@ -1,0 +1,3455 @@
+<?php
+/**
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * Dutch (nl_NL) strings (en_GB is default development language)
+ *
+ * This list of labels is defined as GLOBAL string variables. The first sections are general
+ * for strings used over the whole GUI. These definitions should not be redefined. Subsequent 
+ * sections are related to particular pages. Comments with a page filename indicate the 
+ * beginning of a section. All other strings must be defined there.
+ * Do not use HTML elements in this file.
+ *
+ * To avoid override of other globals we use the $TLS_ (Test Link String) prefix.
+ * This is a reserved prefix. The second part of variable name (after the prefix) should indicate 
+ * usage (warning, title), the third one indicates the page relation and text at the end.
+
+ *
+ * ********************************************************************************************
+ * Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning
+ * ********************************************************************************************
+ *
+ * 1. Be careful about format - the file is parsed by script -> comment only with "//" except header
+ * 2. for JS string you must use \\n to get \n for end of line
+ *
+ * Note: API interface is not localised (except error messages)
+ *
+ * ********************************************************************************************
+ *
+ **/
+
+ // Dutch translation.
+ // Partial translation originally made by contributor "baamster" for version 1.7.4.  
+ // Completed, corrected and extended for new functionality in 1.8 and 1.9, Oct-Nov 2012 by Stephen Poley.
+ // Audit log and server errors not yet done; also some new functions still in development.
+ 
+ // AANTEKENINGEN OVER DE VERTALING
+ // Om consistentie te borgen, gebruik de volgende veel voorkomende vertalingen:
+ //   Test Project = Testproject (let op: Engelse versie is op een gegeven moment overgeschakeld van "test product" naar "test project")
+ //   Test Plan = Testplan
+ //   Test Suite = Test Suite
+ //   Test Case = Testgeval
+ //   management = Beheer 
+ //   admin = beheerder
+ //   Build = Oplevering
+ //   Issue = issue (is iets beters beschikbaar?)
+ //   Requirements = Requirements (lijkt tegenwoordig veel voor te komen in het Nederlands in deze context)
+ //   Event = event
+ //   keyword = steekwoord
+ //   custom field = gebruikersveld
+ //   lead / lead tester = testleider
+ // Gebruik 'u' vorm i.p.v. 'jij'
+ 
+ 
+// Define character set of this file (UTF-8 is common value)
+$TLS_STRINGFILE_CHARSET = "UTF-8";
+
+// Last Update of this file
+$TLS_last_update = "Localisatie laatst bijgewerkt: 10-11-2012";
+
+// ----- General terms (used widely) ----------------------------
+$TLS_type_not_configured = "systeembericht: type niet geconfigureerd.";
+$TLS_undefined = "niet gedefinieerd";
+
+$TLS_active = "Actief";
+$TLS_actions = "Acties";
+$TLS_asc = "oplopend";
+$TLS_any = "enige";
+$TLS_all = "Alle";
+$TLS_alt_delete = "verwijder";
+$TLS_attribute = "Attribuut";
+$TLS_attributes = "Attributen";
+$TLS_custom_fields = "Gebruikersvelden";
+$TLS_author = "Auteur";
+$TLS_automated = "Geautomatiseerd";
+$TLS_automatic = "Automatisch";
+$TLS_availability = "Beschikbaarheid";
+
+$TLS_build = "Oplevering";
+
+$TLS_check_uncheck_all = "Alles omschakelen"; 
+$TLS_check_uncheck_all_for_remove = "alles aan/uitvinken voor verwijderen";
+$TLS_confirm = "Bevestig";
+$TLS_config= "Configuratie";
+
+$TLS_days	= "dagen";
+$TLS_desc = "aflopend";
+$TLS_description = "Omschrijving";
+$TLS_delete_confirm_question = "Weet je zeker dat je wilt verwijderen?";
+$TLS_doc_id = "Document ID";
+$TLS_doc_id_short = "Doc ID";
+$TLS_destination_top = "Doelpositie boven";
+$TLS_destination_bottom = "Doelpositie beneden";
+
+$TLS_error = "Fout";
+$TLS_export = "Export";
+$TLS_export_to_csv = "Export naar CSV";
+$TLS_estimated_execution_duration = "Geschatte duur uitvoering (min)";
+$TLS_execution_duration = "Duur uitvoering (min)";
+
+$TLS_file_type = 'Bestandstype';
+$TLS_filter_mode_and = 'NB: Filter velden werken in EN modus';
+
+$TLS_goto_testspec = 'Open Testgeval specificatie';
+
+$TLS_help = "Help";
+$TLS_hour = "Uur";
+
+$TLS_import = "Import";
+$TLS_importance	= "Belang"; 
+$TLS_imported = "Geïmporteerd";
+$TLS_important_notice = "Belangrijk";
+
+$TLS_keyword = "Steekwoord";
+
+$TLS_log_message = "Logbericht";
+
+$TLS_mandatory = "Verplichte velden";
+$TLS_mandatory_hint = "*";
+$TLS_manual = "Handmatig";
+$TLS_Milestone = "Mijlpaal";
+$TLS_months	= "maanden";
+$TLS_monitor	= "Monitor";
+
+$TLS_name = "Naam";
+$TLS_navigator_add_remove_tcase_to_tplan	= "Testgevallen Toevoegen / Verwijderen";
+$TLS_navigator_tc_exec_assignment = "Toekennen uitvoering";
+$TLS_navigator_test_urgency = "Test Case urgency assignment";
+$TLS_navigator_update_linked_tcversions = "Gewijzigde Testgeval versies bijwerken";
+$TLS_needed = "Nodig";
+$TLS_not_aplicable = "n.v.t.";
+$TLS_nobody = "Niemand";
+$TLS_not_imported = "Niet geimporteerd";
+$TLS_none = "Geen";
+
+$TLS_ok = "OK";
+$TLS_open_on_new_window = "open in nieuw venster";
+
+$TLS_priority	= "Prioriteit";
+$TLS_project = "Project";
+$TLS_public = "Openbaar";
+
+$TLS_requirement = "Requirement"; 
+$TLS_req_monitoring = "Requirement Monitoring";
+$TLS_req_short = "Req.";
+$TLS_reqs = "Requirements";
+$TLS_req_spec = "Requirements specificatie document";
+$TLS_req_spec_short = "Req. Spec.";
+$TLS_requirements_spec = "Requirements Spec.";
+$TLS_required = "Verplicht";
+$TLS_req_specification = "Req. Specificatie";
+$TLS_revision = "revisie";
+$TLS_revision_short = "rev";
+$TLS_revision_tag = "[r%s]";
+$TLS_version_tag = "[v%s]";
+$TLS_version_revision_tag = "[v%sr%s]";
+
+
+$TLS_srs = "SRS";
+$TLS_Role = "Rol";
+$TLS_sort_table_by_column = "Klikken om sorteervolgorde te veranderen";
+$TLS_scope = "Afbakening";
+$TLS_status = "Status";
+$TLS_test_case = "Testgeval";
+$TLS_testcase = $TLS_test_case;
+$TLS_testcaseversion 	= 'Testgeval Versie'; 
+$TLS_tester = "Tester";
+$TLS_test_plan = "Testplan";
+$TLS_testplan = $TLS_test_plan;
+$TLS_testproject = "Testproject";
+$TLS_test_report = "Testrapport";
+$TLS_test_suite = "Test Suite";
+$TLS_testsuite_created = "Test Suite gecreëerd";
+$TLS_type = "Type";
+$TLS_timestamp	= "Timestamp";
+$TLS_timestamp_lastchange	= "Laatste wijziging";
+$TLS_title = "Titel";
+$TLS_warning = "Waarschuwing";
+$TLS_warning_delete = "U gaat verwijderen: %s <br /><br /> Weet u dat zeker?";
+
+$TLS_max_size_file_msg = "Maximum toegestane bestandsgrootte:  %s KB";
+$TLS_due_since = "Toegekend sinds (dagen)";
+$TLS_parent_child = 'is moeder of is dochter';
+$TLS_blocks_depends = 'Blokkeert of is afhankelijk van';
+$TLS_related_to = 'is verwant aan';
+$TLS_unknown_code = 'onbekende code: %s';
+$TLS_in_percent = "[%]";
+$TLS_user_has_no_right_for_action = 'Gebruiker heeft geen rechten om deze actie uit te voeren.';
+$TLS_from = "van";
+$TLS_until = "tot";
+$TLS_file_size_exceeded = 'Bestandsgrootte (%s) groter dan toegestane grootte (%s)';
+$TLS_total = "Totaal";
+$TLS_Unknown = "Onbekend";
+$TLS_urgency = "Urgentie"; 
+$TLS_weeks = "weken";
+$TLS_container = "container";
+$TLS_platform = "Platform";
+$TLS_show_calender = "Toon calender";
+$TLS_clear_date = "Datum wissen";
+
+
+// Actions (used widely)
+$TLS_add = "*Toevoegen*"; 
+$TLS_assigned = "toegekend";
+$TLS_create = "Creëer";
+$TLS_copy = "*Copieer*"; 
+$TLS_delete = "Verwijder";
+$TLS_disable = "Uitschakelen";
+$TLS_export_import = "Export/Import";
+$TLS_executed	= "uitgevoerd";
+$TLS_move	= "*Verplaats*"; 
+$TLS_remove = "*verwijder*"; 
+$TLS_unassigned = "niet toegekend";
+
+
+// Buttons (used widely)
+$TLS_btn_apply 	= "Toepassen";
+$TLS_btn_add = "Voeg toe";
+$TLS_btn_add_to_testplans = "Voeg toe aan Testplannen";
+$TLS_btn_assign = "Toekennen";
+$TLS_btn_cancel = "Annuleer";
+$TLS_btn_check = "Check";
+$TLS_btn_close = "Sluit";
+$TLS_btn_cp = "Kopieer";
+$TLS_btn_copy_step = "Kopieer stap";
+$TLS_btn_create = "Creëer";
+$TLS_btn_create_step = "Creëer stap";
+$TLS_btn_delete = "Verwijder"; 
+$TLS_btn_edit = "Wijzig";
+$TLS_btn_export = "Exporteer";
+$TLS_btn_export_import = "Export/Import";
+$TLS_btn_find = "Vind";
+$TLS_btn_goback = "Terug";
+$TLS_btn_generate_doc = "Genereer document";
+$TLS_btn_import = "Importeer";
+$TLS_btn_monitor 	= "Monitor";
+$TLS_btn_move = "Verplaats";
+$TLS_btn_no = "Nee";
+$TLS_btn_new_revision = "Nieuwe revisie creëren";
+$TLS_btn_ok = "OK";
+$TLS_btn_print = "Afdrukken";
+$TLS_btn_print_view = "View afdrukken";
+$TLS_btn_save = "Opslaan";
+$TLS_btn_unassign = "Niet toekennen";
+$TLS_btn_uncheck = "Uncheck";
+$TLS_btn_update = "Bijwerken";
+$TLS_btn_upd = $TLS_btn_update; //obsolete
+$TLS_btn_upload = "Upload";
+$TLS_btn_advanced_filters = "Geavanceerde Filters";
+$TLS_btn_simple_filters = "Basis Filters"; 
+$TLS_btn_reorder_steps = "Stappen herordenen";
+$TLS_btn_view_history = "Toon geschiedenis";
+$TLS_btn_yes = "Ja";
+
+
+// Status (used widely)
+$TLS_test_status_all = "Allemaal";
+$TLS_test_status_any = "Enige";
+$TLS_test_status_not_run = "Niet Uitgevoerd";
+$TLS_test_status_blocked = "Geblokkeerd";
+$TLS_test_status_failed = "Niet OK";
+$TLS_test_status_passed = "OK";
+$TLS_test_status_not_available = "Niet beschikbaar";
+$TLS_test_status_unknown 	= "Onbekend";
+
+$TLS_review_status_valid 	= "Valide";
+$TLS_review_status_draft 	= 'Concept';
+$TLS_review_status_future	= 'Toekomstig';
+$TLS_review_status_obsolete = 'Obsoleet';
+$TLS_review_status_todo 	= 'Te doen';
+
+$TLS_req_type_info 			= "Informatief";
+$TLS_req_type_feature 		= 'Feature';
+$TLS_req_type_use_case	 	= 'Testgeval';
+$TLS_req_type_interface 	= 'Interface';
+$TLS_req_type_non_functional = 'Niet-functioneel';
+$TLS_req_type_constrain 	= 'Beperking';
+
+$TLS_req_type_system_function = 'Systeemfunctie';
+
+$TLS_req_spec_type_section = "Sectie";
+$TLS_req_spec_type_user_req_spec = "Gebruikers Requirements Specificatie";
+$TLS_req_spec_type_system_req_spec = "Systeem Requirements Specificatie";
+
+
+$TLS_exec_not_run_result_note = "Belangrijk: als een resultaat eenmaal is gewijzigd  van 'Niet Uitgevoerd' naar een andere waarde, " .
+                                "kan het niet teruggezet worden op 'Niet Uitgevoerd'. <br />U kunt het wel nog steeds naar een andere waarde wijzigen.";
+
+$TLS_req_status_not_testable = "Niet testbaar"; // defined for historical reason (should be replaced by $TLS_req_type_info)
+$TLS_req_status_draft = "Concept";
+$TLS_req_status_review = "Review";
+$TLS_req_status_rework = "Herstel";
+$TLS_req_status_finish = "Klaar";
+$TLS_req_status_implemented = "Geïmplementeerd";
+$TLS_req_status_obsolete = "Vervallen";
+
+$TLS_current_direct_link = "Directe link naar huidige document.";
+$TLS_specific_direct_link = "Direct link naar deze versie van het huidige document.";
+
+$TLS_reserved_system_role_1 = 'gereserveerde systeem rol 1';
+$TLS_reserved_system_role_2 = 'gereserveerde systeem rol 2';
+$TLS_req_created_automatic_log = "Requirement gecreëerd";
+$TLS_reqspec_created_automatic_log = "Requirements Specificatie gecreëerd.";
+
+$TLS_elapsed_seconds = 'Verwerkingstijd (seconden)'; 
+
+$TLS_warning_float_value = "%s accepteert alleen numerieke waarden (inclusief floats)";
+
+
+// ----- unsorted (TODO move) -------------------------------------
+$TLS_problems_loading_xml_content = "Kon XML gegevens niet laden. Bestand controleren a.u.b."; 
+$TLS_search_type_like = "Zoeken op deze waarde wordt in LIKE modus uitgevoerd";
+$TLS_exec_assign_no_testcase = "Selecteer tenminste één Testgeval.";
+$TLS_select_at_least_one_testcase = "Selecteer tenminste één Testgeval en een doel.";
+$TLS_no_testcases_available = "Geen Testgevallen of geen doel Test Suites beschikbaar";
+$TLS_no_testcases_available_or_tsuite = "Geen Testgevallen of geen doel Test Suites beschikbaar";
+$TLS_warning_must_be_number = "Waarde moet numeriek zijn";
+$TLS_select_at_least_one_req = "Selecteer tenminste één Requirement";
+
+$TLS_estimated_time_hours = "Geschatte tijd om %s Testgevallen uit te voeren (uren):";
+$TLS_estimated_time_min = "Geschatte tijd om %s Testgevallen uit te voeren (min):";
+$TLS_real_time_hours = "Tijd om %s Testgevallen uit te voeren (uren):";
+$TLS_real_time_min = "Tijd om %s Testgevallen uit te voeren (min):";
+
+$TLS_th_active 		= $TLS_active; //obsolete
+$TLS_th_name 		= $TLS_name; //obsolete
+$TLS_th_notes 		= $TLS_description; //obsolete
+$TLS_th_testcase 	= $TLS_test_case; // obsolete
+$TLS_th_delete 		= $TLS_delete; // obsolete
+$TLS_th_requirement_feature = "Requirement Feature";
+
+$TLS_import_file_type = "Importeer bestand type";
+$TLS_max_file_size_is = "Max. bestand grootte ";
+$TLS_supported_file_formats = "Ondersteunde bestand formaten";
+$TLS_no_permissions_for_action = "U heeft niet de rechten om deze actie uit te voeren! Neem alstublieft contact op met uw beheerder.";
+
+$TLS_name_already_exists = "Naam:%s bestaat al";
+$TLS_created_with_new_name = "Met naam: %s aangemaakt, omdat naam %s al bestaat";
+
+
+$TLS_click_to_open = 'Klik te openen';
+$TLS_testplan_usage = "Testplan gebruik";
+
+$TLS_add_tcversion_to_plans = "Testgeval versie toevoegen aan Testplannen";
+$TLS_please_select_one_testplan = "Selecteer tenminste één Testplan.";
+
+$TLS_deleted_user = "[verwijderde gebruiker - id=%s]";
+$TLS_tag_for_inactive_users = "*";
+
+$TLS_design = "Testgeval bewerken";
+$TLS_execution = "Test uitvoering";
+$TLS_testplan_design = "Test Plan Ontwerp";
+$TLS_enable_on = "Activeren bij";
+$TLS_closed_on_date = "Gesloten op ";
+$TLS_prefix_does_not_exists = "Testproject voorvoegsel bestaat niet";
+$TLS_testcase_does_not_exists = "Testgeval bestaat niet";
+$TLS_testcase_name_length_exceeded = 'Oorspronkelijke lengte (%s) > toegestane lengte (%s)';
+
+
+$TLS_demo_create_user_disabled = 'In demo modus; gebruiker verwijderen NIET BESCHIKBAAR';
+$TLS_demo_update_user_disabled = 'In demo modus; gebruiker wijzigen NIET BESCHIKBAAR';
+$TLS_demo_update_role_disabled = 'In demo modus; rol wijzigen NIET BESCHIKBAAR';
+$TLS_demo_reset_password_disabled = 'In demo modus; wachtwoord reset NIET BESCHIKBAAR';
+$TLS_demo_special_user = "In demo modus; &ndash; gebruiker is geconfigureerd als speciaal " .
+						 "(zie config.inc.php demoSpecialUsers)";
+
+
+// ----- JAVASCRIPT -----
+// Used on javascript logic to validate Custom Field values
+$TLS_warning_numeric_cf = "Gebruikersveld %s staat alleen numerieke waarden toe";
+$TLS_warning_float_cf = "Gebruikersveld %s staat alleen numerieke waarden toe (inclusief floats)";
+$TLS_warning_email_cf = "Gebruikersveld %s  staat alleen e-mail adressen toe";
+$TLS_warning_text_area_cf = "Gebruikersveld %s staat alleen 255 karakters toe";
+$TLS_warning_countreq_numeric = "Het aantal Requirements moet numeriek zijn";
+$TLS_warn_session_timeout = "Uw TestLink sessie is verlopen.";
+$TLS_warn_demo = "Deze feature is uitgeschakeld voor Demo modus. Excuses voor het ongemak";
+$TLS_warning_required_cf = "Gebruikersveld %s is verplicht";
+
+
+// Installation/Migration (TODO remove - migration is English only)
+$TLS_start_warning = '---- Warning ----';
+$TLS_testlink_warning = 'TestLink Warning';
+$TLS_testcase_name_too_long = 'test case name is too long (%s chars) > %s => has been truncated';
+$TLS_original_name = 'Original name';
+$TLS_end_warning = '---- *** ----';
+
+
+// --------------------------------------------------------------------------------------
+// ----- firstLogin.php -----
+$TLS_cant_create_user = "Excuus, maar uw login kan niet worden gecreëerd. Neem alstublieft contact op met uw beheerder!";
+$TLS_empty_email_address = " U kunt geen leeg e-mail adres gebruiken!";
+$TLS_empty_first_name = " U kunt geen lege Voornaam gebruiken!";
+$TLS_empty_last_name = " U kunt geen lege Achternaam gebruiken!";
+$TLS_fatal_page_title = "TestLink ::: Fatale Fout";
+$TLS_invalid_user_name = "Login/Gebruiker naam is niet geldig. Selecteer een andere.";
+$TLS_no_good_email_address = "Email address format seems no good";
+$TLS_passwd_dont_match = "De twee wachtwoorden die zijn ingevoerd komen niet overeen. Let op dat wachtwoorden hoofdletter gevoellig zijn. " .
+                         "Probeer het alstublieft nogmaals.";
+$TLS_user_cant_be_created_because = "Uw account kan niet worden gecreëerd omdat:";
+$TLS_user_name_exists = "Login/Gebruiker naam al in geruik is, selecteer alstublieft een andere.";
+$TLS_valid_user_name_format = "Login/Gebruiker naam kan alleen letters, nummers, spaties, koppeltekens en underscores bevatten.";
+$TLS_warning_empty_pwd = "Uw Wachtwoord mag niet leeg zijn!";
+$TLS_your_info_please = "Voer uw gebruiker informatie in";
+$TLS_new_account = "TestLink - Nieuw Account Gecreëerd";
+
+
+// ----- archiveData.php -----
+$TLS_container_title_testcase = $TLS_test_case;
+$TLS_high_priority = "Hoog";
+$TLS_medium_priority = "Midden";
+$TLS_low_priority = "Laag";
+$TLS_high_importance = "Hoog";
+$TLS_medium_importance = "Midden";
+$TLS_low_importance = "Laag";
+$TLS_urgency_high 		= "Hoog";
+$TLS_urgency_medium 	= "Midden";
+$TLS_urgency_low 		= "Laag";
+$TLS_test_importance 	= "Test belang";
+$TLS_testcases_assigned_to_user = 'Testproject: %s - Testgevallen toegekend aan gebruiker: %s';
+$TLS_assigned_on = 'Datum toekenning';
+
+
+// ----- index.php -----
+$TLS_main_page_title = "TestLink ::: Hoofdpagina";
+$TLS_config_check_warnings = "Let op: er zijn beveiligingswaarschuwingen. " .
+                             "Voor details zie bestand: %s. " .
+                             "Om deze waarschuwingen te negeren (niet aanbevolen) gebruik instellingen \$tlCfg->config_check_warning_mode = SILENT;";
+
+
+// ----- lib/inventory/inventoryView.php & tpl -----
+$TLS_inventory_title = 'Inventaris';
+$TLS_inventory_create_title = 'Invoeren apparaatgegevens';
+$TLS_inventory_empty = 'Geen device gedefinieerd.';
+$TLS_inventory_name = 'Host naam';
+$TLS_inventory_ipaddress = 'IP Adres';
+$TLS_inventory_notes = 'Aantekeningen';
+$TLS_inventory_purpose = 'Doel';
+$TLS_inventory_hw = 'Hardware';
+$TLS_inventory_delete = 'Verwijder';
+$TLS_inventory_owner = 'Eigenaar';
+$TLS_inventory_alt_delete = 'Verwijder de geselecteerde apparaatgegevens';
+$TLS_inventory_alt_edit = 'Bewerk de geselecteerde apparaatgegevens';
+$TLS_inventory_dlg_delete_txt = 'Weet u zeker dat u het apparaat wilt verwijderen?';
+$TLS_inventory_dlg_select_txt = 'Eerst een rij selecteren.';
+$TLS_inventory_msg_no_rights = 'U heeft niet de rechten om inventaris te wijzigen.';
+$TLS_inventory_msg_no_action = 'Incorrecte invoer - geen actie aangegeven.';
+
+
+// ----- lib/functions/inventory.class.php -----
+$TLS_audit_inventory_created = 'Een nieuw apparaat {%1} is gecreëerd &ndash; Testproject {%2}.';
+$TLS_audit_inventory_deleted = 'Het apparaat {%1} is verwijderd - Testproject {%2}.';
+$TLS_inventory_create_success = 'Een nieuw apparaat %s is gecreëerd.';
+$TLS_inventory_create_fails = 'Fout: een nieuw apparaat %s is niet gecreëerd.';
+$TLS_inventory_update_success = 'Het apparaat %s is bijgewerkt.';
+$TLS_inventory_update_fails = 'Fout: het apparaat %s is niet bijgewerkt.';
+$TLS_inventory_delete_success = 'Het apparaat %s is verwijderd.';
+$TLS_inventory_delete_fails = 'Fout: het apparaat %s is niet verwijderd.';
+$TLS_inventory_name_exists = 'Het apparaat %s bestaat al in dit project.';
+$TLS_inventory_name_empty = 'Het apparaat moet een naam hebben.';
+$TLS_inventory_ip_exists = 'Het IP adres %s bestaat al in dit project.';
+$TLS_inventory_no_device = 'Fout: geen apparaat voor dezxe gegevens:';
+
+
+// ----- keywordsimport.php -----
+$TLS_please_choose_keywords_file = "Kies a.u.b. het bestand om te uploaden";
+$TLS_keywords_file = "Steekwoorden bestand";
+$TLS_wrong_keywords_file = "Verkeerde steekwoord bestand (verkeerd formaat)";
+
+
+// ----- lostPassword.php -----
+$TLS_bad_user = "Gebruiker niet gevonden, probeer het a.u.b. nogmaals";
+$TLS_contact_admin = "Neem contact op met uw beheerder als u nog problemen ondervind.";
+$TLS_mail_empty_address = "U heeft geen email adres gespecificeerd in uw profiel! " .
+                          "Neem a.u.b. contact op met uw beheerder om uw wachtwoord te resetten!";
+$TLS_mail_passwd_subject = "Uw nieuwe wachtwoord.";
+$TLS_mail_problems = "Fouten in de mail instelling, neem a.u.b. contact op met uw beheerder.";
+$TLS_page_title_lost_passwd = "TestLink - Wachtwoord verloren";
+$TLS_your_info_for_passwd = "Voeg uw gebruikersinformatie in zodat uw nieuwe wachtwoord naar u kan worden gemaild.";
+$TLS_your_password_is = "Uw nieuwe wachtwoord is:";
+$TLS_password_set = "Wachtwoord is ingesteld op: ";
+$TLS_change_password_mail_body = "Account: %login_name% \n\n " . 
+		 "Wachtwoord (de tekst tussen vierkante haakjes) [%password%]\n\n " .
+		 "Mocht u problemen hebben, neemt u contact op met de beheerder\n\n " .
+		 "%admin_coordinates%";								 
+
+		 
+// ----- login.php -----
+$TLS_bad_user_passwd = "Probeer het opnieuw. Foutieve gebruikersnaam of wachtwoord.";
+$TLS_login_msg_session_exists1 = "Er is nog een valide login voor uw browser. <br> Gebruik a.u.b. deze link >>> ";
+$TLS_login_msg_session_exists2 = " <<< als eerste als u uw sessie wil vernieuwen.";
+$TLS_logout_link = "Afmelden";
+$TLS_passwd_lost = "Uw wachtwoord is gestuurd naar het email adres dar u heeft gespecificeerd tijdens " .
+                   "het aanmaken van uw gebruikers account. Controleer a.u.b. uw mailbox. " .
+                   "Als u andere problemen heeft kunt u contact opnemen met uw beheerder.";
+$TLS_password_reseted = "Nieuw wachtwoord is via e-mail gestuurd";
+$TLS_please_login = "Log in alstublieft...";
+$TLS_session_expired = "Uw sessie is verlopen! Log a.u.b. nogmaals in.";
+$TLS_your_first_login = "Welkom bij TestLink! U heeft nu gast toegangsrechten. Login alstublieft...";
+
+
+// ----- newest_tcversions.php -----
+$TLS_no_linked_tcversions = "geen gekoppelde Testgevallen versies";
+$TLS_testplan_seems_empty = "Testplan is leeg &ndash; kan niets doen.";
+
+
+// resultsGeneral.php
+$TLS_report_tspec_has_no_tsuites = "Er zijn geen Test Suites gedefinieerd voor dit Testproject; ".
+	"geen rapportage kan worden gemaakt.";
+
+$TLS_report_tcase_platorm_relationship = "Platforms zijn aan dit Testplan toegevoegd. <br />" .
+	"Dit heeft invloed op de metrieken, omdat een Testgeval dat voor N platforms moet worden ".
+	"uitgevoerd wordt in de metrieken als N Testgevallen beschouwd.";
+
+                                 
+// ----- resultsNavigator.php -----
+$TLS_title_nav_results = "Testrapportage en Metrieken";
+$TLS_report_tplan_has_no_build = "Geen Oplevering gedefinieerd voor het Testplan; kan geen rapport maken.";
+$TLS_report_tplan_has_no_tcases = "Geen Testgevallen gedefinieerd voor het Testplan; kan geen rapport maken.";
+                                
+
+// ----- tcEdit.php -----
+$TLS_copy_keyword_assignments = "Kopieer steekwoord toekenningen";
+$TLS_copy_requirement_assignments = "Kopieer Requirement toekenningen";
+$TLS_tc_copied = "Testgeval %s was succesvol gekopieerd naar Test Suite %s";
+$TLS_tc_created = "Testgeval %s was succesvol gecreëerd";
+$TLS_tc_deleted = "Testgeval %s was succesvol verwijderd";
+$TLS_tc_new_version = "Testgeval Versie %d was succesvol gecreëerd";
+$TLS_tc_updated = "Testgeval %s was succesvol geupdate";
+$TLS_tc_update_failed = "Update van Testgeval %s is mislukt!";
+$TLS_tc_version_deleted = "Testgeval %s versie %d was succesvol verwijderd";
+$TLS_assign_requirements = "Ken Requirements toe";
+
+
+// ----- tcexecute.php -----
+$TLS_check_test_automation_server = "Controleer Server Instellingen";
+$TLS_result_after_exec = "Resultaten na uitvoering: ";
+$TLS_service_not_supported = "Deze dienst is niet ondersteund";
+$TLS_tcexec_notes = "Testing details";
+$TLS_tcexec_result = "Resultaat";
+$TLS_tcexec_results_for = "Resultaat voor ";
+
+
+// ----- gui/templates/attachment404.tpl -----
+$TLS_error_attachment_not_found = "Fout: Toevoegd bestand niet gevonden!";
+$TLS_title_downloading_attachment = "Downloaden Toevoegd bestand";
+
+
+// ----- gui/templates/attachmentdelete.tpl -----
+$TLS_deleting_was_ok = "Toegevoegd bestand was verwijderd!";
+$TLS_error_attachment_delete = "Fout tijdens verwijderen toegevoegd bestand!";
+$TLS_title_delete_attachment = "Verwijder toegevoegd bestand";
+
+
+// ----- gui/templates/containerDelete.tpl -----
+$TLS_btn_yes_del_comp = "Ja, verwijder Test Suite";
+$TLS_container_title_testsuite = $TLS_test_suite;
+$TLS_linked_but_not_executed = "Aan een of meerdere Testplannen gekoppeld, maar niet uitgevoerd";
+$TLS_question_del_testsuite = "De Test Suite echt verwijderen?";
+$TLS_th_link_exec_status = "Link en uitvoering status";
+$TLS_testsuite_successfully_deleted = "De Test Suite is succesvol verwijderd";
+$TLS_no_links = "Geen afhankelijke gegevens.";
+$TLS_linked_and_executed = "Testgeval is aan een Testplan toegevoegd en heeft resultaten.";
+$TLS_system_blocks_tsuite_delete_due_to_exec_tc = 	"Test Suite kan niet worden verwijderd, omdat de " .
+	"systeem configuratie het verwijderen van uitgevoerde Testgevallen niet toestaat.";
+	
+
+// ----- gui/templates/containerNew.tpl -----
+$TLS_btn_create_testsuite = "Creëer Test Suite";
+$TLS_tc_keywords = "Steekwoorden";
+$TLS_title_create = "Creëer";
+$TLS_warning_empty_testsuite_name = "Geef alstublieft een naam aan de Test Suite";
+
+
+// ----- gui/templates/bug_add.tpl -----
+$TLS_btn_add_bug = "Voeg bevinding toe";
+$TLS_bug_id = "Bevinding nummer";
+$TLS_button_enter_bug = "Creëer nieuwe bevinding";
+$TLS_link_bts_create_bug = "Toegang tot bevindingen beheer ";
+$TLS_title_bug_add = "Voeg bevinding toe";
+
+
+// ----- gui/templates/bug_delete.tpl -----
+$TLS_title_delete_bug = "Verwijder bevinding";
+
+
+
+// ----- gui/templates/containerMove.tpl -----
+$TLS_as_first_testsuite = "Doelpositie boven";
+$TLS_as_last_testsuite = "Doelpositie beneden";
+$TLS_choose_target = "Kies een doel";
+$TLS_cont_copy_first = "Kopieer";
+$TLS_cont_copy_second = "naar enige";
+$TLS_cont_move_first = "Verplaats";
+$TLS_cont_move_second = "naar een verschillende";
+$TLS_copy_keywords = "Kopieer steekwoorden";
+$TLS_defined_exclam = "gedefinieerd !";
+$TLS_include_nested = "Inclusief genestelde data (alleen kopieren).";
+$TLS_sorry_further = "Excuus, er zijn geen verdere ";
+$TLS_title_move_cp = "Verplaats/Kopieer";
+$TLS_title_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_title_delete_testcases = "Delete Test Cases";
+
+
+// ----- gui/templates/reqCreate.tpl -----
+$TLS_req_create = "Creëer requirement";
+$TLS_req_doc_id = "DOC-ID";
+$TLS_warning_empty_req_title = "Requirement titel kan niet leeg zijn!";
+$TLS_warning_empty_reqdoc_id = "Requirement document id kan niet leeg zijn!";
+$TLS_create_testcase_from_req = "Create Test Cases from Requirements";
+$TLS_insert_last_req_doc_id = "Insert Document ID of last created Requirement";
+
+
+// ----- gui/templates/reqCopy.tpl -----
+$TLS_copy_one_req = "Kopieer Requirement";
+$TLS_copy_several_reqs = "Kopieer Requirements";
+$TLS_copy_testcase_assignments = "Kopieer Testgeval toewijzingen";
+
+
+// ----- gui/templates/requirements/reqCreateTestCases.tpl -----
+$TLS_toggle_create_testcase_amount = "Toggle between single Test Case creation and " .
+                                     "the creation of the required amount of test " .
+                                     "cases to fully cover the requirement(s)";
+
+                                     
+// gui/templates/containerOrder.tpl
+$TLS_no_nodes_to_reorder = "Excuus, er is niets om te herordenen!";
+$TLS_node = "Naam";
+$TLS_th_id = "ID";
+$TLS_th_node_type = "Testgeval / Test Suite";
+$TLS_th_order = "Bepaal volgorde";
+$TLS_title_change_node_order = "Wijzig kind volgorde";
+$TLS_node_type_dbtable_testsuites = $TLS_test_suite;
+$TLS_node_type_dbtable_testcases = $TLS_testcase;
+
+
+// ----- gui/templates/containerView.tpl -----
+$TLS_testsuite_operations = "Test Suite Operaties";
+$TLS_testcase_operations = "Testgeval Operaties";
+$TLS_alt_del_testsuite = "Verwijder deze Test Suite inclusief alle dochters (Test Suites and Testgevallen)";
+$TLS_alt_edit_testsuite = "Wijzig Test Suite gegevens en titel";
+$TLS_alt_move_cp_testsuite = "Verplaats of kopieer deze Test Suite naar een ander Testproject";
+$TLS_alt_move_cp_testcases = "Verplaats/kopieer Testgevallen";
+$TLS_btn_del_testsuite = "Verwijder Test Suite";
+$TLS_btn_del_testsuites_bulk = "Verwijder Test Suites Bulk";
+$TLS_btn_edit_testsuite = $TLS_btn_edit;
+$TLS_btn_execute_automatic_testcases = "Alle Automatische Testgevallen uitvoeren";
+$TLS_btn_export_all_testsuites = "Exporteer alle Test Suites";
+$TLS_btn_export_tc = "Exporteer Testgevallen";
+$TLS_btn_export_testsuite = "Exporteer Test Suite";
+$TLS_btn_import_tc = "Importeer Testgevallen";
+$TLS_btn_import_testsuite = "Importeer Test Suite";
+$TLS_btn_move_cp_testsuite = "Verplaats/kopieer";
+$TLS_btn_move_cp_testcases = "Verplaats/kopieer Testgevallen";
+$TLS_btn_new_testsuite = "Nieuwe dochter Test Suite";
+$TLS_btn_new_tc = "Creëer Testgeval";
+$TLS_btn_reorder = "Dochters herordenen";
+$TLS_btn_delete_testcases = "Verwijder";
+$TLS_btn_reorder_testcases_alpha = "Test Cases herordenen (Dictionary)";
+$TLS_btn_reorder_testcases_externalid = "Sorteer op externe ID";
+$TLS_btn_reorder_testsuites_alpha = "Sorteer alfabetisch";
+$TLS_container_title_testproject = $TLS_testproject;
+$TLS_container_title_testplan = $TLS_testplan;
+$TLS_edit_testproject_basic_data = "wijzig Testproject basis data";
+$TLS_th_product_name = "Testproject Naam";
+$TLS_th_testplan_name = "Testplan Name";
+
+
+// ----- gui/templates/cfields/cfieldsEdit.tpl -----
+$TLS_assigned_to_testprojects = "Toegekend aan Testprojecten";
+$TLS_available_on = "Beschikbaar voor";
+$TLS_custom_field = "Gebruikersveld";
+$TLS_enable_on_design = "Activeren bij <br>test specificatie";
+$TLS_enable_on_exec = "Activeren bij <br>test uitvoering";
+$TLS_enable_on_testplan_design = "Activeren bij <br />Testplan ontwerp";
+$TLS_label = "Label";
+$TLS_popup_delete_custom_field = "Weet u zeker dat u het gebruikersveld wilt verwijdern?";
+$TLS_possible_values = "Mogelijke waarden";
+$TLS_show_on_design = "Toon bij <br>test specificatie";
+$TLS_show_on_exec = "Toon bij <br>test uitvoering";
+$TLS_show_on_testplan_design = "Display on <br />test plan design";
+$TLS_testcase = $TLS_test_case;
+$TLS_title_cfields_mgmt = "Gebruikersvelden";
+$TLS_title_cfield_edit = "Edit ";
+$TLS_type = "Type";
+$TLS_warning_empty_cfield_label = "Voer alstublieft het label van het gebruikersveld in.";
+$TLS_warning_empty_cfield_name = "Voer alstublieft de naam van het gebruikersveld in.";
+$TLS_warning_is_in_use = "U kunt dit gebruikersveld niet verwijderen of de type daarvan " . 
+	"wijzigen omdat er een waarde voor ingevuld is in een testspecificatie of test uitvoering."; 
+
+$TLS_warning_no_type_change = "U kunt de type van dit gebruikersveld niet " . 
+	"wijzigen omdat er een waarde voor ingevuld is in een testspecificatie of test uitvoering."; 
+
+	
+// ----- gui/templates/inc_update.tpl -----
+$TLS_info_failed_db_upd = "Mislukt om de database te updaten!";
+$TLS_info_failed_db_upd_details = "Mislukt om de database te updaten! - details:";
+$TLS_invalid_query = "Fout";
+$TLS_warning = "Waarschuwing";
+$TLS_was_success = " was succesvol ";
+
+
+// ----- gui/templates/inc_filter_panel.tpl -----
+$TLS_logical_and = "En";
+$TLS_logical_or = "Of";
+$TLS_btn_apply_filter = $TLS_btn_apply;
+$TLS_btn_reset_filters = " Reset Filters ";
+$TLS_caption_nav_filters = "Filters";
+$TLS_caption_nav_settings = "Instellingen";
+$TLS_current_build = "Huidige build";
+$TLS_filter_owner = "Toegekend aan";
+$TLS_filter_result = "Resultaat";
+$TLS_filter_on = "op";
+$TLS_filter_tcID = "Testgeval ID";
+$TLS_include_unassigned_testcases = "inclusief niet toegekende Testgevallen";
+$TLS_filter_result_all_builds = "ALLE Opleveringen";
+$TLS_filter_result_any_build = "ENIGE Oplevering";
+$TLS_filter_result_specific_build = "specifieke Oplevering";
+$TLS_filter_result_latest_execution = "laatste uitvoering";
+$TLS_filter_result_current_build = "Oplevering gekozen voor uitvoering";
+$TLS_filter_somebody = "Iemand";
+$TLS_exec_build = "Oplevering om uit te voeren";
+$TLS_assign_build = "Oplevering om toe te kennen";
+$TLS_filter_result_all_prev_builds = "ALLE voorgaande Opleveringen";
+$TLS_filter_result_any_prev_build = "ENIG voorgaande Oplevering";
+$TLS_document_id = "Document ID";
+$TLS_req_type = "Requirement Type";
+$TLS_req_spec_type = "Req. Spec. Type";
+$TLS_btn_hide_cf = "Verberg Gebruikersvelden";
+$TLS_btn_show_cf = "Toon Gebruikersvelden";
+$TLS_btn_export_testplan_tree = 'Exporteer Testplan';
+$TLS_expand_tree = " Alles uitvouwen ";
+$TLS_collapse_tree = " Alles samenvouwen ";
+
+
+// ----- gui/templates/execNavigator.tpl -----
+$TLS_TestPlan = $TLS_testplan;
+$TLS_btn_apply_filter = " Pas filter toe ";
+$TLS_btn_update_menu = "Update menu";
+$TLS_caption_nav_filter_settings = "Navigatie Filter & Instellingen";
+$TLS_current_build = "Huidige oplevering";
+$TLS_filter_owner = "Toegekend aan";
+$TLS_filter_result = "Resultaat";
+$TLS_filter_tcID = "Testgeval ID";
+$TLS_include_unassigned_testcases = " - inclusief niet toegekende Testgevallen";
+$TLS_test_status_all_status = $TLS_test_status_all;
+$TLS_filter_result_all_prev_builds = "Resultaat van ALLE vorige Opleveringen";
+
+
+// ----- gui/templates/mainPage.tpl -----
+$TLS_th_my_perc_completed = "Mijn voltooide [%]";
+$TLS_th_perc_completed = "Voltooid [%]";
+$TLS_title_your_tp_metrics = "Uw testplan Metrieken";
+$TLS_error_no_testprojects_present = "Er zijn geen Testprojecten gedefinieerd";
+
+
+// ----- gui/templates/metrics_dashbord.tpl -----
+$TLS_th_total_tc = "Testgeval nummer";
+$TLS_th_active_tc = "Actieve Testgevallen";
+$TLS_th_executed_tc = "Uitgevoerde Testgevallen";
+$TLS_th_executed_vs_active = "Uitgevoerd/Actief [%]";
+$TLS_th_executed_vs_total = "Uitgevoerd/Totaal [%]";
+$TLS_show_only_active = "Toon metrieken alleen voor actieve Testplannen";
+
+
+// ----- gui/templates/newest_tcversions.tpl -----
+$TLS_linked_version = "Gekoppelde versie";
+$TLS_newest_version = "Nieuwste aanwezige actieve versie";
+$TLS_title_newest_tcversions = "Nieuwste versies van gekoppelde Testgevallen";
+$TLS_no_newest_version_of_linked_tcversions = "Alle gekoppelde Testgeval Versies zijn huidig";
+
+
+// ----- gui/templates/emailSent.tpl -----
+$TLS_send_test_report = "- Stuur Test Rapport";
+
+
+// ----- gui/templates/reqImport.tpl -----
+$TLS_Result = "Resultaat";
+$TLS_btn_back2srs = "Terug naar Req. Specificatie";
+$TLS_btn_upload_file = "Upload bestand";
+$TLS_check_req_file_structure = "Controleer alstublieft het bestandsformaat, het lijkt niet mogelijk om enige requirement te verkrijgen";
+$TLS_local_file = "Bestand";
+$TLS_max_size_cvs_file1 = "Max. grootte van het bestand is";
+$TLS_max_size_cvs_file2 = "kB";
+$TLS_req_import_check_note = "Verifieer alstublief mogelijke conficten, zorg voor een mogelijke oplossing and start het importeer proces.";
+$TLS_req_import_dont_empty = "Importeer geen onderdelen met een lege afbakening";
+$TLS_req_import_option_double = "Voeg een nieuwe toe met dezelfde titel";
+$TLS_req_import_option_header = "Stel de confict situatie vast";
+$TLS_req_import_option_overwrite = "Update een bestaande";
+$TLS_req_import_option_skip = "Sla het importeren van dubbele requirements over";
+$TLS_req_import_type = "Type";
+$TLS_req_msg_norequirement = "Geen requirement";
+$TLS_required_cvs_format = "Het verplichte bestandsformaat";
+$TLS_title_choose_file_type = "Kies bestandstype";
+$TLS_title_choose_local_file = "Kies een lokaal bestand om te Uploaden";
+$TLS_title_req_import = "Importeer requirements";
+$TLS_title_req_import_check_input = "Controleer geimporteerde data";
+$TLS_title_req_spec_import = "Import Req. Spec.";
+$TLS_check_status = "Check Status";
+$TLS_skip_frozen_req = "Bevroren requirements overslaan";
+$TLS_bad_file_format = "Bestand kan niet worden geïmporteerd; controleer het formaat";
+
+
+// gui/templates/inc_attachments.tpl
+$TLS_alt_delete_build = "Klik hier om deze oplevering te verwijderen";
+$TLS_alt_delete_attachment = "Klik hier om dit toegevoegde bestand te verwijderen.";
+$TLS_attached_files = "Gekoppelde bestanden";
+$TLS_attachment_feature_disabled = "Toevoegen bestand uitgezet";
+$TLS_button_upload = "Upload";
+$TLS_upload_file_new_file = "Upload nieuw bestand";
+$TLS_warning_delete_attachment = "Verwijder het toegevoegde bestand echt?";
+
+
+
+// gui/templates/resultsNavigator.tpl
+$TLS_note_email_sent_t = "aantekening: e-mail formaat naar de gebruiker zijn e-mail gestuurd";
+$TLS_show_inactive_tplans = "Toon inactieve Testplannen";
+$TLS_send_results = "Gestuurde resultaten";
+$TLS_send_to = "Naar:";
+$TLS_subject = "Onderwerp:";
+$TLS_title_active_build = "Actieve oplevering";
+$TLS_title_report_type = "Rapport Formaat";
+$TLS_via_email = "via e-mail";
+$TLS_link_results_import = "Importeer Resultaten";
+
+
+// gui/templates/inc_attachments_upload.tpl
+
+
+
+// gui/templates/cfields/cfieldsView.tpl
+$TLS_btn_cfields_create = "Creëer";
+$TLS_manage_cfield = "Beheer gebruikersvelden";
+
+
+// cfieldsExport.php
+$TLS_export_cfields = "Exporteer Gebruikersvelden";
+
+// cfieldsImport.php
+$TLS_import_cfields = "Importeer Gebruikersvelden";
+$TLS_custom_field_already_exists = "Gebruikersveld %s bestaat al.";
+$TLS_custom_field_imported = "Gebruikersvelden %s geïmporteerd.";
+
+// gui/templates/inc_cat_viewer_ro_m0.tpl
+$TLS_cat_scope = "Afbakening en doel";
+$TLS_category = "Test Suite";
+$TLS_configuration = "Configuratie";
+$TLS_data = "Data";
+$TLS_not_defined = "Niet gedefinieerd.";
+$TLS_tools = "Gereedschappen";
+
+
+
+// gui/templates/inc_cat_viewer_rw.tpl
+$TLS_cat_alt_name = "Voeg Test Suite naam toe. Deze waarde is verplicht.";
+$TLS_cat_config = "Configuratie";
+$TLS_cat_data = "Data";
+$TLS_cat_name = "Test Suite Naam";
+$TLS_cat_tools = $TLS_tools; //obsolete
+
+
+// gui/templates/reqEdit.tpl
+$TLS_by = "door";
+$TLS_coverage = "Dekking";
+$TLS_popup_delete_req = "Weet u zeker dat u de requirement wil verwijderen?";
+$TLS_req_edit = "Wijzig Requirement";
+$TLS_req_msg_notestcase = "Geen gekoppelde Test Case";
+$TLS_requirement_spec = "Requirement Specificatie Document";
+$TLS_test_case_id = "ID";
+$TLS_title_created = "Gecreëerd op";
+$TLS_title_last_mod = "Als laatste gewijzigd op ";
+$TLS_expected_coverage = "Aantal Testgevallen nodig";
+$TLS_warning_expected_coverage = $TLS_expected_coverage . " moet een getal zijn ";
+$TLS_warning_expected_coverage_range = $TLS_expected_coverage . " moet groter zijn dan 0 ";
+$TLS_stay_here_req = 'nog een requirement creëren na opslaan';
+
+$TLS_current_coverage = "Gekoppeld";
+$TLS_coverage_number = "Creëer";
+$TLS_testsuite_title_addition = "automatisch gegenereerd van req. spec.";
+$TLS_testcase_title_addition = "automatisch gegenereerd van requirement";
+
+$TLS_suggest_create_revision = "Wilt u een nieuwe revisie creëren?\\n" .
+                               "U heeft alleen de scope gewijzigd.\\n" .
+                               "Het wordt aanbevolen om een nieuwe revisie te maken alleen \\n" .
+                               "als u significante wijzigingen heeft gemaakt.\\n" .
+                               "Klik 'Annuleer'als u wilt bijwerken maar zonder \\n" .
+                               "een nieuwe revisie te maken.";
+                            
+$TLS_suggest_create_revision_html = "U heeft alleen de scope gewijzigd. " .
+                                    "Het wordt aanbevolen om een nieuwe revisie te maken alleen <br>" .
+                                    "als u significante wijzigingen heeft gemaakt. In deze situatie graag een logbericht maken.<br>" .
+                                    "<br>Klik 'Annuleer'als u wilt bijwerken maar zonder " .
+                                    "een nieuwe revisie te maken.<p><b>Logbericht</b>";
+
+$TLS_warning_suggest_create_revision = "Let op! &ndash; Wilt u een nieuwe revisie creëren?";
+                            
+$TLS_revision_log_title = "Revisie Log";
+$TLS_please_add_revision_log = "A.u.b. een logbericht opgeven";
+$TLS_commit_title = "Logbericht";
+$TLS_please_add_reason_log = "A.u.b. een reden voor de wijzigingen toevoegen";
+
+
+// gui/templates/buildEdit.tpl
+$TLS_enter_build = "Titel";
+$TLS_enter_build_notes = "Omschrijving";
+//$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
+//                 "Description should include: list of delivered packages, approvals, status,etc.";
+$TLS_open = "Open";
+$TLS_title_build_2 = "Opleveringsbeheer";
+$TLS_title_build_create = "Creëer een nieuwe oplevering";
+$TLS_title_build_update = "Oplevering bijwerken";
+$TLS_title_build_edit = "Oplevering bewerken";
+$TLS_warning_empty_build_name = "Voeg alstublieft een naam in voor de oplevering";
+$TLS_copy_to_all_tplans = "Kopieer naar alle Testplannen";
+$TLS_release_date = "Opleverdatum";
+$TLS_closure_date = "Sluiten op";
+$TLS_copy_tester_assignments = "Tester toekenningen kopieren";
+$TLS_assignment_source_build = "Van bestaande oplevering";
+
+
+// gui/templates/inc_comp_viewer_ro.tpl
+$TLS_component = $TLS_test_suite; //obsolete
+$TLS_introduction = "Introductie";
+$TLS_limitations = "Beperkingen";
+$TLS_methodology = "Metodologie";
+$TLS_references = "Referenties";
+
+
+// gui/templates/inc_comp_viewer_rw.tpl
+$TLS_comp_alt_name = "Voeg Test Suite naam toe. Deze waarde is verplicht.";
+$TLS_comp_intro = "Introductie";
+$TLS_comp_lim = "Beperkingen";
+$TLS_comp_method = "Methodologie";
+$TLS_comp_name = "Test Suite Naam";
+$TLS_comp_ref = "Referenties";
+$TLS_comp_scope = "Afbakening";
+
+
+
+// gui/templates/reqSpecView.tpl
+$TLS_req_spec_operations = "Requirements Specificatie operaties";
+$TLS_req_operations = "Requirements operaties";
+$TLS_btn_analyse = "Analyseer";
+$TLS_btn_check_all = "Selecteer alles";
+$TLS_btn_copy_requirements = "Copy Requirements";
+$TLS_btn_copy_req_spec = "Copy";
+$TLS_btn_delete_spec = "Verwijder document";
+$TLS_btn_edit_spec = "Wijzig document";
+$TLS_btn_export_reqs = "Exporteer requirements";
+$TLS_btn_export_req_spec = "Export";
+$TLS_btn_import_reqs = "Import";
+$TLS_btn_import_req_spec = "Import";
+$TLS_btn_req_create = "Creëer Nieuwe REQ";
+$TLS_btn_spec_list = "Lijst van alle documenten";
+$TLS_btn_uncheck_all = "De-selecteer Alles";
+$TLS_cant_delete_req_nothing_sel = "Selecteer alstublieft een requirement!";
+$TLS_popup_sure_delete = "Weet u zeker dat u het Requirement Specificatie document wil verwijderen?";
+$TLS_req_select_create_tc = "Creëer Testgevallen";
+$TLS_req_select_delete = "Verwijder requirements";
+$TLS_req_title_list = "Lijst van requirements";
+$TLS_req_total = "Overschreven aantal REQs";
+$TLS_req_reorder = "Herorden requirements";
+$TLS_select_at_least_one_req = "Selecteer een requirement";
+$TLS_warning_delete_requirements = "Weet u zeker dt u de geselecteerde requirements wil verwijderen?";
+$TLS_warning_delete_req_spec = "U gaat %s verwijderen<br /><br /> Weet u dat zeker?";
+$TLS_title_change_req_order = "Wijzige volgorde van requirements";
+$TLS_req_spec_copy_done = "Een kopie van Req. Spec (DOCID:%s - %s) is gemaakt (DOCID:%s)";
+
+
+// ----- gui/templates/inc_copyrightnotice.tpl -----
+$TLS_gnu_gpl = "GNU GPL";
+$TLS_lic_home = "Start";
+$TLS_lic_product = "TestLink product";
+$TLS_licensed_under = "TestLink is gelicenseerd onder het";
+
+
+// ----- gui/templates/containerEdit.tpl -----
+$TLS_btn_update_testsuite = "Update Test Suite";
+$TLS_title_edit_level = "Wijzig";
+
+
+// ----- gui/templates/reqSpecAnalyse.tpl -----
+$TLS_edit = "Wijzig";
+$TLS_req = "Requirement";
+$TLS_req_spec_change = "Wijzig Requirements Specificatie document naar";
+$TLS_req_title_analyse = "Analyseer Requirements Specificatie document ";
+$TLS_req_title_covered = "Requirements gedekt door Testgevallen";
+$TLS_req_title_in_tl = "Requirements binnen TestLink";
+$TLS_req_title_nottestable = "Geen testbare Requirements";
+$TLS_req_title_uncovered = "Requirements niet gedekt door Testgevallen";
+$TLS_req_title_not_in_tl = "Niet gedekte of niet testbare requirements";
+$TLS_req_total_count = "Totaal aantal requirements";
+
+
+
+// ----- gui/templates/reqSpecCreate.tpl -----
+$TLS_action_create_srs = "Creëer Requirement Specificatie document";
+
+
+// ----- gui/templates/inc_reqView.tpl -----
+$TLS_last_edit = "Laatst gewijzigd door";
+$TLS_warning_delete_requirement = "U gaat verwijderen: %s <br /><br />Wilt u dat?";
+$TLS_btn_freeze_this_version = "Deze versie bevriezen";
+$TLS_warning_freeze_requirement = "U gaat bevriezen: %s <br /><br />Wilt u dat?";
+$TLS_warning_freeze_spec = "U gaat de child Requirements van %s bevriezen<br /><br />Wilt u dat?";
+$TLS_btn_freeze_req_spec = "Requirements bevriezen";
+$TLS_freeze = "Bevriezen";
+$TLS_can_not_edit_req = "u kunt deze versie niet bewerken omdat hij bevroren is.";
+$TLS_req_version_frozen = "Requirements versie is bevroren.";
+$TLS_freeze_req = "Requirement bevriezen";
+$TLS_req_frozen = "Requirements zijn bevroren.";
+$TLS_showing_version = "Tonen versie ";
+$TLS_btn_revisions = "Revisies";
+
+
+// gui/templates/inc_res_by_comp.tpl
+$TLS_title_res_by_top_level_suites = "Resultaten van de hoogste niveau Test Suites";
+$TLS_trep_blocked = $TLS_test_status_blocked;
+$TLS_trep_comp = "Test Suite";
+$TLS_trep_comp_perc = "Voltooid [%]";
+$TLS_trep_failed = $TLS_test_status_failed;
+$TLS_trep_not_run = $TLS_test_status_not_run;
+$TLS_trep_passed = $TLS_test_status_passed;
+$TLS_trep_total = "Totaal";
+
+
+// ----- gui/templates/inc_res_by_keyw.tpl -----
+$TLS_title_res_by_kw = "Resultaten aan de hand van Steekwoord";
+$TLS_trep_kw = "Steekwoord";
+
+
+// gui/templates/inc_res_by_owner.tpl
+$TLS_title_res_by_owner = "Resultaten aan de hand van Tester";
+$TLS_trep_owner = "Tester";
+$TLS_title_res_by_tester = "Resultaten aan de hand van Tester";
+$TLS_trep_tester = "Tester";
+
+
+// gui/templates/inc_res_by_prio.tpl
+$TLS_tit_end_date = "Einddatum";
+$TLS_tit_milestone = "Mijlpaal";
+$TLS_title_res_by_prio = "Resultaten aan de hand van prioriteit";
+$TLS_trep_milestone_goal = "Mijlpaal Doel [%]";
+$TLS_trep_prio = "Prioriteit";
+$TLS_trep_status = "Status";
+
+
+// gui/templates/inc_res_by_ts.tpl
+$TLS_title_res_by_ts = "Resultaten aan de hand van Test Suite";
+$TLS_trep_imp = "Belang";
+$TLS_trep_risk = "Risico";
+$TLS_trep_ts = "Test Suite";
+
+
+// gui/templates/reqSpecEdit.tpl
+$TLS_req_total_description = "Gebruik deze parameter om het werkelijk aantal requirements binnen het document te overschrijven. '0' betekend niet gebruikt.";
+$TLS_copy_req_spec = "Copy Req. Spec.";
+
+
+// gui/templates/inc_show_bug_table.tpl
+$TLS_caption_bugtable = "Relevante Meldingen";
+$TLS_delete_bug = "verwijder bug";
+$TLS_del_bug_warning_msg = "Verwijder deze melding echt?";
+
+
+
+// gui/templates/reqSpecList.tpl
+$TLS_btn_assign_tc = "Koppel Testgeval";
+$TLS_no_docs = "Geen bechikbare documenten.";
+$TLS_req_list_docs = "Requirement Specificatie Documenten";
+
+
+
+// ----- gui/templates/tcEdit_New_viewer.tpl -----
+$TLS_alt_add_tc_name = "Voeg Testgeval naam toe. Deze waarde is verplicht.";
+$TLS_expected_results = "Verwachte resulaten";
+$TLS_preconditions = "Voorwaarden";
+$TLS_steps = "Stappen";
+$TLS_summary = "Samenvatting";
+$TLS_tc_title = "Testgeval titel";
+
+
+// ----- gui/templates/show_exec_notes.tpl -----
+$TLS_title_execution_notes = "Uitvoeringsaantekingen";
+
+
+// ----- gui/templates/rolesedit.tpl -----
+$TLS_btn_create_role = "Creëer";
+$TLS_btn_edit_role = "Opslaan";
+$TLS_caption_define_role = "Definieer rollen";
+$TLS_caption_possible_affected_users = "Mogelijk beïnvloedde gebruikers door rol verwijder operatie";
+$TLS_enter_role_notes = "Rol beschrijving";
+$TLS_menu_assign_product_roles = "Ken Testproject rollen toe";
+$TLS_menu_assign_testplan_roles = "Ken Testplan rollen toe";
+$TLS_menu_define_roles = "Nieuwe rol";
+$TLS_menu_mod_user = "Wijzig gebruiker";
+$TLS_menu_new_user = "Nieuwe gebruiker";
+$TLS_menu_edit_user = "Wijzig gebruiker";
+$TLS_menu_edit_role = "Edit Role";
+$TLS_menu_view_users = "Bekijk gebruikers";
+$TLS_menu_view_roles = "Bekijk rollen";
+$TLS_th_cf_rights = "Gebruikersveld";
+$TLS_th_issuetracker_rights = 'Issue Tracker';
+$TLS_th_kw_rights = "Steekwoord";
+$TLS_th_mgttc_rights = "Testgeval beheer";
+$TLS_th_platform_rights = $TLS_platform;
+$TLS_th_product_rights = "Testproject";
+$TLS_th_req_rights = "Requirement";
+$TLS_th_rights = "Rechten";
+$TLS_th_rolename = "Rol naam";
+$TLS_th_system_rights = "Systeem rechten";
+$TLS_th_tp_rights = "Testplan";
+$TLS_th_user_rights = "Gebruiker";
+$TLS_title_user_mgmt = "Gebruikers Administratie";
+$TLS_warning_empty_role_name = "Geeft u een naam voor de rol";
+$TLS_warning_modify_role = "Wijzig deze rol echt?";
+
+
+
+// ----- gui/templates/tcSearchForm.tpl -----
+$TLS_caption_search_form = "Zoek Testgevallen";
+$TLS_custom_field_value = "Gebruikersveld waarde";
+$TLS_not_applied = "Niet toegepast";
+$TLS_th_tcid = "Testgeval ID";
+$TLS_th_tcversion = "Versie";
+$TLS_th_title = "Titel";
+$TLS_title_search_tcs = "Zoek";
+$TLS_requirement_document_id = "Req. Doc. ID";
+$TLS_creation_date_from = 'Gecreëerd vanaf:';
+$TLS_creation_date_to = 'Gecreëerd tot:';
+$TLS_modification_date_from = 'Wijzigingsdatum vanaf:';
+$TLS_modification_date_to = 'Wijzigingsdatum tot:';
+
+
+// ----- gui/templates/testcases/searchData.tpl -----
+$TLS_too_wide_search_criteria = "Te veel resultaten. Stelt u een meer specifieke filter in. ";
+
+
+// ----- gui/templates/infoWindow.tpl -----
+
+
+// ----- gui/templates/tcDelete.tpl -----
+$TLS_btn_yes_iw2del = "Ja, verwijder Testgeval!";
+$TLS_question_del_tc = "Verwijder Testgeval echt?";
+$TLS_th_executed = "Uitgevoerd";
+$TLS_th_linked_to_tplan = "Gekoppeld aan Testplan";
+$TLS_th_version = "Versie";
+
+
+// ----- gui/templates/tcNew.tpl -----
+$TLS_title_new_tc = "Creëer Testgeval";
+$TLS_warning_empty_tc_title = "Geef alstublieft het Testgeval een titel";
+$TLS_stay_here_tc = 'creëer nog een Testgeval na opslaan';
+
+
+// ----- gui/templates/tcImport.tpl -----
+$TLS_title_imp_tc_data = "Importeer Testgeval data";
+$TLS_view_file_format_doc = "(Toon bestandsformaten documentatie)";
+
+
+// ----- gui/templates/keywordsimport.tpl -----
+$TLS_title_keyword_import_to = "Importeer steekwoorden naar";
+$TLS_title_keyword_import = "Importeer steekwoorden";
+
+
+// ----- gui/templates/keywordsExport.tpl -----
+$TLS_export_keywords = "Exporteer steekwoorden";
+$TLS_title_req_import_to = "Importeer requirements naar document";
+
+
+// ----- gui/templates/cfields_tproject_assign.tpl -----
+$TLS_btn_cfields_active_mgmt = "Update actieve status";
+$TLS_btn_cfields_display_order = "Bewaar getoonde sortering";
+$TLS_btn_cfields_display_attr = "Display volgorde en locatie opslaan";
+$TLS_cfields_active = "Actief";
+$TLS_cfields_tproject_assign = "Wijs gebruikersvelden toe";
+$TLS_display_order = "Toon sortering";
+$TLS_title_assigned_cfields = "Toegewezen gebruikersvelden";
+$TLS_title_available_cfields = "Beschikbare gebruikersvelden";
+$TLS_location = "Locatie";
+$TLS_standard_location = "standaard";
+$TLS_before_steps_results = "Voor stappen";
+
+
+// ----- gui/templates/usersview.tpl -----
+$TLS_No = "Nee";
+$TLS_Yes = "Ja";
+$TLS_alt_delete_user = "Verwijder de geselecteerde gebruiker echt?";
+$TLS_alt_disable_user = "Maak gebruiker inactief";
+$TLS_alt_edit_user = "Wijzig gebruiker";
+$TLS_order_by_login = "Sorteer aan de hand van login";
+$TLS_order_by_role_descr = "Sorteer aan de hand van rol beschrijving";
+$TLS_th_email = "E-mail";
+$TLS_th_first_name = "Voornaam";
+$TLS_th_last_name = "Achternaam";
+$TLS_th_locale = "Taal";
+$TLS_th_login = "Loginnaam";
+$TLS_th_role = "Rol";
+$TLS_th_api = "API Key";
+//$TLS_api_gen_key_action = "generate";
+$TLS_warning_delete_user = "Verwijder de geselecteerde gebruiker echt?";
+$TLS_warning_disable_user = "U gaat %s deactiveren<br /><br /> Weet u dat zeker?";
+$TLS_order_by_login_dir = "Volgorde van Loginnaam";
+$TLS_order_by_role_dir = "Volgorde van rol";
+$TLS_alt_active_user = "Actieve gebruiker";
+$TLS_show_inactive_users = "Toon inactieve gebruikers";
+$TLS_hide_inactive_users = "Verberg inactieve gebruikers";
+
+
+// ----- gui/templates/login.tpl -----
+$TLS_btn_login = "Login";
+$TLS_login_name = "Login Naam";
+$TLS_lost_password_q = "Wachtwoord verloren?";
+$TLS_new_user_q = "Nieuwe Gebruiker?";
+$TLS_password = "Wachtwoord";
+$TLS_timeout_info = "Uw sessie is verlopen.<br><br>A.u.b. opnieuw inloggen om recente wijzigingen niet te verliezen. ";
+
+
+// ----- gui/templates/loginFirst.tpl -----
+$TLS_btn_add_user_data = "Voeg gebruikers gevens toe";
+$TLS_e_mail = "E-mail adres (nodig om nieuw wachtwoord te sturen)";
+$TLS_first_name = "Voornaam";
+$TLS_last_name = "Achternaam";
+$TLS_link_back_to_login = "Terug naar login";
+$TLS_password_again = "Herhaal wachtwoord";
+$TLS_password_mgmt_is_external = "Wachtwoord beheer is extern";
+$TLS_user_login_valid_regex = "De loginnaam bevat niet toegestane karakters";
+
+
+// ----- gui/templates/tcMove.tpl -----
+$TLS_as_first_testcase = "Doelpositie boven";
+$TLS_as_last_testcase = "Doelpositie beneden";
+$TLS_btn_mv = "Verplaats";
+$TLS_choose_container = "Kies Test Suite";
+$TLS_inst_copy = "Kopieer Testgeval naar een Test Suite.";
+$TLS_inst_move = "Verplaats Testgeval naar een andere Test Suite.";
+$TLS_inst_copy_move_warning = "Belangrijk: u kunt alleen Test Suites kiezen die bij dit Testproject horen.";
+$TLS_title_mv_cp_tc = "Verplaats/Kopieer Testgeval";
+
+
+// ----- gui/templates/loginLost.tpl -----
+$TLS_btn_send = "Stuur";
+$TLS_password_reset = "Wachtwoord opnieuw instellen ";
+
+
+// ----- gui/templates/tcView.tpl -----
+$TLS_no_records_found = "Uw zoekopdracht heeft geen resultaten opgeleverd!";
+$TLS_other_versions = 'Andere versies';
+$TLS_match_count = "Aantal gevonden";
+
+
+// ----- gui/templates/execSetResults.tpl -----
+$TLS_alt_attachment_mgmt = "toegevoegde bestanden";
+$TLS_alt_notes = "aantekeningen";
+$TLS_assigned_to = "Toegewezen aan";
+$TLS_attachment_mgmt = "toegevoegde bestanden";
+$TLS_btn_history_off = "Toon alleen de laatste uitoering";
+$TLS_btn_history_off_any_build = "Toon alleen laatste uitvoering (enige Oplevering)";
+$TLS_btn_history_on = "Toon volledige uitvoer historie";
+$TLS_btn_save_all_tests_results = "Opslaan alles";
+$TLS_btn_save_tc_exec_results = "Opslaan";
+$TLS_btn_save_exec_and_movetonext = "Opslaan en volgende";
+$TLS_bug_mgmt = "Bevindingenbeheer";
+$TLS_btn_export_testcases = "Export Testgevallen";
+$TLS_build_is_closed = "Oplevering is gesloten";
+$TLS_builds_notes = "Oplevering omschrijving";
+$TLS_bulk_tc_status_management = "Bulk Testgeval status beheer";
+$TLS_closed_build = "Oplevering is gesloten. Kan geen operaties uitvoeren.";
+$TLS_date_time_run = "Datum";
+$TLS_details = "Details";
+$TLS_edit_notes = "aantekeningen bewerken";
+$TLS_execute_and_save_results = "Voer uit en bewaar resultaten";
+$TLS_exec_any_build = "(elke oplevering)";
+$TLS_exec_current_build = "(huidige oplevering)";
+$TLS_exec_notes = "Aantekeningen";
+$TLS_exec_status = "Status";
+$TLS_execution_history = "Uitvoerings historie";
+$TLS_execution_type_manual = "Handmatig";
+$TLS_execution_type_auto = "Automatisch";
+$TLS_has_no_assignment = "Geen tester is toegewezen";
+$TLS_img_title_bug_mgmt = "Bevindingenbeheer";
+$TLS_img_title_delete_execution = "Verwijder uitvoering";
+$TLS_import_xml_results = "Import XML Results";
+$TLS_just_last_execution_for_this_build = "Laatste uitvoering voor deze oplevering";
+$TLS_last_execution = "Laatste uitvoering";
+$TLS_no_data_available = "Geen gegevens beschikbaar";
+$TLS_only_test_cases_assigned_to = "Alleen Testgevallen toegekend aan";
+$TLS_or_unassigned_test_cases = " Of zonder toegekende tester";
+$TLS_run_mode = "Run modus";
+$TLS_set_all_tc_to = "Zet alles naar status ";
+$TLS_show_hide = "Toon / verberg";
+$TLS_show_hide_reorder = "Toon / Verberg herorderning ";
+$TLS_tc_not_tested_yet = "Nog niet getest";
+$TLS_test_cases_cannot_be_executed = "Testgevallen kunnen niet worden uitgevoerd";
+$TLS_testcase_version_is_inactive_on_exec = "Deze versie is inactief; hij kan niet worden uitgevoerd.";
+$TLS_testcase_customfields = "Testgevallen gebruikersvelden";
+$TLS_test_exec_by = "Getest door";
+$TLS_test_exec_expected_r = "Verwachte Resultaten";
+$TLS_test_exec_last_run_date = "Meest recente uitvoering";
+$TLS_test_exec_notes = "Aantekeningen / Beschrijving";
+$TLS_test_exec_on_build = "bij oplevering";
+$TLS_test_exec_result = "Resultaat";
+$TLS_test_exec_steps = "Stappen";
+$TLS_test_exec_summary = "Samenvatting";
+$TLS_test_plan_notes = "Testplan aantekeningen";
+$TLS_th_test_case_id = "ID ";
+$TLS_th_testsuite = $TLS_test_suite;
+$TLS_title_t_r_on_build = "Test Resultaten bij oplevering";
+$TLS_title_t_r_owner = " Toegewezen aan";
+$TLS_title_test_case = "Testgeval";
+$TLS_version = "Versie";
+$TLS_warning_delete_execution = "U gaat de uitvoering verwijderen<br /><br /> Weet u dat zeker?";;
+$TLS_warning_nothing_will_be_saved = "Voor het geselecteerde resultaat wordt niets bewaard.";
+$TLS_edit_execution = "uitvoering bewerken";
+$TLS_platform_description = "Platform beschrijving";
+$TLS_remoteExecFeeback = "Remote Testgeval Uitvoering Terugkoppeling";
+
+
+// ----- gui/templates/inc_testsuite_viewer_ro.tpl -----
+$TLS_keywords = "Steekwoorden";
+
+
+// ----- gui/templates/navBar.tpl -----
+$TLS_access_doc = "documentatie";
+$TLS_home = "Start";
+$TLS_link_logout = "Afmelden";
+$TLS_navbar_user_management = "Gebruikers";
+$TLS_product = "Testproject";
+$TLS_product_role = "Testproject rol ";
+$TLS_search_testcase = "Zoek";
+$TLS_title_edit_personal_data = "Persoonlijk";
+$TLS_title_admin = "Gebruikersadministratie";
+$TLS_title_events = "Events";
+$TLS_title_execute = "Uitvoeren testen";
+$TLS_title_results = "Resultaten";
+$TLS_title_specification = "Testspecificatie";
+$TLS_session_inactivity_timeout_at = "Session idle timeout at";
+
+
+
+// ----- gui/templates/inc_testsuite_viewer_rw.tpl -----
+
+
+
+// ----- gui/templates/planAddTC_m1.tpl -----
+$TLS_add_tc = "Toevoegen";
+$TLS_adding_tc = "toevoegen";
+$TLS_removal_tc = "verwijderen";
+$TLS_added_on_date = "Toegevoegd op datum";
+$TLS_info_added_on_date = "Datum wanneer Testgeval aan Testplan werd toegevoegd";
+$TLS_empty_tc_summary = "<i>Testgeval Samenvatting is leeg</i>";
+$TLS_add_remove_selected_tc_hint = "Operatie zal worden toegepast op ALLE Test suites";
+$TLS_btn_add_remove_selected_tc = "Voeg toe / Verwijder geselecteerde";
+$TLS_btn_add_selected_tc = "Voeg geselecteerde toe";
+$TLS_btn_save_exec_order = "Volgorde opslaan";
+$TLS_btn_save_custom_fields = "Gebruikersvelden opslaan";
+$TLS_btn_save_platform = "Platform opslaan";
+$TLS_check_uncheck_all_tc = "Alle Testgevallen aan/uitvinken";
+$TLS_check_uncheck_all_tc_for = "Alle Testgevallen aan/uitvinken voor";
+$TLS_check_uncheck_tc_with_platform = "Testgevallen met Platform aan/uitvinken";
+$TLS_for = "voor";
+$TLS_check_uncheck_tc = "Alle Testgevallen in de Test Suite.";
+$TLS_check_uncheck_all_checkboxes = "alles aan/uitvinken";
+$TLS_check_uncheck_all_checkboxes_for_add = "alles aan/uitvinken (voor toevoegen)";
+$TLS_check_uncheck_all_checkboxes_for_rm = "alles aan/uitvinken (voor verwijderen)";
+$TLS_executed_can_not_be_removed = "Uitgevoerde Testgevallen kunnen niet worden verwijderd.";
+$TLS_execution_order = "Volgorde van uitvoering";
+$TLS_select_all_to_add = "Select/deselect all Test Cases to add";
+$TLS_select_all_to_remove = "Select/deselect all Test Cases to remove";
+$TLS_tester_assignment_on_add = "Bij toevoegen ken toe aan gebruiker ";
+$TLS_build_to_assign_on_add = "voor Oplevering";
+
+$TLS_has_been_executed = "is uitgevoerd";
+$TLS_inactive_testcase = "inactief";
+$TLS_no_testcase_available = "Geen Testgeval beschikbaar";
+$TLS_note_keyword_filter = "Testgevallen zijn gefilterd aan de hand van steekwoorden";
+$TLS_remove_tc = "Verwijder";
+$TLS_show_tcase_spec = "Toon Testgeval specificatie";
+$TLS_th_test_case = "Testgevallen";
+$TLS_title_add_remove_test_to_plan = "Voeg toe/Verwijder Testgevallen van/naar Testplan";
+$TLS_title_add_test_to_plan = "Voeg Testgevallen toe aan Testplan";
+$TLS_warning_add_remove_selected_tc = "Waarschuwing! Weet u zeker dat u de geselecteerde Testgevallen uit het Testplan wil verwijderen?";
+$TLS_warning_remove_executed = "U gaat Testgevallen verwijderen van dit Testplan.  \\n" .
+	"Sommige Testgevallen zijn uitgevoerd. \\n" .
+	"Hiermee verwijdert u ALLE tesresultaten. \\n" .
+	"Weet u het zeker?";
+
+
+// ----- gui/templates/planAddTCNavigator.tpl -----
+$TLS_title_navigator = "Navigator";
+$TLS_keywords_filter_help = "U kunt EN/OF filters gebruiken";
+
+
+// ----- gui/templates/planTCNavigator.tpl -----
+$TLS_btn_update_all_testcases_to_latest_version = "Alle Testgevallen bijwerken tot laatste versie";
+$TLS_btn_bulk_update_to_latest_version = " Massa bijwerking naar laatste versie ";
+$TLS_caption_nav_filters = "Filters";
+
+
+// ----- gui/templates/planPriority.tpl -----
+$TLS_btn_upd_prio = "Update";
+$TLS_title_priority = "Definieer prioriteit regels voor het Testplan";
+$TLS_tr_th_importance = "Belang";
+$TLS_tr_th_prio_cba = "Prioriteit (C/B/A)";
+$TLS_tr_th_risk = "Risico/Belang";
+
+
+// ----- gui/templates/planUpdateTC.tpl -----
+$TLS_btn_update_testplan_tcversions = "Testplan bijwerken";
+$TLS_update_to_version = "Bijwerken tot versie";
+$TLS_update_all_testcase_versions = "Alle Testgevallen Bijwerken";
+$TLS_update_testcase_versions = "Gekoppelde Testgeval versies bijwerken";
+$TLS_no_testcase_checked = "Er zijn geen aangevinkte Testgevallen. Niets wordt gedaan.";
+$TLS_tplan_updated = "Testplan is bijgewerkt.";
+$TLS_update2latest = "<p>Alle Testgevallen die bij het Testplan horen worden bijgewerkt tot de nieuwste versie.
+	Vink de Testgevallen uit waar bijwerken niet gewenst is.</p>";
+$TLS_noupdateneeded = "Alle Testgevallen zijn al bijgewerkt tot de nieuwste versie.";
+
+
+// ----- gui/templates/planEdit.tpl -----
+$TLS_btn_testplan_create = "Creëer";
+$TLS_cancel = "Annuleer";
+$TLS_opt_no = "Nee";
+$TLS_testplan_question_create_tp_from = "Creëer van bestaand Testplan?";
+$TLS_testplan_th_active = "Actief";
+$TLS_testplan_th_name = "Naam";
+$TLS_testplan_th_notes = "Beschrijving";
+$TLS_testplan_title_create = "Creëer een nieuw Testplan";
+$TLS_testplan_title_edit = "Wijzig het Testplan";
+$TLS_testplan_title_for_project = "voor Testproject ";
+$TLS_testplan_title_tp_management = "Testplan Beheer";
+$TLS_testplan_txt_notes = "<p>Een Testplan hoort een duidelijk afgebakende taak te bevatten, met een planning en inhoud. " .
+                          "Testplannen kunnen worden gecreëerd voor simpele wijzigingsvoorstellen tot geheel nieuwe product versies. " .
+                          "Het is aan te raden het beschrijvingsveld te gebruiken om de scope van het Testplan te definieren. " . 
+                          "Daarnaast kan het links naar projectplannen en gerelateerde " .
+                          "documentatie bevatten, lijsten van onderdelen die getest moeten worden, risico's etc. </p> " .
+                          "<p>U kunt een nieuw testplan creëren van een bestaande. " .
+                          "De onderdelen die worden gekopieerd zijn: opleveringen, Testgevallen, prioriteiten, mijlpalen, en gebruikersrollen. " .
+                          "<p>Testplannen kunnen worden gedeactiveerd (dat wil zeggen: wijzigen van het plan en aanpassen van de resultaten zijn niet toegestaan).</p> " .
+                          "Gedeactiveerde testplannen zijn alleen zichtbaar via 'Rapportage' en op deze pagina. </p>";
+$TLS_warning_empty_tp_name = "U kunt geen Testplan toevoegen zonder naam";
+
+$TLS_testplan_copy_tcases = "Kopieer Testgevallen";
+$TLS_testplan_copy_tcases_latest = "Laatste beschikbare versie";
+$TLS_testplan_copy_tcases_current = "Huidige gekoppelde versie";
+$TLS_testplan_copy_builds = "Kopieer Opleveringen";
+$TLS_testplan_copy_priorities = "Kopieer prioriteiten";
+$TLS_testplan_copy_milestones = "Kopieer mijlpalen";
+$TLS_testplan_copy_user_roles = "Kopieer rollen";
+$TLS_testplan_copy_platforms_links = "Kopieer platform links";
+$TLS_testplan_copy_assigned_to = "Kopieer toekenningen";
+
+
+// ----- gui/templates/planNew.tpl -----
+$TLS_testplan_btn_edit = "Update";
+$TLS_testplan_btn_new = "Creëer";
+$TLS_testplan_menu_create = "Creëer";
+$TLS_testplan_menu_edit = "Wijzig";
+$TLS_testplan_menu_list = "Lijst";
+
+
+
+// ----- gui/templates/planMilestones*.tpl -----
+$TLS_alt_delete_milestone = "Verwijder mijlpaal?";
+$TLS_btn_edit_milestone = "Wijzig";
+$TLS_btn_new_milestone = "Creëer";
+$TLS_info_milestones_date = "Mijlpalen moeten in de toekomst zijn (of gelijk aan vandaag)";
+$TLS_info_milestones_start_date = "Startdatum is optioneel.";
+$TLS_no_milestones = "Er zijn geen Mijlpalen voor dit Testplan!";
+$TLS_popup_delete_milestones = "Weet u zeker dat u de mijlpaal %NAME% wil verwijder?";
+$TLS_warning_delete_milestone = "U gaat mijlpaal verwijderen: %s <br /> <br /> Weet u dat zeker?";
+$TLS_warning_empty_milestone_name = "Mijlpaal naam mag niet leeg zijn";
+$TLS_warning_invalid_date = "Deze datum is niet geldig";
+
+$tls_info_milestone_1 = "Mijlpalen hebben betrekking op testuitvoeringen in een specifieke tijdsperiode. " .
+	"Deze periode begint bij <b>Startdatum 00:00:00</b> en eindigt bij <b>Doeldatum 23:59:59</b>. Als geen Startdatum is " .
+	"gespecificeerd worden alle testuitvoeringen voor de Doeldatum meegenomen. <br />"; 
+$TLS_info_milestone_create_prio = $tls_info_milestone_1 . "Mijlpalen zijn bereikt als alle 'Submijlpalen' voor de verschillende " .
+	"<b>prioriteiten</b> zijn bereikt. De status van mijlpalen is te vinden in de Algemene Testplan metrieken. ";
+$TLS_info_milestone_create_no_prio = $tls_info_milestone_1 . "Mijlpalen zijn bereikt als de gekozen percentage van 
+	<b>voltooide testen</b> is bereikt. De status van mijlpalen is te vinden in de Algemene Testplan metrieken. ";
+
+$TLS_th_date_format = "Doel Datum";
+$TLS_th_perc_a_prio = "Afgeronde tests met A Prioriteit [0-100%]";
+$TLS_th_perc_b_prio = "Afgeronde tests met B Prioriteit [0-100%]";
+$TLS_th_perc_c_prio = "Afgeronde tests met C Prioriteit [0-100%]";
+$TLS_th_perc_testcases = "Voltooide testen [0-100%]";
+$TLS_title_existing_milestones = "Bestaande Mijlpalen";
+$TLS_title_milestones = "Mijlpalen voor Testplan";
+$TLS_title_new_milestone = "Nieuwe Mijlpaal";
+$TLS_title_edit_milestone = "Mijlpaal Bewerken";
+$TLS_delete_milestone = "Mijlpaal verwijderen";
+$TLS_milestone_deleted = "Mijlpaal %s is verwijderd";
+$TLS_create_milestone = "Mijlpaal Creëren";
+$TLS_edit_milestone = "Mijlpaal %s Bewerken";
+$TLS_warning_empty_low_priority_tcases = "Waarde mag niet leeg zijn";
+$TLS_warning_empty_medium_priority_tcases = "Waarde mag niet leeg zijn";
+$TLS_warning_empty_high_priority_tcases = "Waarde mag niet leeg zijn";
+$TLS_milestone_created = "Mijlpaal gecreëerd";
+$TLS_start_date = 'Startdatum';
+
+
+// ----- gui/templates/projectEdit.tpl -----
+$TLS_btn_activate = "Activeer";
+$TLS_btn_del = "Verwijder";
+$TLS_btn_edit_del = "Wijzig / Verwijder";
+$TLS_btn_inactivate = "Zet op inactief";
+$TLS_caption_edit_tproject = "Bewerk %s";
+$TLS_caption_new_tproject = "Creëer nieuw Testproject";
+$TLS_create_from_existent_tproject = 'Creëer op basis van bestaand Testproject?';
+$TLS_testproject_color = 'Achtergrondkleur';
+$TLS_testproject_enable_automation = 'Test Automation (API sleutels)';
+$TLS_testproject_enable_inventory = 'Inventaris';
+$TLS_testproject_enable_priority = 'Testprioriteit';
+$TLS_testproject_enable_requirements = 'Requirements feature';
+$TLS_color = "Kleur";
+$TLS_enable_requirements = "Activeren Requirements functionaliteit";
+$TLS_enable_priority = "Priority Beheer";
+$TLS_enable_automation = "Test Automation";
+$TLS_info_failed_loc_prod = "Mislukt om het Testproject te lokalizeren.";
+$TLS_testproject_description = 'Project omschrijving';
+$TLS_testproject_features = 'Geavanceerde features';
+$TLS_testproject_alt_color = 'Click Here to Pick up the Project background colour';
+$TLS_notes = "Gerelateerde Aantekeningen";
+$TLS_testproject_alt_delete = "Verwijder Testproject";
+$TLS_testproject_alt_active = "Active";
+$TLS_testproject_alt_requirement_feature = "Requirements geactiveerd";
+$TLS_testproject_alt_edit = "Bewerk Testproject";
+$TLS_testproject_txt_empty_list = "Er zijn geen Testprojecten gedefinieerd";
+$TLS_testproject_prefix = 'Voorvoegsel (voor Testgeval ID)';
+
+// Warning!!! - if JS string you must use \\n to get \n
+$TLS_popup_product_delete = "Waarschuwing! Deze actie verwijdert alle gerelateerde Testprojecten (onomkeerbaar) " .
+                            "data (inclusief test resultaten, plannen, etc.). " .
+                            "U kunt ook deactiveren gebruiken in plaats van verwijder.\\n" .
+                            "Aanbevolen: Maak eerst een backup van de database.\\n" .
+                            "Weet u zeker dat u het Testproject wil verwijderen?"; 
+
+$TLS_tcase_id_prefix = "Test Case ID voorvoegsel";
+$TLS_warning_empty_tcase_prefix = "Test Case ID voorvoegsel kan niet leeg zijn";
+$TLS_warning_empty_tproject_name = "Testproject naam kan niet leeg zijn!";
+$TLS_testproject_issue_tracker_integration = 'Issue Tracker Integratie';
+$TLS_issue_tracker = 'Issue Tracker';
+
+
+// ----- gui/templates/projectView.tpl -----
+$TLS_title_testproject_management = "Testproject Beheer";
+$TLS_tcase_id_prefix = 'Voorvoegsel';
+$TLS_testproject_alt_delete = 'Verwijder Testproject en alle daaraan verwante gegevens.';
+// Warning!!! - if JS string you must use \\n to get \n
+$TLS_popup_product_delete = 'Waarschuwing! Deze actie verwijdert onherroepelijk alle Testproject ' .
+                            'gegevens (inclusief testplannen, testresultaten, enz.). ' .
+                            'U kunt ook deactiveren gebruiken i.p.v. verwijderen.\\n' .
+                            'Aanbeveling: maak eerst een backup van de database.\\n' .
+                            'Weet u zeker dat u het Testproject wilt verwijderen?';
+
+
+// ----- gui/templates/reqAssign.tpl -----
+$TLS_please_select_a_req = "Kies alstublieft een requirement";
+$TLS_req_msg_norequirement66 = "Geen requirement";
+$TLS_req_title_assign = "Ken Requirements toe aan Testgeval";
+$TLS_req_title_assigned = "Gekoppelde Requirements";
+$TLS_req_title_unassigned = "Beschikbare Requirements";
+$TLS_warning_req_tc_assignment_impossible = "U <b>niet niet</b> de koppeling niet toepassen door een van de volgende oorzaken:" .
+                                            "<br><ul><li>Er zijn geen Requirement Specificatie documenten gedefinieerd</li>" .
+                                            "<li>Het Requirement Specificatie document is leeg</ul></li></ul>";
+
+
+// ----- gui/templates/tcEdit.tpl -----
+$TLS_title_edit_tc = "Wijzig Testgeval";
+$TLS_warning_editing_executed_step = "Waarschuwing! Testgeval stap is al uitgevoerd.";
+$TLS_warning_editing_executed_tc = "Waarschuwing! Testgeval versie is al uitgevoerd";
+$TLS_warning_delete_executed_tc = "Waarschuwing! Testgeval versie is al uitgevoerd";
+$TLS_warning_unsaved = "U verliest niet opgeslagen wijzigingen!";
+$TLS_warning_estimated_execution_duration_format = "Geschatte uitvoeringsduur moet numeriek zijn";
+
+
+// ----- gui/templates/planOwner.tpl -----
+$TLS_assign_ownership = "Wijs eigenaarschap toe";
+$TLS_def_prio_rules = "Definieer prioriteits regels";
+$TLS_opt_label_none = "geen";
+$TLS_th_imp = "Belang";
+$TLS_th_owner = "Tester";
+$TLS_th_risk = "Risico";
+$TLS_th_test_suite = "Test Suite";
+$TLS_title_plan_ownership = "Testplan eigenaarschap";
+
+
+// ----- gui/templates/tcView_viewer.tpl -----
+$TLS_activate_this_tcversion = "Activeer deze versie";
+$TLS_Requirements = "Requirements";
+$TLS_btn_del_this_version = "Verwijder deze versie";
+$TLS_btn_execute_automatic_testcase = "Automatische Testgeval uitvoeren";
+$TLS_btn_mv_cp = "Verplaats / Kopieer";
+$TLS_btn_new_version = "Creëer een nieuwe versie";
+$TLS_can_not_edit_tc = "U kunt deze versie niet aanpassen omdat deze is uitgevoerd";
+$TLS_deactivate_this_tcversion = "Deactiveer deze versie";
+$TLS_execution_type = 'Type uitvoering';
+$TLS_execution_type_short_descr = 'Uitvoering';
+$TLS_tcversion_is_inactive_msg = "Deze versie is INACTIEF; hij zal niet beschikbaar zijn om toegevoegd te worden aan een Testplan";
+$TLS_system_blocks_delete_executed_tc = "Systeemconfiguratie blokkeert verwijdering van uitgevoerde versies.";
+$TLS_system_blocks_delete_executed_tc_when = "Systeemconfiguratie blokkeert verwijdering van Testgeval als er " .
+											 "uitgevoerde versies zijn.";
+
+
+// ----- gui/templates/planRemoveTC_m1.tpl -----
+$TLS_btn_remove_selected_tc = "Verwijder geselecteerde Testgevallen";
+$TLS_remove_ok = "Verwijder correct";
+$TLS_title_remove_test_from_plan = "Verwijder Testgeval van testplan";
+
+
+// ----- gui/templates/keywordsAssign.tpl -----
+$TLS_keyword_assignment_empty_tsuite = "Er zijn geen Testgevallen in deze Test Suite => steekwoord koppeling is niet mogelijk";
+$TLS_menu_assign_kw_to_tc = "Koppel aan Testgevallen";
+$TLS_menu_manage_keywords = "Steekwoord beheer";
+$TLS_title_keywords = "Steekwoorden";
+
+
+// ----- gui/templates/planTestersNavigator.tpl -----
+$TLS_label_list_of = "Lijst van";
+$TLS_opt_test_plans = "Testplannen";
+$TLS_opt_users = "Gebruikers";
+
+
+// ----- gui/templates/planUpdateTC.tpl -----
+$TLS_btn_upd_ck_tc = "Update gecheckde Test Testgeval(len)";
+$TLS_info_all_tc_uptodate = "Alle Testgevallen zijn huidig.";
+$TLS_th_category = "Test Suite";
+$TLS_th_component = "Test Suite";
+$TLS_th_id_tc = "[ID] Testgeval";
+$TLS_th_reason = "Reden van Update";
+$TLS_th_spec_version = "Spec. versie";
+$TLS_th_status = "Status";
+$TLS_th_suite_version = "Suite versie";
+$TLS_th_update = "Update";
+$TLS_title_upd_mod_tc = "Update gewijzigde Testgeval(len) in ";
+
+
+// ----- gui/templates/keywordsView.tpl -----
+$TLS_alt_delete_keyword = "Verwijder het steekwoord?";
+$TLS_btn_create_keyword = "Creëer steekwoord";
+$TLS_btn_edit_keyword = "Wijzig";
+$TLS_btn_export_keywords = "Exporteer";
+$TLS_btn_import_keywords = "Importeer";
+$TLS_th_keyword = "Steekwoord";
+$TLS_warning_delete_keyword = "Weet u zeker dat u het steekwoord wil verwijderen?";
+$TLS_warning_enter_at_least1 = "Voeg alstublieft te minste ";
+$TLS_warning_enter_at_least2 = " karakters in.";
+$TLS_warning_enter_less1 = "Voeg alstublieft minder dan ";
+$TLS_warning_enter_less2 = " karakters in.";
+
+
+// ----- gui/templates/platformsView.tpl -----
+$TLS_alt_delete_platform = "Verwijder platform?";
+$TLS_btn_create_platform = "Creëer platform";
+$TLS_btn_edit_platform = "Bewerken";
+$TLS_th_platform = "Platform";
+$TLS_menu_manage_platforms = "Platform Beheer";
+$TLS_warning_delete_platform = "Waarschuwing! U gaat %s verwijderen.<br /> Dit verwijdert <b>ALLE</b> " .
+                               "uitvoeringsresultaten in alle Testplannen.<br />Dit kan niet ongedaan worden. " .
+                               "<br/>Weet u het zeker?";
+$TLS_warning_cannot_delete_platform = "<b>%s</b> is in gebruik.<br/>U kunt het nu niet verwijderen. " .
+                                      "U moet het eerst verwijderen van de Testplannen waar het wordt gebruikt. ";
+$TLS_warning_enter_at_least1 = "Voer tenminste ";
+$TLS_warning_enter_at_least2 = " karakters in.";
+$TLS_warning_enter_less1 = "Voer minder dan";
+$TLS_warning_enter_less2 = " karakters in.";
+$TLS_export_platforms = "Exporteer platforms";
+$TLS_import_platforms = "Importeer platforms";
+$TLS_platform_created = "Platform %s gecreëerd";
+$TLS_platform_updated = "Platform %s bijgewerkt";
+$TLS_platform_deleted = "Platform %s verwijderd";
+$TLS_platform_imported = "Platform %s geïmporteerd";
+
+
+// ----- gui/templates/platformsAssign.tpl -----
+$TLS_platform_assignment_no_testplan = "Er is geen Testplan geselecteerd.";
+$TLS_menu_assign_platform_to_testplan = "Toekennen aan Testplan";
+$TLS_title_platforms = "Platforms";
+$TLS_available_platforms = "Beschikbare platforms";
+$TLS_assigned_platforms = "Toegekende platforms";
+$TLS_add_remove_platforms = "Platforms toekennen aan / verwijderen van Testplan: %s";
+$TLS_platform_linked_count = " (Gebruikt in %s Testgevallen)";
+$TLS_platform_unlink_warning_title = "Platform is in gebruik";
+$TLS_platform_unlink_warning_message = "De geselecteerd platform(s) zijn in gebruik." .
+                                       "<br/><br/>Om een platform te verwijderen, verwijder eerst " .
+                                       "alle daaraan gekoppelde Testgevallen.";
+
+
+// ----- gui/templates/reqexport.tpl -----
+$TLS_title_req_export = "Exporteer requirements";
+$TLS_title_req_spec_export = "Exporteer Req. Spec.";
+$TLS_all_reqspecs_in_tproject = "Alle Req. Specs in Testproject";
+
+
+// ----- gui/templates/resultsAllBuilds.tpl -----
+$TLS_th_build = "Oplevering";
+$TLS_th_tc_total = "Testgeval Totaal";
+$TLS_th_tc_assigned = "Toegekend";
+$TLS_title_met_of_build = "Metrieken van de oplevering";
+
+
+// ----- gui/templates/resultsBugs.tpl -----
+$TLS_bugs_open = "Open";
+$TLS_bugs_resolved = "Opgelost";
+$TLS_bugs_total = "totaal";
+$TLS_date = "Datum";
+$TLS_printed_by = "Geprint door";
+$TLS_tcs_with_bugs = "Testgevallen met bugs";
+$TLS_title_test_case_bugs = "Testgeval bevinding";
+$TLS_title_test_case_timestamp = "Testgeval timestamp";
+$TLS_title_test_case_title = $TLS_test_case;
+$TLS_title_test_suite_name = $TLS_test_suite;
+$TLS_no_linked_bugs = "Er zijn geen gekoppelde Bugs";
+$TLS_info_bugs_per_tc_report = "Dit rapport toont alle bugs die aan Testgevallen zijn gelinked tijdens uitvoering.";
+
+
+// ----- gui/templates/resultsTC.tpl -----
+$TLS_info_resultsTC_report = "Dit rapport toont de laatste Testgeval uitvoering voor elke Oplevering. <br /><br />" .
+	"De 'laatste uitvoering' kolom toont de meest recente uitvoering over alle Opleveringen in het Testplan. " . 
+	"Als bijvoorbeeld een Testgeval slaagt bij Oplevering 3, maar men daarna het Testgeval voor Oplevering 2 " .
+	"uitvoert, waar het faalt, dan staat 'niet OK' in de 'laatste uitvoering' kolom. ";
+
+                             
+// ----- gui/templates/results/tcNotRunAnyPlatform.tpl -----
+$TLS_info_tcNotRunAnyPlatform = "Dit rapport toont Testgevallen die onderdeel zijn van het huidige Testplan, " .
+	"maar voor geen enkele platform zijn uitgevoerd.";
+
+
+// ----- gui/templates/resultsByStatus.tpl -----
+$TLS_info_test_results = "Er zijn alleen test resultaten getoond. " .
+                         "Testgeval is niet getoond als test resultaat voor " .
+                         "latere oplevering een andere status heeft (maar niet uitgevoerd).";
+$TLS_th_bugs = "Bevindingen";
+$TLS_th_date = "Datum";
+$TLS_th_run_by = "Uitgevoerd door";
+$TLS_th_bugs_not_linked = "Totaal aantal Testgevallen met ontbrekende/gelinkde Bugs: ";
+$TLS_th_assigned_to = "Toegekend aan";
+$TLS_info_failed_tc_report = "Dit rapport toont alle Testgevallen voor elke Oplevering " .
+	"en elke platform (als dit voor dit Testplan wordt gebruikt), waarvan het laatste testresultaat " .
+	"'gefaald' is.";
+$TLS_info_blocked_tc_report = "Dit rapport toont alle Testgevallen voor elke Oplevering " .
+	"en elke platform (als dit voor dit Testplan wordt gebruikt), waarvan het laatste testresultaat " .
+	"'geblokkeerd' is.";
+$TLS_info_notrun_tc_report = "Dit rapport toont alle Testgevallen die voor geen enkele Oplevering zijn uitgevoerd " .
+                             "in dit Testplan.";
+$TLS_no_blocked = "Er zijn geen geblokkeerde Testgevallen.";
+$TLS_no_notrun =  "Er zijn geen Testgevallen die niet zijn uitgevoerd.";
+$TLS_no_not_run = "Er zijn geen Testgevallen die niet zijn uitgevoerd.";
+$TLS_no_failed = "Er zijn geen gefaalde Testgevallen.";
+
+
+// ----- gui/templates/resultsByTesterPerBuild.tpl -----
+$TLS_caption_results_by_tester_per_build = "Resultaten per Tester per Oplevering";
+$TLS_results_by_tester_per_build = "Resultaten per Tester per Oplevering";
+$TLS_progress = "Voortgang [%]";
+$TLS_executions_without_assignment = "Niet toegekende uitvoeringen";
+$TLS_no_testers_per_build = "Er zijn geen testers toegekend aan Opleveringen in dit Testplan.";
+
+
+// ----- gui/templates/resultsGeneral.tpl -----
+$TLS_title_gen_test_rep = "Algemene Testplan Metrieken";
+$TLS_title_report_tc_priorities = "Testresultaten volgens test prioriteiten";
+$TLS_title_report_milestones = "Status Mijlpalen";
+$TLS_th_completed = "Voltooid";
+$TLS_th_milestone = "Mijlpaal [datum]";
+$TLS_th_not_run = "Niet uitgevoerd";
+$TLS_th_tc_priority_high = "Hoge prioriteit";
+$TLS_th_tc_priority_medium = "Medium prioriteit";
+$TLS_th_tc_priority_low = "Lage prioriteit";
+$TLS_th_progress = "Test voortgang [%]";
+$TLS_th_goal = "Execution goal [%]";
+$TLS_th_overall_priority = "Overall test priority";
+$TLS_th_overall_platform = "Overall test platform";
+$TLS_title_res_by_platform = "Results by Platform";
+$TLS_th_expected = "Verwacht";
+$TLS_th_overall = "Alle prioriteiten";
+$TLS_info_res_by_top_level_suites = "Deze sectie toont resultaten voor elke Test Suite " .
+		"op het hoogste niveau. Resultaten voor dochter Test Suites worden meegeteld bij " .
+		"de moeders.";
+
+$TLS_info_report_tc_priorities = "Deze sectie toont resultaten op basis van prioriteit. " . 
+		"De prioriteit wordt berekend op basis van het testbelang en de urgentie. " .
+		"Voor verdere informatie raadpleeg de gebruikershandleiding. ";
+
+$TLS_info_res_by_platform = "Dit rapport toont het resultaat voor elk aan dit Testplan gekoppelde platform. ";
+
+$TLS_info_report_milestones_prio = "Dit rapport toont de mijlpalen gedefinieerd voor dit Testplan. " .
+	"Een mijlpaal is bereikt als alle sub-mijlpalen voor elke prioriteit zijn bereikt (aangegeven door groene kleur).";
+
+$TLS_info_report_milestones_no_prio = "Dit rapport toont de mijlpalen gedefinieerd voor dit Testplan. " .
+	"Een mijlpaal is bereikt als de voortgang groen is (voortgang > doel).";
+
+$TLS_info_res_by_kw = "Deze sectie toont resultaten voor elk steekwoord. " . 
+		"Als een Testgeval meerdere steekwoorden heeft, dan wordt het voor elk toegekende " . 
+		"steekwoord geteld. ";
+
+$TLS_info_gen_test_rep = "<b>Algemene Informatie</b><br />" .
+		"Alle secties zijn gebaseerd op de laatste testresultaten van elk Testgeval.<br />" .
+		"U kunt kolommmen sorteren door op de kolomkoppen te klikken. ";
+
+
+// ----- gui/templates/resultsMoreBuilds_query_form.tpl -----
+$TLS_excel_format = "MS Excel";
+$TLS_html_format = "HTML";
+$TLS_results_latest = "Alleen laatste resultaten";
+$TLS_results_all = "Alel Resultaten";
+$TLS_display_results_tc = "Resultaat Set";
+$TLS_last_status_any = "Enige";
+$TLS_last_status_blocked = $TLS_test_status_blocked;
+$TLS_last_status_failed = $TLS_test_status_failed;
+$TLS_last_status_not_run = $TLS_test_status_not_run;
+$TLS_last_status_passed = $TLS_test_status_passed;
+$TLS_select_builds_header = "Selecteer Oplebering(en)";
+$TLS_select_platforms_header = "Selecteer Platforms";
+$TLS_select_components_header = "Hoogste niveau Test Suite(s)";
+$TLS_select_keyword_header = "Selecteer Steekwoord";
+$TLS_select_last_result_header = "Toon uitvoer van Status";
+$TLS_select_owner_header = "Toegewezen aan";
+$TLS_select_report_format_header = "Selecteer Rapporteer Formaat";
+$TLS_submit_query = "Plaats selectie";
+$TLS_test_plan_header = $TLS_testplan;
+$TLS_query_metrics_report = "Selectie Metrieken Rapport";
+$TLS_enter_start_time = "Start Tijd";
+$TLS_enter_end_time = "Eind Tijd";
+$TLS_year = "jaar";
+$TLS_month = "maand";
+$TLS_day = "dag";
+$TLS_hour = "Uur";
+$TLS_search_in_notes = "zoek naar woord in aantekeningen";
+$TLS_executor = "uitgevoerd door";
+
+
+// ----- gui/templates/resultsMoreBuilds_report.tpl -----
+$TLS_caption_show_collapse = "Toon / Klap in";
+$TLS_caption_user_selected_query_parameters = "Selectie Parameters";
+$TLS_not_yet_executed = "Nog niet uitgevoerd";
+$TLS_show_hide_all = "Toon / Verberg alles";
+$TLS_th_builds = "Oplevering(en)";
+$TLS_th_execution_ts = "Tijd";
+$TLS_th_last_result = "Laatste resultaat";
+$TLS_th_report_format = "Rapport type";
+$TLS_th_test_plan = $TLS_testplan;
+$TLS_th_test_suites = "Suite(s)";
+$TLS_th_tester_id = "Tester";
+$TLS_th_total_block = "#" . $TLS_test_status_blocked;
+$TLS_th_total_cases = "#Testgevallen";
+$TLS_th_total_fail = "#" . $TLS_test_status_failed;
+$TLS_th_total_not_run = "#" . $TLS_test_status_not_run;
+$TLS_th_total_pass = "#" . $TLS_test_status_passed;
+$TLS_th_start_time = "Start Tijd";
+$TLS_th_end_time = "Eind Tijd";
+$TLS_th_executor = "Uitgevoerd door";
+$TLS_th_search_notes_string = "aantekeningen zoek woord";
+$TLS_true = "waar";
+$TLS_false = "onwaar";
+$TLS_display_suite_summaries = "Toon Suite Samenvattingen";
+$TLS_display_query_params  = "Toon selectie Parameters";
+$TLS_display_totals = "Toon Totalen";
+$TLS_display_test_cases = "Testgevallen";
+$TLS_report_display_options = "Report display opties";
+
+
+// ----- gui/templates/resultsReqs.tpl -----
+$TLS_no_srs_defined = "Geen Requirements Specificatie beschikbaar voor dit Testproject.";
+$TLS_no_matching_reqs = "Geen overeenkomstige Requirements beschikbaar.";
+$TLS_count_of_reqs = "Aantal Requirements";
+$TLS_req_availability = "Requirement-Beschikbaarheid";
+$TLS_show_only_finished_reqs = "Toon alleen voltooide Requirements";
+$TLS_title_result_req_testplan = "Testresultaten gebaseerd op Requirements Specificatie";
+$TLS_title_test_plan = $TLS_testplan;
+$TLS_evaluation = "Evaluatie";
+$TLS_partially_passed = "Gedeeltelijk geslaagd";
+$TLS_partially_passed_reqs = "Gedeeltelijk volotooide Requirements";
+$TLS_uncovered = "Niet gedekt";
+$TLS_uncovered_reqs = "Niet gedekte Requirements";
+$TLS_passed_nfc = "Geslaagd (nvg)";
+$TLS_passed_nfc_reqs = "Geslaagde Requirements (nvg)";
+$TLS_failed_nfc = "Gefaald (nvg)";
+$TLS_failed_nfc_reqs = "Gefaalde Requirements (nvg)";
+$TLS_blocked_nfc = "Geblokkeerd (nvg)";
+$TLS_blocked_nfc_reqs = "Geblokkerde Requirements (nvg)";
+$TLS_not_run_nfc = "Niet uitgevoerd (nvg)";
+$TLS_not_run_nfc_reqs = "Niet uitgevoerde Requirements (nvg)";
+$TLS_partially_passed_nfc = "Gedeeltelijk geslaagd (nvg)";
+$TLS_partially_passed_nfc_reqs = "Gedeeltelijk geslaagde Requirements (nvg)";
+$TLS_linked_tcs = "Toegekende Testgevallen";
+$TLS_no_linked_tcs = "Geen toegekende Testgevallen";
+$TLS_title_resultsReqsProgress = "Test Voortgang gebaseerd op Requirements";
+$TLS_info_resultsReqsProgress = "nvg = niet volledig gedekt";
+$TLS_title_resultsReqs = "GedetailleerdTest Voortgang gebaseerd op Requirements";
+$TLS_info_resultsReqs = "Dit rapport toont Requirements en geeft informatie over de voortgang " . 
+	"van het testen, uitgedrukt als aantal toegekende Testgevallen met de overeenkomstige " . 
+	"testresultaten. ";
+
+
+// IMPORTANT for dynamic generation of labels
+// $TLS_req_title_<Test Case status>
+// If user adds a new Test Case status he/she MUST add a new label
+$TLS_req_title_blocked = "Geblokkeerde Requirements";
+$TLS_req_title_failed = "Gefaalde Requirements";
+$TLS_req_title_not_run = "Niet uitgevoerde Requirements";
+$TLS_req_title_passed = "Geslaagde Requirements";
+
+
+// ----- gui/templates/resultsSend.tpl -----
+$TLS_btn_send_report = "Stuur Rapport";
+$TLS_check_send_to_me = "Stuur een kopie naar mijzelf";
+$TLS_mail_body = "Inhoud:";
+$TLS_mail_report = "Rapport:";
+$TLS_mail_subject = "Onderwerp:";
+$TLS_mail_to = "Naar:";
+$TLS_status_for_build = "Status voor oplevering";
+$TLS_tp_status = "Algemene Testplan status";
+$TLS_tp_status_for_build = "Testplan status voor Oplevering";
+
+
+// ----- gui/templates/resultsTC.tpl -----
+$TLS_generated_by_TestLink_on = "Door TestLink gegenereerd op ";
+$TLS_show_all_columns = "Toon alle kolommen";
+$TLS_show_all_columns_tooltip = "Toon alle kolommen (als ze verborgen zijn)";
+$TLS_expand_collapse_groups = 'Groepen uitvouwen/samenvouwen';
+$TLS_default_state = "Default instelling";
+$TLS_multisort = 'MultiSort';
+$TLS_multisort_tooltip = 'Om meerdere kolommen te sorteren, ' .
+                         'sleep de gewenste kolomkoppen naar deze ' .
+                         'knoppenbalk. Plaats ze op lege ruimte. ';
+$TLS_multisort_button_tooltip = 'Klik om sorteerrichting te wijzigen. ' .
+                                'Shift-klik om knop te verwijderen. ' .
+                                'U kunt de volgorde van de multisort knoppen wijzigen door ze te slepen.';
+
+                             
+// ----- gui/templates/resultsImport.tpl -----
+$TLS_results_import_format = "XML Bestand moet in het volgende formaat zijn: ";
+$TLS_title_results_import_to = "Import results";
+$TLS_wrong_results_import_format = "Wrong XML Results file (see documentation)";
+
+
+// ----- gui/templates/plan/setUrgency.tpl -----
+$TLS_title_plan_urgency = "Test urgentie voor Test Suite";
+$TLS_th_urgency = "Urgentie";
+$TLS_label_set_urgency_ts = "Urgentie instellen voor hele Test Suite: ";
+$TLS_btn_set_urgency_tc = "Urgentie instellen voor individuele Testgevallen";
+$TLS_urgency_description = "Urgentie heeft invloed op prioriteit Testgevallen " .
+	"voor uitvoering en rapportage. 'Midden' is de default waarde.";
+$TLS_feedback_urgency_fail = "Test urgentie bijwerken niet gelukt. Zie event log voor details.";
+$TLS_feedback_urgency_ok = "Test urgentie is gewijzigd.";
+$TLS_testsuite_is_empty = 'Deze Test Suite heeft geen Testgevallen.';
+
+
+// ----- gui/templates/printDocOptions.tpl -----
+$TLS_doc_opt_title = 'Document opties';
+$TLS_doc_opt_guide = 'Selecteer de opties in de bovenste lijst voor de gewenste documentstructuur. ' .
+                     '<br />Klik dan op de gewenste element in de boomstructuur ' .
+                     'om de documentinhoud te genereren.';
+$TLS_tr_td_show_as = "Toon als";
+$TLS_check_uncheck_all_options = "Alles selecteren / deselecteren";
+
+
+// ----- gui/templates/tcReorder.tpl -----
+$TLS_no_tc_to_reorder = "Er zijn geen Testgevallen om te herordenen!";
+$TLS_title_change_tc_order = "Wijzig Testgeval volgorde van deze Test Suite.";
+$TLS_drag_and_drop_to_reorder = "Drag and drop items to reorder them";
+
+
+// ----- gui/templates/tcTree.tpl -----
+$TLS_button_refresh = "Ververs";
+$TLS_button_update_tree = "Ververs overzicht";
+$TLS_do_auto_update = "Ververs overzicht na elke operatie";
+$TLS_no_tc_spec_av = "Geen Test Specificatie beschikbaar!";
+
+
+// ----- gui/templates/tc_exec_assignment.tpl -----
+$TLS_all_platforms = "Alle platforms";
+$TLS_assign_to = "Toekennen aan ";
+$TLS_btn_do = "Doe";
+$TLS_btn_update_selected_tc = "Opslaan";
+$TLS_can_not_execute = " (Geen rechten om uit te voeren)";
+$TLS_check_uncheck_children_checkboxes = "Alle Testgeval selecties omschakelen (inclusief dochter Test Suites)";
+$TLS_title_tc_exec_assignment = "Toekennen van Testgevallen uitvoer taken voor testplan ";
+$TLS_user = "Gebruiker";
+$TLS_user_bulk_assignment = "Bulk gebruikerstoekenning";
+
+
+// ----- tc_exec_assignment.php -----
+$TLS_mail_subject_testcase_assigned = 'TestLink - Testgeval Toekenning - Testplan';
+$TLS_mail_subject_testcase_assignment_removed = 'TestLink - Testgeval Toekenning VERWIJDERD - Testplan';
+$TLS_mail_testcase_assigned = "Volgende Testgevallen zijn aan u toegekend %s door %s <br /><br />";
+$TLS_mail_testcase_assignment_removed = "%s - Uw volgende Testgeval toekenningen ZIJN VERWIJDERD door %s <br /><br />";
+$TLS_send_mail_to_tester = "E-mail notificatie aan tester sturen";
+
+
+// ----- gui/templates/tc_exec_unassign_all.tpl -----
+$TLS_btn_remove_all_tester_assignments = "Alle test toekenningen verwijderen van Oplevering";
+
+
+// ----- gui/templates/tc_exec_unassign_all.php -----
+$TLS_number_of_assignments_per_build = "Er zijn %d uitvoeringstoekenningen voor Oplevering %s";
+$TLS_unassign_all_tcs_warning_msg = "Als u Ja klikt, worden alle tester toekeninngen verwijderd van Oplevering %s.";
+$TLS_unassign_all_tcs_msgbox_title = "Echt alle tester toekenningen verwijderen?";
+$TLS_unassigned_all_tcs_msg = "Alle tester toekenningen zijn verwijderd van Oplevering %s.";
+$TLS_no_testers_assigned_to_build  = "Er zijn geen testers toegekend aan Testgevallen in Oplevering %s.";
+$TLS_remove_all_tester_assignments_title = "Verwijder alle tester toekenningen";
+
+
+// ----- gui/templates/testSetNavigator.tpl -----
+
+
+// ----- gui/templates/userInfo.tpl -----
+$TLS_btn_change_passwd = "Wijzig wachtwoord";
+$TLS_btn_upd_user_data = "Opslaan";
+$TLS_btn_apikey_generate = "Generate a new key";
+$TLS_th_new_passwd = "Nieuw Wachtwoord";
+$TLS_th_new_passwd_again = "Bevestig nieuw Wachtwoord";
+$TLS_th_old_passwd = "Oud wachtwoord";
+$TLS_title_account_settings = "Account Instellingen";
+$TLS_title_personal_data = "Persoonlijke gegevens";
+$TLS_title_personal_passwd = "Persoonlijk wachtwoord";
+$TLS_title_api_interface = "API interface";
+$TLS_warning_different_pwd = "Vul uw wachtwoord alstublieft nogmaals in. Nieuwe waardes waren verschillend.";
+$TLS_warning_empty_pwd = "Uw Wachtwoord mag niet leeg zijn!";
+$TLS_your_password_is_external = "Uw wachtwoord wordt beheerd door een extern systeem.<br>".
+                                 "U kunt dit niet wijzigen aan de hand van TestLink.";
+$TLS_user_api_key = "Personal API access key";
+$TLS_audit_login_history = "Login geschiedenis";
+$TLS_audit_last_succesful_logins = "Laatste succesvolle logins";
+$TLS_audit_last_failed_logins = "Laatste onsuccesvolle logins";
+$TLS_result_password_changed = "Uw wachtwoord is succesvol gewijzigd.";
+$TLS_result_apikey_create_ok = "Nieuw API sleutel is gegenereerd.";
+$TLS_result_user_changed = "Persoonlijke gegevens gewijzigd.";
+$TLS_empty_old_passwd = "Oude wachtwoord is leeg. Voer uw oude wachtwoord in.";
+$TLS_never_logged = "Nooit gelogd";
+
+
+
+// ----- gui/templates/usersassign.tpl -----
+$TLS_TestProject = "Testproject";
+$TLS_User = "Gebruiker";
+$TLS_btn_change = "Wijzig";
+$TLS_caption_assign_testplan_user_roles = "Ken testplan rollen toe aan gebruikers";
+$TLS_caption_assign_testproject_user_roles = "Ken Testproject toe aan gebuikers rollen";
+$TLS_menu_assign_testproject_roles = "Ken Testproject rollen toe";
+$TLS_th_roles = "Rol";
+$TLS_th_roles_testplan = "Testplan Rol";
+$TLS_th_roles_testproject = "Testproject Rol";
+$TLS_title_assign_roles = "Ken rollen toe";
+$TLS_set_roles_to = "Rol toewijzen:";
+$TLS_testproject_roles_assign_disabled = "U heeft niet de rechten om rollen toe te wijzen aan Testprojecten.";
+$TLS_testplan_roles_assign_disabled = "U heeft niet de rechten om rollen toe te wijzen aan Testplannen.";
+$TLS_show_only_authorized_users = 'Toon alleen geautoriseerde gebruikers';
+$TLS_no_test_plans_available = "Er zijn geen bruikbare Testplannen voor dit Testproject.";
+
+
+
+// ----- gui/templates/usersedit.tpl -----
+$TLS_button_reset_password = "Stel wachtwoord opnieuw in";
+$TLS_caption_user_details = "Gebruiker details";
+$TLS_th_password = "Wachtwoord";
+$TLS_warning_empty_first_name = "Voeg een voornaam in";
+$TLS_warning_empty_last_name = "Voeg een achternaam in";
+$TLS_warning_empty_login = "Voeg een login in";
+
+
+// ----- gui/templates/attachmentupload.tpl -----
+$TLS_attachment_upload_ok = "Bestand geupload";
+$TLS_enter_attachment_title = "Voeg titel voor toe te voegen bestand in";
+$TLS_import_was_ok = "Het importeren is gelukt";
+$TLS_max_size_cvs_file = "Max. grootte van het bestand is";
+$TLS_max_size_file_upload = "Max. grootte van het bestand is";
+$TLS_title_upload_attachment = "Upload toe te voegen bestand";
+$TLS_error_file_size_larger_than_maximum_size_check_php_ini = "Het bestand is groter dan " .
+		"het aangegeven maximum in uw php.ini bestand.";
+$TLS_error_file_size_larger_than_maximum_size = "Het bestand is groter dan " .
+		"het geconfigureerde maximum in TestLink.";
+$TLS_error_file_upload = "Het bestand kon niet worden ingeladen.";
+
+
+// ----- gui/templates/rolesview.tpl -----
+$TLS_N_A = "N/A";
+$TLS_alt_delete_role = "Verwijder rol";
+$TLS_alt_edit_role = "Wijzig rol";
+$TLS_btn_confirm_delete = "Verwijder=";
+$TLS_delete_role = "Verwijder rol";
+$TLS_no_roles = "Geen rollen";
+$TLS_th_role_description = "Omschrijving";
+$TLS_title_roles = "Beschikbare rollen";
+$TLS_warning_delete_role = "Verwijder de rol echt?";
+$TLS_warning_users_will_be_reset = "Beinvloedde gebruikers krijgen de rol:";
+
+
+
+// ----- gui/templates/tcexport.tpl -----
+$TLS_export_filename = "Exporteer bestandsnaam";
+$TLS_export_with_keywords = "Exporteer met steekworden";
+$TLS_warning_empty_filename = "Geeft u een bestandsnaam a.u.b.";
+
+
+// ----- gui/templates/buildView.tpl -----
+$TLS_alt_active_build = "Actieve oplevering";
+$TLS_alt_edit_build = "klik hier om deze oplevering te wijzigen";
+$TLS_alt_open_build = "Open oplevering";
+$TLS_btn_build_create = "Creëer";
+$TLS_no_builds = "Er zijn geen opleveringen gedefinieerd binnen dit Testplan!";
+$TLS_th_description = "Omschrijving";
+$TLS_th_open = "Open";
+$TLS_title_build_list = "Lijst van bestaande opleveringen";
+$TLS_warning_delete_build = "Wilt u werkelijk deze oplevering verwijderen? Alle afhankelijke data (b.v. test resultaten) worden ook verwijderd!";
+$TLS_builds_description = "Een Oplevering wordt gedefinieerd door zijn titel. Elke oplevering is gerelateerd aan een actief Testplan. " .
+						  "De omschrijving zou moeten bevatten: lijst van opgeleverde onderdelen, oplossingen of aanpassingen, goedkeuringen, status, etc. " .
+						  "Een oplevering heeft de volgende attributen:<br />" .
+                          "Actief / Inactief &ndash; definieert of de oplevering gebruikt mag worden. " .
+                          "Inactieve opleveringen worden niet getoond bij de uitvoering en rapportage paginas.<br />" .
+                          "Open / Gesloten &ndash; De test resultaten van een open oplevering kunnen worden aangepast; die van een gesloten oplevering niet.";
+$TLS_build_copy_help = "Als u de optie kiest: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+		"&nbsp;, de Oplevering naam wordt opgezocht in elk Testplan van dit Testproject; " .
+		"als de naam niet bestaat wordt het gecreëerd.";
+
+
+// ----- gui/templates/planView.tpl -----
+$TLS_testplan_alt_delete_tp = "Verwijder het testplan?";
+$TLS_testplan_alt_edit_tp = "wijzig het testplan";
+$TLS_testplan_msg_delete_confirm = "Weet u zeker dat u het volledige testplan wil verwijderen? U kunt deactiveren gebruiken via de wijzigen link.";
+$TLS_testplan_th_delete = "Verwijder";
+$TLS_testplan_title_list = "Lijst van bestaande Testplannen";
+$TLS_testplan_txt_empty_list = "Er zijn geen Testplannen gedefinieerd! Creëer er een om test uitvoer functinaliteit te activeren";
+$TLS_alt_active_testplan = "Actief testplan";
+$TLS_warning_delete_testplan = "<p>U gaat verwijderen: %s </p><p>Weet u dat zeker?</p>";
+$TLS_export_testplan_links = "Exporeert links naar Testgevallen en platforms";
+$TLS_import_testplan_links = "Importeer links naar Testgevallen en platforms";
+$TLS_testcase_qty = 'Aantal Testgevallen';
+$TLS_platform_qty = 'Aantal Platforms';
+
+
+// ----- gui/templates/mainPage_left.tpl -----
+$TLS_href_assign_user_roles = "Ken gebruikersrollen toe";
+$TLS_href_browse_tc = "Blader Testgevallen";
+$TLS_href_cfields_management = "Gebruikersvelden beheer";
+$TLS_href_cfields_tproject_assign = "Ken gebruikersvelden toe";
+$TLS_href_edit_tc = "Wijzig Testgevallen";
+$TLS_href_inventory = "Inventaris";
+$TLS_href_inventory_management = 'Inventaris management';
+$TLS_href_keywords_assign = "Ken steekwoorden toe";
+$TLS_href_keywords_manage = "Steekwoord beheer";
+$TLS_href_keywords_view = "Bekijk stekwoorden";
+$TLS_href_print_tc = "Genereer Test Specificatie Document";
+$TLS_href_print_req = "Genereer Requirements Specificatie Document";
+$TLS_href_req_assign = "Ken Requirements toe";
+$TLS_href_req_spec = "Requirement Specificatie document";
+$TLS_href_req_overview = "Requirements Overzicht";
+$TLS_href_roles_management = "Rollenbeheer";
+$TLS_href_search_tc = "Zoek Testgevallen";
+$TLS_href_tproject_management = "Testproject Beheer";
+$TLS_href_user_management = "Gebruikersbeheer";
+$TLS_href_admin_modules = "Systeem Configuratie";
+$TLS_title_requirements = "Requirements";
+$TLS_title_test_spec = "Test Specificatie";
+$TLS_title_documentation = "Documentatie";
+$TLS_title_product_mgmt = "Testproject";
+$TLS_href_plan_define_priority = "Definieer prioriteitsregels";
+$TLS_href_my_testcase_assignments = "Testgevallen aan mij toegewezen";
+$TLS_href_platform_management = "Platform Beheer";
+$TLS_href_issuetracker_management = "Issue Tracker Beheer";
+
+
+$TLS_href_search_req = "Zoek Requirements";
+$TLS_href_search_req_spec = "Zoek Requirements Specificaties";
+$TLS_caption_search_form_req = "Zoek Requirements";
+$TLS_caption_search_form_req_spec = "Zoek Requirements Specificaties";
+$TLS_title_search_req = "Zoek";
+$TLS_requirement_document_id = "Req. Doc. ID";
+$TLS_req_spec_document_id = "Req. Spec. Doc. ID";
+$TLS_reqversion = "Versie";
+$TLS_title_search_req_spec = "Zoek";
+$TLS_requirements = "Requirements";
+$TLS_req_specs = "Req. Specs";
+$TLS_req_expected_coverage = "Verwachte aantal Testgevallen";
+$TLS_has_relation_type = "Heeft relatie van type";
+$TLS_reqid = "Requirement ID";
+$TLS_info_search_req = "Deze lijst toont alle Requirements die overeenkomen met de zoek criteria. " .
+                       "<br />U kunt de aangegeven versie van de Requirement openen door op de link " .
+                       "rechts van de titel te klikken.  " .
+                       "Om het hele Requirements document te openen, klik de ikoon links van de titel. ";
+$TLS_info_search_req_spec = "Deze lijst toont alle Requirements Specificaties die overeenkomen met de zoek criteria. " .
+                       "<br />U kunt de aangegeven versie van de Requirements Specificatie openen door op de link " .
+                       "rechts van de titel te klikken.  " .
+                       "Om de hele Requirements Specificatie te openen, klik de ikoon links van de titel. ";
+
+
+// ----- gui/templates/mainPage_right.tpl -----
+$TLS_filter_tp_by_product = "Filter Testplannen aan de hand van Testproject";
+$TLS_href_add_remove_test_cases = "Testgevallen toevoegen / verwijderen";
+$TLS_href_build_new = "Opleveringsbeheer";
+$TLS_href_execute_test = "Voer tests uit";
+$TLS_href_metrics_dashboard = "Overzicht Metrieken";
+$TLS_href_newest_tcversions = "Toon de nieuwste versies van de Testgevallen";
+$TLS_href_plan_assign_urgency = "Urgente testen definiëren";
+$TLS_href_plan_management = "Testplan beheer";
+$TLS_href_plan_mstones = "Mijlpaal beheer";
+$TLS_href_rep_and_metrics = "Testrapportage en Metrieken";
+$TLS_href_tc_exec_assignment = "Ken Testgeval uitvoer toe";
+$TLS_href_update_tplan = "Gewijzigde Testgeval versies bijwerken";
+$TLS_href_platform_assign = "Platforms toevoegen/verwijderen";
+$TLS_current_test_plan = "Huidige Testplan";
+$TLS_href_upd_mod_tc = "Update aangepaste Testgeval(len)";
+$TLS_msg_no_rights_for_tp = "<br /> U heeft geen rechten voor elk ACTIEF Testplan";
+$TLS_testplan_role = "TestPlan rol ";
+$TLS_title_test_case_suite = "Testplan inhoud";
+$TLS_title_test_execution = "Testen uitvoeren";
+$TLS_title_test_plan_mgmt = "Testplan beheer";
+
+
+// ----- gui/templates/metricsDashboard.tpl -----
+$TLS_info_metrics_dashboard_progress = "The project progress is calculated by summing up all executions " .
+                                       "for a specific execution result for all platforms within all Test " .
+                                       "Plans. This sum is then divided by the sum of all active " .
+                                       "Test Cases for all platforms within all Test Plans.";
+$TLS_info_metrics_dashboard = "This Report shows the progress for the whole project and all " .
+                              "(or only active) Test Plans defined within the project.<br />" .
+                              "\"Overall Progress\" for Test Plans is calculated based upon " .
+                              "the progress of each platform (if in use).<br />" .
+                              "\"Test Project Progress\" is calculated based upon the progress " .
+                              "of all (or only active) Test Plans.";
+$TLS_overall_progress = "Overall Progress";
+$TLS_progress_absolute = "Progress";
+$TLS_test_plan_progress = "Test Plan Progress";
+$TLS_project_progress = "Test Project Progress";
+
+
+// ----- lib/execute/bug_add.php -----
+$TLS_bug_added = "Bevinding toegevoegd";
+$TLS_error_bug_does_not_exist_on_bts = "Bug ID bestaat niet in Bug Tracking System";
+$TLS_error_wrong_BugID_format = "Verkeerd Bevinding ID formaat";
+
+
+// ----- lib/execute/bug_delete.php -----
+$TLS_bugdeleting_was_ok = "De bevinding was succesvol verwijderd.";
+
+
+// ----- lib/functions/doAuthorize.php -----
+$TLS_error_ldap_auth_failed = "LDAP authenticatie is mislukt";
+$TLS_error_ldap_bind_failed = "LDAP binding is mislukt";
+$TLS_error_ldap_server_connect_failed = "Connectie maken met de LDAP server is mislukt";
+$TLS_error_ldap_update_failed = "Updating LDAP is mislukt";
+$TLS_error_ldap_user_not_found = "LDAP gebruiker niet gevonden";
+
+
+
+// ----- lib/functions/product.inc.php -----
+$TLS_info_product_delete_fails = "Er is een fout opgestreden terwijl u het Testproject probeerde te verwijderen";
+
+
+// ----- lib/results/resultsImport.php -----
+$TLS_imp_result_ko = '- resultaten zijn niet geïmporteerd';
+$TLS_invalid_execution_timestamp = "Test Case %s - invalid execution timestamp %s " . $TLS_imp_result_ko;
+$TLS_invalid_tester = "Test Case %s - tester with login %s can not be found " . $TLS_imp_result_ko;
+$TLS_import_results_tc_not_found = "Testgeval %s is niet gevonden in testplan - geen gegevens toegevoegd voor dit geval";
+$TLS_import_results_invalid_result = "Testgeval %s heeft een foutief resultaat gehad - geen gegevens toegevoegd voor dit geval";
+$TLS_import_results_ok = "Testgeval %s - versie %s - Tester: %s - Resultaat: %s - Uitvoeringstijd: %s - Geïmporteerd.";
+$TLS_import_results_tc_exists = "Testgeval %s staat in het testplan, tcversion_id = %s ";
+$TLS_tcase_external_id_do_not_exists = "Testgeval met externe id=%s niet gevonden " . $TLS_imp_result_ko;
+$TLS_tcase_internal_id_do_not_exists = "Testgeval met interne id=%s niet gevonden "  . $TLS_imp_result_ko;
+$TLS_tcase_id_is_not_number = "Testgeval interne id=%s is niet numeriek " . $TLS_imp_result_ko;
+$TLS_bug_id_invalid_len = "BUG ID lengte ongeldig [%s > %s] " . $TLS_imp_result_ko;
+$TLS_tproject_id_not_found = "Testproject ID niet gevonden [%s] " . $TLS_imp_result_ko;
+$TLS_invalid_exec_type = "Uitvoeringstype code [%s] ongeldig" . $TLS_imp_result_ko;
+$TLS_missing_exec_type = "Uitvoeringstype code niet gegeven - (%s => %s) gebruikt.";
+$TLS_internal_id = "Interne ID:%s";
+$TLS_external_id = "Externe ID:%s";
+
+
+// ----- lib/functions/results.inc.php -----
+$TLS_trep_failing = "Afkeuren";
+$TLS_trep_passing = "Goedkeuren";
+$TLS_trep_status_for_build = "Status voor oplevering";
+$TLS_trep_status_for_ts = "Status voor Test Suite";
+$TLS_unassigned = "niet toegekend";
+
+
+// ----- lib/functions/resultsMoreBuilds.inc.php -----
+$TLS_bugs = "Gerelateerde bevindingen";
+$TLS_builds_selected = "Oplevering(en)";
+$TLS_case_not_run_warning = "Testgeval niet uitgevoerd";
+$TLS_category_header = "Test Suite =";
+$TLS_daterun = "Datum Uitvoer";
+$TLS_last_status = "Laatste Status";
+$TLS_number_blocked = "# " . $TLS_test_status_blocked;
+$TLS_number_cases = "# Gevallen";
+$TLS_number_executions = "# Testgevallen Uitvoer";
+$TLS_number_failed = "# " . $TLS_test_status_failed;
+$TLS_number_not_run = "# " . $TLS_test_status_blocked;
+$TLS_number_passed = "# " . $TLS_test_status_passed;
+$TLS_owner = "Tester";
+$TLS_owner_header = $TLS_owner. " =";
+$TLS_runby = "Uitgevoerd door";
+$TLS_test_plan_name = $TLS_testplan;
+
+
+
+// ----- lib/functions/roles.inc.php -----
+$TLS_desc_cfield_management = "Gebruikersveld beheer";
+$TLS_desc_cfield_view = "Gebruikersvelden bekijken (alleen lezen)";
+$TLS_desc_mgt_modify_key = "Steekwoord beheer";
+$TLS_desc_mgt_modify_product = "Testproject beheer";
+$TLS_desc_mgt_modify_req = "Requirements beheer";
+$TLS_desc_mgt_modify_tc = "Testgeval creëeren/wijzigen";
+$TLS_desc_mgt_modify_users = "Gebruikersbeheer";
+$TLS_desc_mgt_view_key = "Steekwoord bekijken (alleen lezen)";
+$TLS_desc_mgt_view_req = "Requirements bekijken (alleen lezen)";
+$TLS_desc_mgt_view_tc = "Testgeval bekijken (alleen lezen)";
+$TLS_desc_mgt_view_events = "Events bekijken (alleen lezen)";
+$TLS_desc_events_mgt = "Event beheer";
+$TLS_desc_platforms_view = "Platforms bekijken (alleen lezen)";
+$TLS_desc_platforms_management = "Platform Management";
+$TLS_desc_project_inventory_view = "Inventaris bekijken (alleen lezen)";
+$TLS_desc_project_inventory_management = "Inventaris Beheer";
+$TLS_desc_issuetrackers_view = "Issue Tracker bekijken (alleen lezen)";
+$TLS_desc_issuetrackers_management = "Issue Tracker beheer";
+$TLS_desc_mgt_unfreeze_req = "Unfreeze requirement";
+$TLS_desc_role_management = "Rol beheer";
+$TLS_desc_testplan_create_build = "Oplevering creëeren/wijzigen";
+$TLS_desc_testplan_execute = "Testplan uitvoer";
+$TLS_desc_testplan_metrics = "Testplan metrieken";
+$TLS_desc_testplan_planning = "Testplan planning";
+$TLS_desc_user_role_assignment = "Rol toekenning";
+$TLS_desc_req_tcase_link_management = "Requirement-Test Case Assignment";
+$TLS_desc_keyword_assignment = "Keyword Assignment";
+$TLS_error_duplicate_rolename = "Er bestaat al een rol met die naam!";
+$TLS_error_role_no_rights = "U kunt geen rollen opslaan zonder rechten!";
+$TLS_error_role_no_rolename = "U moet een naam invullen voor de rol";
+$TLS_inherited_role = "<inherited>";
+$TLS_mgt_testplan_create = "Testplan creëeren/wijzigen";
+$TLS_inherited = "inherited";
+$TLS_no_rights = "geen rechten";
+
+
+// ----- lib/functions/testproject.class.php -----
+$TLS_error_creating_req_spec = "Fout bij het aanmaken van het Requirement Specificatie document";
+$TLS_info_product_name_empty = "Lege naam is niet mogelijk.";
+$TLS_keyword_already_exists = "Dit steekwoord bestaat al";
+$TLS_string_contains_bad_chars = "Het woord bevat verkeerde karakters die niet gebruikt kunnen worden.";
+$TLS_warning_duplicate_req_title = "er bestaat al een requirement met deze titel!";
+
+
+
+// ----- lib/functions/requirements.inc.php -----
+$TLS_conflict = "Conflict";
+$TLS_error_deleting_req = "Fout bij verwijderen van requirements";
+$TLS_error_inserting_req = "Fout bij toevoegen van requirements";
+$TLS_error_updating_req = "Fout bij updating van requirements";
+$TLS_error_updating_reqspec = "Fout bij updating van Requirement Specificatie document";
+$TLS_file_is_not_xml = "Bestand is niet goed gevormde XML. Kan niet worden gebruikt.";
+$TLS_req_import_format_description1 = " - CSV type heeft drie velden nodig voor elke rij: 'req_doc_id','title','description'";
+$TLS_req_import_format_description2 = " - CSV geexporteerd van DOORS heeft een header rij nodig.";
+$TLS_req_import_format_docbook = " - DocBook XML format";
+$TLS_req_import_result_overwritten = "overschreven!";
+$TLS_req_import_result_skipped = "overgeslagen";
+$TLS_warning_duplicate_reqdoc_id = "Dubbel document id";
+$TLS_req_import_result_skipped_is_frozen = "overgeslagen (is bevroren)";
+$TLS_warning_sibling_req_with_same_title = "Duplicaat req naae %s";
+
+//  ----- lib/functions/requirement_spec_mgr.class.php -----
+$TLS_warning_duplicated_req_spec_doc_id = "Er bestaat al een req. spec (title:%s) met deze doc id (%s)";
+$TLS_warning_duplicated_req_spec_title = "Er bestaat al een req. spec (doc id:%s) met deze titel (%s)";
+
+
+// ----- lib/functions/testcase.class.php -----
+$TLS_create_new_version = "Nieuwe versie gecreëerd %s"; 
+$TLS_testcase_name_already_exists = "Er bestaat al een Testgeval met deze titel!";
+$TLS_created_with_title = "Gecreëerd met titel (%s)";
+$TLS_the_format_tc_xml_import = "";
+
+
+// ----- lib/functions/testsuite.class.php -----
+$TLS_component_name_already_exists = "Er bestaat al een Test Suite met die naam";
+$TLS_testsuite = "Test Suite";
+
+
+// ----- lib/functions/exec.inc.php -----
+$TLS_test_results_submitted = "Test Resultaten toegevoegd.";
+
+
+// ----- lib/functions/info.inc.php -----
+$TLS_email_sent_message = "Uw mail is verzonden";
+
+
+// ----- lib/functions/print.inc.php -----
+$TLS_printed_by_TestLink_on = "Geprint door TestLink op";
+$TLS_title_toc = "Inhoudsopgave";
+$TLS_passfail = "Akkoord / Niet akkoord";
+$TLS_testnotes = "Test aantekeningen";
+$TLS_last_exec_result = "Last Result";
+$TLS_test_project_notes = "Testproject omschrijving";
+$TLS_undefined_req_spec_type = "Req Spec Type (%s) is niet gedefinieerd";
+
+
+// ----- lib/functions/users.inc.php -----
+$TLS_duplicate_login = "Een gebruiker met die login bestaat al";
+$TLS_login_must_not_be_empty = "Login mag niet leeg zijn";
+$TLS_wrong_old_password = "Verkeerd oud wachtwoord";
+
+
+// ----- lib/functions/email_api.php -----
+$TLS_stmp_host_unconfigured = "SMTP host is niet correct geconfigureerd";
+
+
+// ----- lib/functions/common.php -----
+$TLS_test_automation_exec_ok = " Uitvoering succesvol.";
+$TLS_test_automation_server_conn_failure = " Kon geen connectie maken met HTTP server.";
+$TLS_XMLRPC_error_number = "XML-RPC Fault number:- ";
+
+
+// ----- lib/functions/configCheck.php -----
+$TLS_attachments_dir = "Map voor toe te voegen bestanden:";
+$TLS_bts_connection_problems = "Connectie naar uw bevindingenbeheer is mislukt:<br> 
+                                Controleer alstublieft uw configuratie.<br>
+                                Weer voorzichtig, dit probleem kan de prestatie van Testlink verminderen.";
+$TLS_but_directory_is_not_writable = "De map is niet schrijfbaar.";
+$TLS_check_email_config = "Controleer de volgende parameters van de e-mail feature:";
+$TLS_directory_is_writable = "De map is schrijfbaar";
+$TLS_does_not_exist = "bestaat niet.";
+$TLS_exists = "bestaat";
+$TLS_ldap_extension_not_loaded = "Login methode is geconfigureerd als LDAP<br />" .
+                               "maar PHP LDAP uitbreiding is niet geladen. " .
+                               "U zult niet in kunnen loggen. <br />".
+                               "Neem contact op met uw TestLink beheerder.";
+$TLS_sec_note_admin_default_pwd = "U zou het standaard wachtwoord moeten vervangen van de 'admin' account!";
+$TLS_sec_note_remove_install_dir = "Install map zou moeten worden verwijderd!";
+$TLS_error_domxml_missing = "Domxml niet gevonden. Importeren van XML bestanden is niet mogelijk.";
+$TLS_error_gd_missing = "GD PHP extensie niet gevonden. Grafieken zullen niet werken.";
+$TLS_error_gd_png_support_disabled = "PHP extensie for GD library is beschikbaar zonder ondersteuning PNG formaat.
+		Grafieken zullen niet werken. Configureer PHP of installeer de benodigde libraries.";
+
+
+// ----- lib/functions/cfield_mgr.class.php -----
+$TLS_text_counter_feedback = "U mag tot %d karakters invoeren. Nog over: ";
+
+
+// ----- lib/general/frmWorkArea.php -----
+$TLS_create_a_build = "Creëer een nieuwe oplevering";
+$TLS_no_build_warning_part1 = "Er zijn geen opleveringen gecreëerd voor dit Testplan ";
+$TLS_no_build_warning_part2 = "Creëer dit alstublieft eerst of vraag het uw beheerder.";
+
+
+// ----- lib/general/myTPInfo.php -----
+$TLS_no_testplans_available = "Excuses, er zijn geen Testplannen beschikbaar";
+
+
+// ----- lib/general/tlsmarty.inc.php -----
+$TLS_show_hide_api_info = "Toon / Verberg API Info";
+$TLS_show_hide_direct_link = "Toon / Verberg directe link";
+
+
+// ----- lib/keywords/keywords.inc.php -----
+$TLS_empty_keyword_no = "U kunt geen leeg steekwoord invoeren";
+$TLS_keywords_char_not_allowed = "Komma's en quotes zijn niet toegestaan in steekwoorden";
+$TLS_tc_kw_update_fails1 = "Testgeval";
+$TLS_tc_kw_update_fails2 = "niet akkoord";
+$TLS_the_format_keyword_csv_import = "steekwoord; aantekeningen";
+
+
+// ----- lib/keywords/keywordsView.php -----
+$TLS_kw_delete_fails = "Steekwoord verwijder operatie mislukt";
+$TLS_kw_update_fails = "Update mislukt";
+
+
+
+// ----- lib/keywords/keywordsAssign.php -----
+$TLS_assigned_kword = "Toegekende steekwoorden";
+$TLS_available_kword = "Beschikbare steekwoorden";
+
+
+
+// ----- lib/plan/buildNew.php -----
+$TLS_cannot_add_build = "De oplevering kan niet worden toegevoegd";
+$TLS_cannot_delete_build = "De oplevering kan niet worden verwijderd";
+$TLS_cannot_update_build = "Fout tijdens het updaten van de oplevering";
+$TLS_warning_duplicate_build = "Er bestaat al een oplevering met die identificatie";
+
+
+
+// ----- lib/plan/plan.inc.php -----
+$TLS_warning_enter_valid_date = "U moet een valide datum invoeren!";
+$TLS_warning_invalid_percentage_value = "Percentage waardes moeten tussen de 0 en 100% liggen";
+$TLS_warning_milestone_date = "Mijlpalen moeten gecreerd worden op de dag van vandaag of groter!";
+$TLS_warning_percentage_value_higher_than_100 = "Alle percentages bij elkaar kunnen niet groter dan 100 zijn";
+$TLS_warning_target_before_start = "Doeldatum moet na startdatum liggen.";
+
+
+// ----- lib/plan/planMilestone*.php -----
+$TLS_milestone_delete_fails = "De mijlpaal kan niet worden verwijderd!";
+$TLS_warning_milestone_add_failed = "Mijlpaal kan niet worden toegevoegd!";
+$TLS_warning_milestone_update_failed = "De mijlpaal kan niet worden geupdate!";
+$TLS_milestone_name_already_exists = "Er bestaat al een mijlpaal met deze naam (%s)";
+
+
+
+// ----- lib/plan/planTestersEdit.php -----
+$TLS_title_assign_tp = "Wijs Testplannen toe aan de gebruiker ";
+$TLS_title_assign_users = "Wijs gebruikers toe aan testplan";
+
+
+// ----- lib/plan/planTestersNavigator.php -----
+$TLS_nav_test_plan = "Navigator - Testplannen";
+$TLS_nav_users = "Navigator - Gebruikers";
+
+
+//  -----lib/plan/planUpdateTC.php -----
+$TLS_deleted = "verwijderd";
+$TLS_different_versions = "Verschillende versies";
+$TLS_plan_update_no_tc_updated = "Er zijn geen Testgevallen geupdate";
+$TLS_updated = "geupdate";
+$TLS_all_versions_where_latest = "Niets te doen - alle Testgevallen zijn de nieuwste beschikbaar.";
+$TLS_num_of_updated = "%d Testgevallen zijn bijgewerkt.";
+
+
+// ----- lib/plan/testSetNavigator.php -----
+$TLS_title_test_plan_navigator = "Testplan navigator";
+
+
+// ----- lib/plan/testSetRemove.php -----
+$TLS_tcase_removed_from_tplan = "Testgeval verwijderd van Testplan";
+$TLS_multiple_tcase_removed_from_tplan = "Testgevallen verwijderd van Testplan";
+
+
+// ----- lib/plan/planEdit.php -----
+$TLS_testplan_created_ok = "Testplan is gecreëerd";
+$TLS_update_tp_failed1 = "Update van Testplan '";
+$TLS_update_tp_failed2 = "' mislukt";
+$TLS_warning_duplicate_tplan_name = "Er bestaat al een Testplan met deze naam. Kies alstublieft een andere naam!";
+$TLS_platform_default_suffix = "Default Platform %s";
+$TLS_platform_default_notes = "Automatically created platform for Test Plan %s";
+
+
+// ----- lib/platforms/platformsAssign.php -----
+$TLS_unknown_platform = "Waarschuwing!<br /><br />" .
+	"In dit Testplan zijn er Testgeval versies zonder toekenning aan een Platform. " .
+	"Dit betekent waarschijnlijk dat u op dit Testplan heeft gewerkt voordat u platforms " . 
+	"heeft toegekend. <br /><br />" .
+	"Nadat u platforms aan dit Testplan heeft toegekend MOET u naar 'Testgevallen toevoegen / verwijderen' " .
+	"gaan om het juiste platform naar uw Testgevallen toe te kennen. " .
+	"Om dit eenvoudiger te maken, als u nu ÉÉN platform toekent aan een Testplan zonder platforms, " .
+	"worden alle toegekende Testgevallen bijgewerkt met dit Platform. ";
+
+
+// ----- lib/results/printDocOptions.php -----
+$TLS_opt_displayVersion = "Req Spec and Requirements Versie";
+$TLS_opt_show_hdrNumbering = "Genummerde kopteksten";
+$TLS_opt_show_toc = "Inhoudsopgave";
+$TLS_opt_show_suite_txt 	= "Test Suite beschrijving";
+$TLS_opt_show_tplan_txt 	= "Testplan beschrijving";
+$TLS_opt_show_tc_body = "Testgeval inhoud";
+$TLS_opt_show_tc_summary = "Testgeval samenvatting";
+$TLS_opt_show_tc_author = "Toon Testgeval auteur";
+$TLS_opt_show_tc_notes 	= "Testgeval Notes";
+$TLS_opt_show_tc_reqs 		= "Testgeval gerelateerde Requirements";
+$TLS_opt_show_tc_keys 		= "Testgeval steekwoorden";
+$TLS_opt_show_cfields	= "Testgeval gebruikersvelden";
+$TLS_opt_show_passfail = "Toon akkoord/niet akkoord en aantekeningen";
+$TLS_opt_show_metrics 		= "Metrieken";
+$TLS_opt_req_spec_scope = "Requirements Specificatie scope";
+$TLS_opt_req_spec_author = "Requirements Specificatie auteur";
+$TLS_opt_req_spec_overwritten_count_reqs = "Requirements Specificatie voorgeschreven aantal REQs";
+$TLS_opt_req_spec_type = "Requirements Specification type";
+$TLS_opt_req_spec_cf = "Requirements Specification gebruikersvelden";
+$TLS_opt_req_scope = "Requirement scope";
+$TLS_opt_req_author = "Requirement auteur";
+$TLS_opt_req_status = "Requirement status";
+$TLS_opt_req_type = "Requirement type";
+$TLS_opt_req_cf = "Requirement gebruikersvelden";
+$TLS_opt_req_relations = "Requirement relaties";
+$TLS_opt_req_linked_tcs = "Requirement gerelateerde Testgevallen";
+$TLS_opt_req_coverage = "Requirement dekking";
+$TLS_title_tc_print_navigator = "Navigator - Print Testspecificatie";
+$TLS_title_req_print_navigator = "Navigator - Print Requirements Specificatie";
+$TLS_title_tp_print_navigator = "Navigator - Print Testplan ";
+$TLS_testplan_report = "Testplan rapport";
+$TLS_testspecification_report = "Test Specificatie rapport";
+$TLS_requirement_specification_report = "Requirements Specificatie rapport";
+$TLS_related_tcs = "Gerelateerde Testgevallen";
+
+
+// ----- lib/project/projectedit.php -----
+$TLS_error_product_name_duplicate = "Er bestaat al een Testproject genaamd named %s. <br>Kies alstublieft een andere naam";
+$TLS_error_tcase_prefix_exists = "Testgeval ID voorvoegsel %s bestaat al";
+$TLS_info_no_more_prods = "Geen Testprojecten meer.";
+$TLS_info_product_activated = "Het Testproject was geactiveerd.";
+$TLS_info_product_inactivated = "Het testproject was gedeactiveerd.";
+$TLS_info_product_not_deleted_check_log = "Testproject was niet verwijderd. Controleer de Testlink Log Alstublieft.";
+$TLS_info_product_was_deleted = "Het Testproject wat succesvol verwijderd.";
+$TLS_refer_to_log = " Kijk alstublieft in de TestLink Log voor meer informatie.";
+$TLS_test_project_activated = "Testproject %s was succesvol geactiveerd";
+$TLS_test_project_created = "Testproject %s was succesvol gecreëerd";
+$TLS_test_project_deleted = "Testproject %s was succesverwijderd";
+$TLS_test_project_inactivated = "Testproject %s was succesvol gedeactiveerd";
+$TLS_test_project_updated = "Testproject %s was succesvol geupdate";
+$TLS_test_project_update_failed = "Update van Testproject %s is mislukt!";
+
+
+// ----- lib/results/charts.php -----
+$TLS_graphical_reports = "Grafische Rapporten";
+$TLS_overall_metrics = "Algemene Metrieken";
+$TLS_results_by_keyword = "Resultaten aan de hand van steekwoord";
+$TLS_results_by_tester = "Resultaten aan de hand van Tester";
+$TLS_results_top_level_suites = "Resultaten van hoogste niveau Suites";
+$TLS_chart_report = "Rapport";
+$TLS_chart_assigned_testers = "Owners";
+$TLS_chart_keywords = "Steekwoorden";
+$TLS_chart_testsuites = "Test Suites";
+$TLS_overall_metrics_for_platform = "Overall Metrieken - Platform: ";
+
+
+// ----- lib/req/reqImport.php -----
+$TLS_file_is_not_ok_for_import_type = "Bestand lijkt niet overeen te komen met het importeer type dat is geselecteerd.";
+$TLS_file_is_not_text = "Bestand is geen tekst bestand. Kan niet worden gebruikt";
+$TLS_please_choose_req_file = "Kies alstublieft het bestand om te uploaden";
+$TLS_req_import_finished = "Het importeren is klaar!";
+$TLS_tproject_import_requirements = '%s : Import Requirements';
+$TLS_reqspec_import_requirements = '%s : Import Requirements';
+$TLS_tproject_import_req_spec = '%s : Import Req. Specs';
+$TLS_reqspec_import_req_spec = '%s : Import Req. Specs';
+
+$TLS_same_docid = 'heeft hetzelfde DOC ID';
+$TLS_same_title = 'heeft dezelfde titel';
+
+$TLS_update_last_requirement_version = 'Update data on Latest version';
+$TLS_create_new_requirement_version = 'Create a new version';
+// $TLS_generate_new_requirement='Create a new requirement with different title and DOC ID';
+
+$TLS_duplicate_req_criteria = "Consider Requirement as duplicate if";
+
+
+// ----- lib/req/reqSpecView.php -----
+$TLS_cant_create_tc_from_req_nothing_sel = "Kies alstublieft een requirement!";
+$TLS_req_created = "Requirement %s is succesvol gecreëerd";
+
+
+
+// ----- lib/req/reqTcAssign.php -----
+$TLS_req_msg_noselect = "Niet geselecteerd";
+$TLS_req_msg_notupdated_coverage = "Dekking was niet geupdate voor Requirements ";
+$TLS_bulk_req_assign_msg = 'Deze operatie kent de geselecteerde requirements toe aan %s Testgevallen ' .
+                         'in de huidige Test Suite (inclusief dochter Test Suites).';
+$TLS_bulk_req_assign_no_test_cases = 'Operatie niet mogelijk omdat de geselecteerde Test Suite geen testgevallen bevat.';
+$TLS_bulk_assigment_done = '%s assignments uitgevoerd';
+$TLS_req_title_bulk_assign = 'Requirements Bulk Toekenning';
+$TLS_req_title_available = 'Beschikbare Requirements';
+$TLS_no_req_spec_available = "Geen Requirements Specification beschikbaar voor dit Testproject";
+
+
+// ----- lib/results/resultsBugs.php -----
+$TLS_title_test_report_all_builds = "Test Rapport: Resultaten van Testgevallen voor alle opleveringen";
+
+// ----- requirement relations (BUGID 1748)
+$TLS_relation_id = "#";
+$TLS_current_req = "Huidige requirement";
+$TLS_relation_type = "Type";
+$TLS_relation_document = "Gerelateerde Requirement";
+$TLS_relation_status = "Status";
+$TLS_relation_set_by = "Ingesteld door";
+$TLS_relation_delete = "Verwijder";
+$TLS_relations = "Relaties";
+$TLS_th_relations = "# Gerelateerde Req.";
+$TLS_new_relation = "Nieuwe relatie";
+$TLS_relation_project = "In Testproject";
+$TLS_in = "in project";
+$TLS_relation_destination_doc_id = "Requirement Document ID";
+$TLS_new_rel_add_success = "Nieuwe relatie is toegevoegd.";
+$TLS_rel_add_error_dest_id = "Doel Document ID is invalid.";
+$TLS_rel_add_error = "Fout bij toevoegen nieuwe relatie.";
+$TLS_rel_add_error_self = "Een Requirement mag geen relatie met zichzelf hebben.";
+$TLS_rel_add_error_exists_already = "Een relatie van deze type (\"%s\") bestaat al tussen deze twee Requirements.";
+$TLS_delete_rel_success = "Relatie is verwijderd.";
+$TLS_error_deleting_rel = "Relatie kon niet verwijderd worden.";
+$TLS_delete_rel_msgbox_title = "Verwijder relatie";
+$TLS_delete_rel_msgbox_msg = "Relatie #%i echt verwijderen?";
+$TLS_img_title_delete_relation = "Klik om deze relatie te verwijderen.";
+
+
+// ----- configured requirement relation types (BUGID 1748) -----
+$TLS_req_rel_is_parent_of = "moeder van";
+$TLS_req_rel_is_child_of = "dochter van";
+$TLS_req_rel_blocks = "blokkeert";
+$TLS_req_rel_depends = "afhankelijk van";
+$TLS_req_rel_is_related_to = "verwant aan";
+
+// ----- lib/results/resultsTC.php -----
+$TLS_title_test_report_all_builds = "Testrapport: resultaten van Testgevallen voor alle Opleveringen";
+
+
+// ----- lib/results/resultsAllBuilds.php -----
+$TLS_title_metrics_x_build = "Globaal Opleveringsstatus";
+
+
+// ----- lib/results/resultsByStatus.php -----
+$TLS_list_of_blocked = "Geblokkeerde Testgevallen";
+$TLS_list_of_failed = "Gefaalde Testgevallen";
+$TLS_list_of_not_run = "Niet uitgevoerde Testgevallen";
+
+
+// ----- lib/results/tcNotRunAnyPlatform.php -----
+$TLS_title_test_report_not_run_on_any_platform = "Testrapport: Testgevallen op geen enkele Platform uitgevoerd";
+$TLS_not_run_any_platform_status_msg = "Er zijn %d Testgevallen aan dit Testplan gekoppeld.<br/> " .
+                                       "%d hiervan zijn op geen enkele Platform uitgevoerd.</p>";
+$TLS_not_run_any_platform_no_platforms = "Er zijn geen platforms aan dit Testplan gekoppeld.";
+
+
+// ----- lib/results/testPlanWithCF----
+$TLS_link_report_tplans_with_cf = "Testplan met gebruikersvelden";
+$TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
+$TLS_no_linked_tplan_cf = "Er zijn geen Testgevallen waar een gebruikersveld  " .
+	"werd ingevuld tijdens het toevoegen daarvan aan een Testplan.";
+$TLS_info_testPlanWithCF = "Dit rapport toont alle Testgevallen waar een gebruikersveld " .
+	"werd ingevuld tijdens het toevoegen daarvan aan een Testplan.";
+
+
+// ----- lib/results/resultsTC.php -----
+$TLS_result_on_last_build = 'Laatste Oplevering';
+$TLS_tcversion_indicator = ' [v%s]';
+$TLS_title_test_report_all_builds = "Testrapport: Resultaten van Testgevallen voor alle Opleveringen";
+
+
+// ----- lib/results/testCasesWithCF.php -----
+$TLS_link_report_tcases_with_cf = "Testgevallen met gebruikersvelden tijdens uitvoering ingevuld";
+$TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
+$TLS_no_linked_tc_cf= 'Er zijn geen Testgevallen met een gebruikersveld ingevuld tijdens uitvoering.';
+$TLS_info_testCasesWithCF = "Dit rapport toont alle Testgevallen met een gebruikersveld " .
+	"dat ingevuld is tijdens test uitvoering. Ook worden de uitvoeringsaantekeningen getoond voor deze " .
+	"Testgevallen. ";
+	
+
+// ----- lib/results/resultsAllBuilds.php -----
+$TLS_title_metrics_x_build = "Algemene oplevering status";
+
+
+// ----- lib/results/resultsByStatus.php -----
+$TLS_list_of_blocked = "Geblokkeerde Testgevallen";
+$TLS_list_of_failed = "Gefaalde Testgevallen";
+$TLS_list_of_not_run = "Niet uitgevoerde Testgevallen";
+
+
+// ----- cfg/reports.cfg.php -----
+$TLS_link_charts = "Charts";
+$TLS_link_report_blocked_tcs = "Geblokkeerde Testgevallen";
+$TLS_link_report_failed = "Gefaalde Testgevallen";
+$TLS_link_report_general_tp_metrics = "Algemene Testplan Metrieken";
+$TLS_link_report_by_tester_per_build = "Resultaten per Tester per Oplevering";
+$TLS_link_assigned_tc_overview = "Test Case Toekenning Overzicht";
+$TLS_link_report_metrics_active_build = "Metrieken voor de actieve Oplevering";
+$TLS_link_report_metrics_more_builds = "Opgevraagde Metrieken";
+$TLS_link_report_not_run = "Niet uitgevoerde Testgevallen";
+$TLS_link_report_not_run_any_platform = "Testgevallen niet op enig Platform uitgevoerd";
+$TLS_link_report_overall_build = "Algemene Oplevering status";
+$TLS_link_report_reqs_coverage = "Requirements-gebaseerd Rapport";
+$TLS_link_report_tcases_without_tester = "Testgevallen zonder toegekende Tester";
+$TLS_link_report_test = "Testresultaat Matrix";
+$TLS_link_report_test_plan = "Testplan Rapport";
+$TLS_link_report_test_report = "Testrapport";
+$TLS_link_report_total_bugs = "Totaal aantal bevindingen voor elk Testgeval";
+$TLS_link_report_uncovered_testcases = "Testgevallen zonder toegekende Requirements";
+$TLS_link_report_reqs_with_cf = "Requirements met gebruikersvelden";
+$TLS_caption_requirementsWithCF = $TLS_link_report_reqs_with_cf;
+$TLS_link_report_free_testcases_on_testproject = "Testgevallen niet toegekend aan enig Testplan";
+
+$TLS_no_linked_req_cf = 'Er zijn geen Requirements met ingevulde gebruikersvelden';
+
+$TLS_format_html 		= 'HTML';
+$TLS_format_odt 		= 'OpenOffice Writer';
+$TLS_format_ods 		= 'OpenOffice Calc';
+$TLS_format_xls 		= 'MS Excel';
+$TLS_format_msword 		= 'MS Word';
+$TLS_format_pdf 		= 'PDF';
+$TLS_format_mail_html 	= 'Email (HTML)';
+
+
+// ----- lib/results/resultsSend.php -----
+$TLS_send_to_empty_email_warning = "Excuus, maar e-mail kan niet gestuurd worden met een leeg veld. " .
+	"Voer alstublieft een geldig adres in.";
+$TLS_warning_create_build_first = "U moet eerst Opleveringen creëren of gegevens importeren.";
+
+
+// ----- lib/results/displayMgr.php -----
+$TLS_error_sendreport_no_email_credentials = "E-mail voor deze gebruiker is niet gespecificeerd, " .
+	"wijzig alstublieft de e-mail gegevens in het 'Persoonlijk' tabblad.";
+$TLS_mail_sent_to = 'e-mail gestuurd aan %s';
+$TLS_send_mail_ko = 'Waarschuwing: Problemen met het sturen van e-mail - details: ';
+
+
+// ----- lib/testcases/archive.inc.php -----
+
+
+// ----- lib/testcases/listTestCases.php -----
+
+
+// ----- lib/testcases/tcAssignedToUser.php -----
+$TLS_assigned_tc_overview = "Testproject: %s - Testgeval Toekenning Overzicht voor alle gebruikers";
+$TLS_show_closed_builds_btn = "Toon ook gesloten opleveringen";
+
+
+// ----- lib/testcases/tcCreatedPerUser.php -----
+$TLS_link_report_test_cases_created_per_user = "Testgevallen gecreëerd per gebruiker";
+$TLS_testcases_created_per_user = 'Testproject: %s - Testgevallen gecreëerd per gebruiker';
+
+
+// ----- lib/testcases/tcImport.php -----
+$TLS_action_on_duplicated_name = "Actie voor gedupliceerde namen";
+$TLS_action_for_duplicates = "Actie voor duplicaten";
+$TLS_already_exists_updated = "Bestaat al; gegevens van laatste versie zijn bijgewerkt.";
+$TLS_please_choose_file_to_import = "Kies alstublieft een bestand om te importeren";
+$TLS_title_tc_import_to = "Importeer Testgeval(len)";
+$TLS_title_tsuite_import_to = "Importeer Test Suite";
+$TLS_wrong_xml_tcase_file = "verkeerd xml Testgeval bestand";
+$TLS_wrong_xml_tsuite_file = "verkeerd xml Test Suite bestand";
+$TLS_cf_value_not_imported_missing_cf_on_testproject = "Waarde van Gebruikersveld '%s' ".
+	"kan niet worden geïmporteerd omdat er geen gebruikersveld is van die naam " .
+	"beschikbaar voor %s in dit Testproject.";
+$TLS_req_not_in_req_spec_on_tcimport = "Requirement DOCID=%s kan niet worden gekoppeld aan " .
+	"Testgeval omdat het geen dochter is van Req. Spec: %s";
+$TLS_req_spec_ko_on_tcimport = "Req. Spec=%s bestaat niet; Requirement kan niet " .
+		"aan Testgeval worden gelinkd.";
+$TLS_update_last_testcase_version = 'Gegevens bijwerken van laatste versie';
+$TLS_create_new_testcase_version = 'Een nieuwe versie creëren';
+$TLS_generate_new_testcase = 'Creëer een nieuw Testgeval met een andere titel';
+$TLS_no_cf_defined_can_not_import = "Gebruikersveld waarden zijn aanwezig in het importbestand, " . 
+	"maar kunnen niet worden geïmporteerd omdat geen Gebruikersvelden met testspecificatie ontwerp scope " .
+	"zijn gedefinieerd binnen dit Testproject.";
+$TLS_no_reqspec_defined_can_not_import = "Requirements zijn aanwezig in het importbestand, " .
+	"maar kunnen niet worden geïmporteerd omdat er geen Requirement Specificatie gedefinieerd is " .
+	"voor dit Testproject.";
+$TLS_same_internalID = 'heeft dezelfde Interne ID';
+$TLS_same_externalID = 'heeft dezelfde Externe ID'; // (only applicable to Test Cases)';
+$TLS_same_name = 'heeft dezelfde naam';
+$TLS_duplicate_criteria = "Beschouw Testgeval als duplicaat als ";
+
+
+// ----- lib/testcases/tcexport.php -----
+$TLS_no_testcases_to_export = "Er zijn geen Testgevallen om te exporteren";
+$TLS_no_testsuites_to_export = "Er zijn geen Test Suites om te exporteren";
+$TLS_title_tc_export = "Exporteer Testgeval";
+$TLS_title_tc_export_all = "Exporteer alle Testgevallen";
+$TLS_title_tsuite_export = "Exporteer Test Suite";
+$TLS_title_tsuite_export_all = "Exporteer alle Test Suites";
+
+
+
+// ----- lib/testcases/containerEdit.php -----
+$TLS_delete = "Verwijder";
+$TLS_delete_notice = "Waarschuwing: Alle gerelateerde uitvoer resultaten worden verwijderd.";
+$TLS_warning_empty_com_name = "Geef alstublieft een naam aan de Test Suite";
+$TLS_all_testcases_have_been_deleted = "Alle Testgevallen zijn verwijderd.";
+$TLS_delete_testcases = "Verwijder Testgevallen";
+
+
+// ----- lib/testcases/tcEdit.php -----
+$TLS_current = "huidig";
+$TLS_delete_linked = "Links naar testplannen worden verwijderd.";
+$TLS_delete_linked_and_exec = "Links naar testplannen en uitvoer gerelateerde informatie wordt verwijderd.";
+$TLS_error_tc_add = "Er is een fout opgetreden tijdens het toevoegen van het Testgeval";
+$TLS_title_del_tc = "Verwijder Testgeval ";
+
+
+
+// ----- lib/usermanagement/rolesview.php -----
+$TLS_error_role_deletion = "De rol kon niet verwijderd worden!";
+
+
+// ----- lib/usermanagement/usersassign.php -----
+$TLS_no_test_projects = "Er zijn geen Testproducten gedefinieerd";
+$TLS_no_test_plans = "Er zijn geen Testplannen gedefinieerd voor dit testproduct";
+$TLS_test_project_user_roles_updated = "Gebruikers rollen geupdate";
+$TLS_test_plan_user_roles_updated = "Gebruikers rollen geupdate";
+
+
+// ----- lib/usermanagement/usersedit.php -----
+$TLS_user_created = "Gebruiker %s was succesvol gecreëerd";
+$TLS_user_deleted = "Gebruiker %s was succesvol verwijderd";
+$TLS_user_disabled = "Gebruiker %s is inactief";
+$TLS_user_not_added = "De gebruiker is niet toegevoegd!";
+$TLS_error_user_not_updated = "De gebruiker kon niet worden bijgewerkt.";
+$TLS_error_user_not_deleted = "De gebruiker kon niet worden verwijderd.";
+$TLS_error_user_not_disabled = "De gebruiker kon niet worden gedeactiveerd.";
+$TLS_error_user_login_length_error = "De loginnaam is te kort of te lang";
+$TLS_invalid_smtp_hostname = 'SMTP Hostname lijkt ongeldig';
+$TLS_password_cannot_be_reseted_invalid_smtp_hostname = 'Wachtwoord Reset niet mogelijk. ' .
+                                                        'Reden: SMTP Hostname lijkt ongeldig.';
+$TLS_password_cannot_be_reseted_reason = 'Wachtwoord Reset niet mogelijk. Reden: %s ';
+
+
+
+// ----- lib/usermanagement/rolesedit.php -----
+$TLS_error_role_creation = "De rol kan niet worden gecreëerd!";
+$TLS_error_role_update = "De rol kan niet worden geupdate!";
+
+
+// ----- lib/cfields/cfields_edit.php -----
+$TLS_cf_name_exists = "Gebruikersveld bestaat al. Kies alstublieft een nieuwe.";
+$TLS_error_creating_cf = "Het gebruikersveld kan niet worden gecreëerd!";
+$TLS_do_update = "geupdate";
+$TLS_do_delete = "verwijderd";
+$TLS_do_add = "toegevoegd";
+$TLS_warning_delete_cf = "U gaat verwijderen: %s <br /><br /> Weet u het zeker?";
+
+
+// ----- lib/project/fix_tplans.php -----
+$TLS_list_inactive_tplans1 = "Listing ";
+$TLS_list_inactive_tplans2 = "Active Test Plans that are currently not associated with a Test Project";
+$TLS_assoc_test_project = "Associated Test Project";
+$TLS_btn_fix_tplans = "Update";
+$TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br />Please contact your administrator";
+$TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project - That's Good!";
+
+
+// ----- lib/project/project_req_spec_mgmt.tpl -----
+$TLS_btn_new_req_spec = "Nieuwe Requirements Specificatie";
+$TLS_btn_reorder_req_spec = "Reorder Requirements Specificaties";
+$TLS_btn_export_all_reqspec = "Exporteer alle Requirements Specificaties";
+
+
+// ----- lib/requirements/reqOverview.php -----
+$TLS_caption_req_overview = "Requirements Overzicht";
+$TLS_number_of_reqs = "Aantal Requirements";
+$TLS_number_of_versions = "Aantal Requirement versies";
+$TLS_no_linked_req = 'Er zijn nog geen Requirements in dit Testproject.';
+$TLS_th_coverage = 'Dekking';
+$TLS_all_versions_displayed = 'Alle versies van elke Requirement worden getoond.';
+$TLS_latest_version_displayed = 'Alleen de laatste versie van elke Requirement wordt getoond.';
+$TLS_dont_show_all_versions_btn = 'Toon alleen laatste versie van elke Requirement';
+$TLS_show_all_versions_btn = 'Toon alle versies van elke Requirement';
+$TLS_frozen = 'Bevroren';
+$TLS_notes_req_overview = "Dit overzicht toont alle Requirements (laatste of alle versies) " .
+                          "en alle verwante attributen. Tevens worden alle gebruikersvelden in een aparte " .
+                          "kolom getoond.";
+$TLS_calendar_week_short = "CW";
+$TLS_modified_on = "Laatst gewijzigd";
+$TLS_created_on = "Gecreëerd";
+$TLS_never = "Nooit";
+
+
+// ----- reqSpecEdit.php -----
+$TLS_delete_req_spec = "Verwijder Requirements Specificatie";
+$TLS_req_spec_created = "Requirements Specificatie: %s is gecreëerd";
+$TLS_req_spec_deleted = "Requirements Specificatie: %s is verwijderd";
+$TLS_title_req_spec = "Requirements Specificaties";
+$TLS_warning_empty_req_spec_title = "Requirements Specificatie titel mag niet leeg zijn";
+$TLS_warning_empty_doc_id = "Document ID mag niet leeg zijn";
+$TLS_create_req_spec = "Creëer Requirements Specificatie";
+$TLS_create_child_req_spec = "Creëer Child Req Specificatie";
+$TLS_edit_req_spec = "Requirements Specificatie bewerken";
+
+
+// ----- reqEdit.php -----
+$TLS_create_req = "Creëer Requirement";
+$TLS_delete_req = "Verwijder Requirement";
+$TLS_edit_req = "Bewerk Requirement";
+$TLS_req_created = "Requirement %s is gecreëerd.";
+$TLS_req_deleted = "Requirement: %s is verwijderd.";
+$TLS_req_version_deleted = "Req: %s-%s Versie %s is verwijderd.";
+
+
+// ----- reqSpecReorder.tpl -----
+$TLS_title_change_req_spec_order = "Wijzig volgorde Requirements Specificaties";
+
+
+// ----- requirement_mgr -----
+$TLS_created_on_testsuite = "Testgeval is gecreëerd in Test Suite %s";
+$TLS_testsuite_name_created = "Test Suite %s is gecreëerd";
+
+
+// ----- keywordsEdit.php -----
+$TLS_keyword_management = "Beheer Steekwoorden";
+$TLS_create_keyword = "Creëer steekwoord";
+$TLS_delete_keyword = "Verwijder steekwoord";
+$TLS_edit_keyword = "Steekwoord bewerken";
+$TLS_warning_empty_keyword = "Steekwoord mag niet leeg zijn";
+
+
+// ----- platformsEdit.php -----
+$TLS_platform_management = "Platform Beheer";
+$TLS_create_platform = "Creëer platform";
+$TLS_edit_platform = "Platform bewerken";
+$TLS_platform_name_already_exists = "Platform naam %s bestaat al.";
+$TLS_platform_update_failed = "Platform bijwerken niet gelukt.";
+$TLS_warning_empty_platform = "Platform kan niet leeg zijn.";
+
+
+// ----- api/TestlinkXMLRPCServerErrors.php -----
+$TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
+$TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key has insufficient rights to perform this action";
+$TLS_API_NO_DEV_KEY = "No devKey provided. A valid devKey must be provided!";
+$TLS_API_NO_TCASEID = "No Test Case ID provided. A valid Test Case ID must be provided!";
+$TLS_API_NO_TCASEEXTERNALID = "No Test Case External ID provided. A valid Test Case External ID must be provided!";
+$TLS_API_NO_TPLANID = "No test plan id provided. A valid test plan id must be provided!";
+$TLS_API_NO_TEST_MODE = "A test Mode must be provided!";
+$TLS_API_NO_STATUS = "No status provided. A valid status must be provided!";
+$TLS_API_NO_TESTCASENAME = "No testcasename provided. A testcase name must be provided!";
+$TLS_API_NO_TESTPROJECTID = "No testprojectid provided. A valid test project id must be provided!";
+$TLS_API_NO_TESTSUITEID = "No testsuiteid provided. A valid test suite id must be provided!";
+$TLS_API_NO_TPID = "No testplan ID (tpid) provided. A valid tpid must be provided!";
+$TLS_API_NO_TCID = "No testcase ID (tcid) provided. A valid tcid must be provided!";
+$TLS_API_INVALID_TCASEID= "The Test Case ID (tcid) provided does not exist!";
+$TLS_API_INVALID_BUILDID = "The Build ID (buildid) provided does not exist!";
+$TLS_API_INVALID_TPLANID = "The Test Plan ID (%s) provided does not exist!";
+$TLS_API_INVALID_STATUS = "The status (status) provided is not valid!";
+$TLS_API_INVALID_TESTCASE_EXTERNAL_ID = "Test Case External ID (%s) does not exist!";
+
+$TLS_API_TCID_NOT_INTEGER = "TCID must be an integer!";
+$TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
+$TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the tpid provided! A build must be created to report results.";
+$TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a buildid must be specified!";
+$TLS_API_BUILDNAME_ALREADY_EXISTS = "Returning ID of existing build by name (case insensitive): ";
+$TLS_API_NO_BUILDID = "No buildid provided. A valid buildid must be provided!";
+$TLS_API_TCASEID_NOT_IN_TPLANID = "Test Case (name=%s/id=%s) is not associated with Test Plan (name=%s/id=%s).";
+$TLS_API_GENERAL_SUCCESS = "Success!";
+$TLS_API_INVALID_TESTPROJECTID = "The Test Project ID (testprojectid) provided does not exist!";
+$TLS_API_INVALID_TESTSUITEID = "The Test Suite ID (testsuiteid) provided does not exist!";
+$TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase exists with the name provided!";
+$TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
+$TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME = "Cannot find matching Custom Field. " .
+                                     "No Custom Field exists with the name provided!";
+
+$TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
+$TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
+
+$TLS_API_INVALID_TESTCASE_VERSION_NUMBER = "The required version number do not exist for test case";
+$TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
+
+$TLS_API_TPLAN_TPROJECT_KO = "Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_TPROJECT_KO = "Test Case (%s:%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_VERSION_NUMBER_KO = "Version (%s) does not exist for Test Case (%s:%s).";
+
+$TLS_API_TPROJECT_IS_EMPTY = "Test Project (%s) is empty.";
+$TLS_API_TPROJECT_PREFIX_ALREADY_EXISTS = "Prefix (%s) is already in used on Test Project (%s)";
+
+$TLS_API_REQSPEC_TPROJECT_KO = "Requirements Spec (title=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+
+$TLS_API_REQSPEC_KO = "Requirements Spec (id=%s) does not exist on system";
+$TLS_API_REQ_KO = "Requirement (id=%s) does not exist on system";
+$TLS_API_REQSPEC_IS_EMPTY = "Requirements Spec (title=%s / id=%s) has NO requirements";
+$TLS_API_REQ_REQSPEC_KO = "Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_TPLAN_HAS_NO_BUILDS = "There are no builds defined for Test Plan (name=%s/id=%s)";
+$TLS_API_VERSION_NOT_VALID = "Version number %s is not valid.";
+
+$TLS_API_BAD_BUILD_FOR_TPLAN = "Build (id:%s), do not exist for Test Plan (name:%s/id:%s).";
+
+$TLS_API_CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE = "Custom Field (name:%s), can not be used on %s, but on %s";
+
+// ----- audit log entries -----
+$TLS_audit_login_succeeded = "Login voor '{%1}' van '{%2}' succesvol";
+$TLS_audit_login_failed = "Login voor '{%1}' van '{%2}' gefaald";
+$TLS_audit_role_saved = "Role '{%1}' was saved";
+$TLS_audit_role_created = "Role '{%1}' was created";
+$TLS_audit_role_deleted = "Role '{%1}' was deleted";
+
+
+$TLS_audit_cfield_created = "Custom field '{%1}' was created";
+$TLS_audit_cfield_saved = "Custom field '{%1}' was saved";
+$TLS_audit_cfield_deleted = "Custom field '{%1}' was deleted";
+$TLS_audit_cfield_assigned = "Custom field '{%1}' was assigned to Test Project '{%2}'";
+$TLS_audit_cfield_unassigned = "Custom field '{%1}' was unassigned from Test Project '{%2}'";
+$TLS_audit_cfield_display_order_changed = "Display order of custom fields from Test Project '{%1}' was saved";
+$TLS_audit_cfield_activated = "Custom field '{%1}' was activated on Test Project '{%2}'";
+$TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Project '{%2}'";
+
+$TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
+$TLS_audit_user_saved = "User '{%1}' was saved";
+$TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
+$TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned the role '{%3}' to the Test Project '{%2}'";
+$TLS_audit_users_roles_added_testplan = "User '{%1}' was assigned the role '{%3}' to the Test Plan '{%2}'";
+$TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned from the Test Plan '{%1}'";
+$TLS_audit_all_user_roles_removed_testproject = "All user roles were unassigned from the Test Project with id '{%1}'";
+$TLS_audit_user_created = "User '{%1}' was created";
+$TLS_audit_user_deleted = "User '{%1}' was deleted";
+$TLS_audit_user_logout = "Logout of '{%1}'";
+$TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
+$TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
+$TLS_audit_user_role_changed = "User '{%1}' role changed old='{%2}' new='{%3}'";
+$TLS_audit_user_active_status_changed = "User '{%1}' active status changed old='{%2}' new='{%3}'";
+
+$TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'! Exit forced!";
+
+$TLS_audit_testproject_created = $TLS_testproject . " '{%1}' was created";
+$TLS_audit_testproject_saved = $TLS_testproject . " '{%1}' was saved";
+$TLS_audit_testproject_deleted = $TLS_testproject . " '{%1}' was deleted";
+
+$TLS_audit_keyword_created = "Keyword '{%1}' was created";
+$TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
+$TLS_audit_keyword_deleted = "Keyword '{%1}' was deleted";
+$TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from Test Case '{%2}'";
+$TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the Test Case '{%1}'";
+
+$TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
+$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted during execution";
+
+$TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
+$TLS_audit_attachment_created = "Attachment '{%1}' - file '{%2}' was created";
+
+$TLS_audit_req_spec_created = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was created";
+$TLS_audit_req_spec_saved = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was saved";
+$TLS_audit_req_spec_deleted = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was deleted";
+$TLS_audit_req_spec_renamed = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' renamed to '{%3}'";
+
+$TLS_audit_requirement_created = "Requirement '{%1}' was created";
+$TLS_audit_requirement_saved = "Requirement '{%1}' was saved";
+$TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
+$TLS_audit_req_assigned_tc = "Requirement with title '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_req_assignment_removed_tc = "Requirement with title '{%1}' was unassigned from the Test Case '{%2}'";
+
+$TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
+$TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";
+$TLS_audit_build_deleted = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was deleted";
+
+$TLS_audit_testplan_deleted = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was deleted";
+$TLS_audit_testplan_saved = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was saved";
+$TLS_audit_testplan_created = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was created";
+$TLS_audit_milestone_deleted = "Test Plan '{%1}' - Milestone '{%2}' was deleted";
+$TLS_audit_milestone_created = "Test Plan '{%1}' - Milestone '{%2}' was created";
+$TLS_audit_milestone_saved = "Test Plan '{%1}' - Milestone '{%2}' was saved";
+
+$TLS_audit_tc_added_to_testplan = "Test Case '{%1}' version {%2} was added to Test Plan {%3}";
+$TLS_audit_tc_removed_from_testplan = "Test Case '{%1}' version {%2} was removed from Test Plan {%3}";
+
+$TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
+
+$TLS_audit_events_deleted = "User '{%1}' deleted all events";
+
+
+// ----- eventviewer.php -----
+$TLS_th_loglevel = "Logniveau";
+$TLS_th_timestamp = "Tijdstempel";
+$TLS_th_activity = "Activiteit";
+$TLS_label_startdate = "Startdatum";
+$TLS_label_enddate = "Einddatum";
+$TLS_log_level_AUDIT = "Audit";
+$TLS_log_level_WARNING = "Waarschuwing";
+$TLS_log_level_INFO = "Info";
+$TLS_log_level_ERROR = "Fout";
+$TLS_log_level_DEBUG = "Debug";
+$TLS_event_viewer = "Event viewer";
+$TLS_th_session_info = "Sessie informatie";
+$TLS_th_sessionID = "Sessie ID";
+$TLS_th_source = "Bron";
+$TLS_click_on_event_info = "Klik op '+' bij event om details te tonen.";
+$TLS_th_activity_code = "Activiteit";
+$TLS_th_object_id = "Object ID";
+$TLS_th_object_type = "Object Type";
+$TLS_message_please_wait = "Even geduld alstublieft ...";
+$TLS_title_eventinfo = "Event informatie";
+$TLS_title_eventdetails = "Event details";
+$TLS_th_user = "Gebruikers";
+$TLS_th_transaction = "Transactie";
+$TLS_show_event_history = "Toon event geschiedenis";
+$TLS_btn_clear_all_events = "Alle Events Wissen";
+$TLS_btn_clear_events = "Events Wissen";
+$TLS_th_event_description = "Omschrijving";
+$TLS_select_user = "Gebruikers (default alle)";
+$TLS_clear_tip = "Delete events with log level(s) selected, or all if no level selected";
+$TLS_show_eventdetails = "Toon event details";
+$TLS_no_events = "Geen events beschikbaar";
+
+
+// ----- int_mantis.php -----
+// Used to display at User interface label as title attribute
+$TLS_issue_status_new = "New issue";
+$TLS_issue_status_feedback = "Feedback";
+$TLS_issue_status_acknowledged = "Acknowledged issue ";
+$TLS_issue_status_confirmed = "Confirmed issue";
+$TLS_issue_status_assigned = "Assigned issue";
+$TLS_issue_status_resolved = "Resolved issue";
+$TLS_issue_status_closed = "Closed issue";
+$TLS_issue_status_custom_undefined_on_tl = 'Custom status NOT CONFIGURED on Test Link - see event viewer';
+$TLS_access_to_bts = "Access issue tracking system";
+
+
+// ----- uncoveredTestCases.php -----
+$TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
+$TLS_no_uncovered_testcases = 'Geen ongedekte Testgevallen';
+$TLS_testproject_has_no_reqspec = 'Er zijn geen Requirements Specificaties gedefinieerd.';
+$TLS_testproject_has_no_requirements = 'Er zijn geen Requirements gedefinieerd.';
+
+
+// ----- testCasesWithoutTester -----
+$TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
+$TLS_all_testcases_have_tester = 'Alle Testgevallen zijn toegekend en/of zijn al uitgevoerd.';
+$TLS_testCasesWithoutTester_info = "Dit rapport toont alle Testgevallen die voor geen enkele Oplevering " .
+	"zijn toegekend aan een tester en voor geen enkele Oplevering zijn uitgevoerd. " .
+	"Als platforms aan dit Testplan zijn toegekend, wordt elke platform apart bekeken. ";
+
+	
+// ----- freeTestCases -----
+$TLS_report_free_testcases_on_testproject=$TLS_link_report_free_testcases_on_testproject;
+$TLS_all_testcases_has_testplan = "Alle Testgevallen zijn aan een Testplan toegekend.";
+$TLS_all_testcases_are_free = "Geen Testgevallen zijn aan een Testplan toegekend.";
+$TLS_info_tc_not_assigned_to_any_tplan = "Dit rapport toont alle Testgevallen die nog niet " .
+	"aan enige Testplan zijn toegekend.";
+
+                                         
+// ----- timeCharts ----- 
+$TLS_interval_end_date 		= "Last Interval Date";
+$TLS_interval_header 		= "Interval Type";
+$TLS_interval_number 		= "Number of Intervals";
+$TLS_link_time_charts		= "Time Charts";
+$TLS_time_charts_metrics 	= "Time Charts Metrics";
+$TLS_time_charts_title 		= "Time Charts";
+
+
+// ----- linkto.php -----
+$TLS_testproject_not_found = "Test Project with prefix (%s) does not exist";
+$TLS_testproject_not_set = "Test Project key (tprojectPrefix) not found on _GET.";
+$TLS_item_not_set = "Item not set - what do we want to see? [item=tc|req|reqspec]";
+$TLS_id_not_set = "ID not set.";
+$TLS_testcase_not_found = "Testcase %s not found in test project (prefix:%s).";
+$TLS_req_spec_not_found = "Requirement specification %s not found in test project (prefix:%s).";
+$TLS_req_not_found = "Requirement %s not found in test project (prefix:%s).";
+$TLS_req_version_not_found = "Version %s of requirement %s not found in test project (prefix:%s).";
+$TLS_invalid_item = 'Invalid item (%s)';
+$TLS_btn_show_direct_link = "Show permanent link";
+$TLS_direct_link_on_wrong_version = "Click here to open the current version of this document.";
+
+
+// ----- testcase/req/req spec comparison -----
+$TLS_title_compare_versions_tc = "Testgeval versies vergelijken";
+$TLS_title_compare_versions_req = "Requirement versies vergelijken";
+$TLS_title_compare_revisions_rspec = "Requirements Spec. revisies vergelijken";
+$TLS_btn_compare_versions = "Versies vergelijken";
+$TLS_btn_compare_selected_versions = "Geselecteerde versies vergelijken";
+$TLS_btn_compare_revisions = "Revisies vergelijken";
+$TLS_btn_compare_selected_revisions = "Geselecteerde revisies vergelijken";
+$TLS_select_versions = "Geselecteerde versies te vergelijken:";
+$TLS_version = "Versie ";
+$TLS_compare = "Vergelijken ";
+$TLS_modified = "Laatst gewijzigd ";
+$TLS_modified_by = "Laatst gewijzigd door ";
+$TLS_num_changes = "Aantal wijzigingen in %s: %s.";
+$TLS_no_changes = "Geen wijzigingen in %s.";
+$TLS_context = "Context (aantal regels):";
+$TLS_show_all = "toon alle";
+$TLS_version_short = "v";
+$TLS_version_revision = "v%s r%s";
+$TLS_empty_log_message = "<i>Logbericht is leeg</i>";
+$TLS_diff_method = "Selecteer een vergelijkingsmodus:";
+$TLS_use_html_comp = "HTML Inhoud";
+$TLS_use_html_code_comp = "HTML Code";
+
+$TLS_diff_subtitle_tc = "Verschillen tussen versie %s (v%s) en versie %s (v%s) van Testgeval %s";
+$TLS_diff_subtitle_req = "Verschillen tussen versie %s (v%s) en versie %s (v%s) van Requirement %s";
+$TLS_diff_details_req = "Verschillen tussen versie %s revisie %s (v%s r%s) en " . 
+                        "versie %s revisie %s (v%s r%s) van Requirement %s";
+
+$TLS_diff_details_rev = "Verschillen tussen revisie %s (r%s) en revisie %s (r%s)";
+
+$TLS_warning_context = "Context (aantal regels) moet numeriek zijn.";
+$TLS_warning_context_range = "Context ongeldig (moet positief getal zijn).";
+$TLS_warning_empty_context = "Context (aantal regels) mag niet leeg zijn.";
+$TLS_warning_selected_versions = "U moet twee verschillende versies van de lijst selecteren.";
+$TLS_warning_same_selected_versions = "U moet twee verschillende versies van de lijst selecteren.";
+$TLS_warning_selected_revisions = "U moet twee verschillende revisies van de lijst selecteren.";
+$TLS_warning_same_selected_revisions = "U moet twee verschillende revisies van de lijst selecteren.";
+
+
+// ----- grab from not-systematic developers -----
+$TLS_step_actions = "Acties";
+$TLS_step_details = "Stap details";
+$TLS_step_number = "#";
+$TLS_step_number_verbose = "Stap nummer";
+$TLS_step_number_x_created = "Stap nummer: %s gecreëerd";
+$TLS_step_number_x_created_as_copy = "Stap nummer: %s gecreëerd als kopie van %s";
+$TLS_edit_step_number_x = "Bewerk stap nummer: %s - Testgeval: %s - Versie: %s";
+$TLS_create_step = "Creëer Stap - Testgeval: %s - Versie: %s";
+$TLS_delete_step = "Verwijder stap";
+$TLS_warning_delete_step = "<p>U gaat stap nummer: %s verwijderen </p><p>Weet u dat zeker?</p>";
+$TLS_warning_step_number = " Stap nummer moet een positief getal zijn ";
+$TLS_warning_step_number_already_exists = " Stap nummer %s bestaat al";
+
+$TLS_BTS_integration_failure = " Integration with Bugtracking System: %s - Failed";
+$TLS_BTS_connect_to_database_fails = "Connect to Bug Tracker database fails: %s";
+$TLS_MANTIS_status_not_configured = 'Get Bug Status: %s from Mantis DB, but status is not configured on int_mantis.php';
+$TLS_testcase_set_copied = "%s Test Cases has been copied";
+$TLS_one_testcase_copied = "Test Case has been copied";
+
+$TLS_import_req_spec_created = 'Created - Req. Spec. - Doc ID:%s';
+$TLS_import_req_spec_skipped = 'Skipped - Req. Spec. - Doc ID:%s - Already exists on other branch';
+$TLS_import_req_spec_updated = 'Updated - Req. Spec. - Doc ID:%s';
+$TLS_import_req_spec_ancestor_skipped = 'Skipped - Req. Spec. - Doc ID:%s - a parent container already exists on other branch';
+
+$TLS_import_req_created = 'Created - Requirement - Doc ID:%s';
+$TLS_import_req_skipped = 'Skipped - Requirement - Doc ID:%s - Already exists on other branch';
+$TLS_import_req_skipped_plain = 'Skipped - Reason: %s';
+$TLS_import_req_updated = 'Updated - Requirement - Doc ID:%s';
+$TLS_import_req_new_version_created = 'New version created - Requirement - Doc ID:%s';
+$TLS_import_req_new_version_failed = 'Request to create a New version has failed - %s';
+$TLS_import_req_update_last_version_failed = 'Request to update LAST version has failed - %s';
+
+$TLS_import_done = 'Import klaar';
+$TLS_import_req_conflicts_other_branch = 'Doc ID conflicts with req in othe branch';
+$TLS_import_req_exists_here = 'Doc ID exists';
+
+$TLS_invalid_release_date = 'Release datum is geen geldige datum.';
+$TLS_insert_step = "Stap invoegen";
+$TLS_frozen_req_unable_to_import = 'Overgeslagen - Requirement - Doc ID:%s - is bevroren';
+
+
+$TLS_no_linked_cfields_for_testcase = 'There are no custom fields applicable to Test Cases, linked to Test Project';
+$TLS_no_cfield_with_this_name = 'There is no custom field with requested name (%s)';
+
+
+// ----- lib/plan/planExport.php -----
+$TLS_export_test_plan = 'Exporteer Testplan';
+
+
+// ----- lib/plan/planImport.php -----
+$TLS_title_import_testplan_links = 'Import links to Test Cases and platforms';
+$TLS_platform_not_linked = "Test Case link #%s has platform (name=%s), but this platform is not linked to Test Plan (name:%s)";
+$TLS_link_without_required_platform = "Test Case link #%s has no platform but Test Plan definition requires one";
+$TLS_link_with_platform_not_needed = "Test Case link #%s has platform but Test Plan has no linked platforms";
+$TLS_link_without_platform_element = "Test Case link #%s has no platform element";
+$TLS_tproject_has_zero_testcases = "Test Project %s has no Test Cases defined, unable to continue";
+$TLS_tcase_doesnot_exist = "Test Case with external id %s does not exist on Test Project %s";
+$TLS_tcversion_doesnot_exist = "Test Case with external id %s version %s does not exist on Test Project %s";
+$TLS_link_to_tplan_feedback = "Test Case with external id %s version %s has been linked to Test Plan";
+$TLS_link_to_platform = " for Platform %s";
+$TLS_no_platforms_on_tproject = "Input file provides platform links, but target Test Project has no platforms.";
+$TLS_platform_not_on_tproject = "Input file requests platform %s be linked to Test Plan, but does not exist in target Test Project.";
+$TLS_platform_linked = "Platform %s has been linked to Test Plan.";
+$TLS_tcase_link_updated = "Test Case (%s) - Version (%s) was already linked to Test Plan, only execution order has been updated.";
+
+                                                                                                        
+// ----- lib/execute/execExport.php -----
+$TLS_export_execution_set = 'Export Execution Set';
+
+
+// ----- lib/results/resultsReqs.php -----
+$TLS_no_label_for_req_type = 'No req_type_labels configuration for type: %s';
+
+
+$TLS_print_testcase = 'Print Test Case: %s';
+$TLS_print_requirement = 'Requirement afdrukken: %s';
+$TLS_print_requirement_specification = 'Requirements Specificatie afdrukken: %s';
+
+
+// ----- lib/functions/remote_exec.php
+$TLS_remoteExecServerConfigProblems = 'Remote execution can not be launched due to missing configuration.\n' .
+									  'Please check if the required Custom Fields are defined and assigned ' .
+									  'to this test project'; 
+
+$TLS_remoteExecServerConnectionFailure = 'Remote execution connection failure - check your configuration';
+
+
+// ----- int_polarion.php -----
+// Used to display at User interface label as title attribute
+// Attention must follow rule: issue_status_, because there is logic build on this.
+$TLS_issue_status_open = "Open";
+$TLS_issue_status_accepted = "Geaccepteerd";
+$TLS_issue_status_inprogress = "In gang";
+$TLS_issue_status_confirmed = "Bevestigd";
+$TLS_issue_status_assigned = "Toegewezen";
+$TLS_issue_status_resolved = "Opgelost";
+$TLS_issue_status_tested = "Getest";
+$TLS_issue_status_delivered = "Geleverd";
+$TLS_issue_status_closed = "Gesloten";
+$TLS_issue_status_held = "Geparkeerd";
+
+$TLS_testCaseStatus_draft = 'Concept';
+$TLS_testCaseStatus_readyForReview = 'Klaar voor review';
+$TLS_testCaseStatus_reviewInProgress = 'Review in gang';
+$TLS_testCaseStatus_rework = 'Herstel';
+$TLS_testCaseStatus_obsolete = 'Vervallen';
+$TLS_testCaseStatus_future = 'Toekomstig';
+$TLS_testCaseStatus_final = 'Definitief';		
+
+$TLS_workflow_status = 'Workflow status';
+$TLS_workflowStatus_draft = 'Concept';
+$TLS_workflowStatus_readyForReview = 'Klaar voor review';
+$TLS_workflowStatus_reviewInProgress = 'Review in gang';
+$TLS_workflowStatus_rework = 'Herstel';
+$TLS_workflowStatus_obsolete = 'Vervallen';
+$TLS_workflowStatus_future = 'Toekomstig';
+$TLS_workflowStatus_final = 'Definitief';		
+
+// this definition has to be placed AFTER $TLS_title_metrics_x_build
+$TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
+							' data is computed using only Test Cases that have tester assignment on build';
+
+
+$TLS_xls_jmexport_testproject = 'Test Project';
+$TLS_xls_jmexport_testplan = 'Test Plan';
+$TLS_xls_jmexport_created = 'Created';
+$TLS_xls_jmexport_author = 'Author';
+$TLS_xls_jmexport_tester = 'Tester';
+$TLS_xls_jmexport_testcase = 'Test Case';
+$TLS_xls_jmexport_testobjectives = 'Test Objectives';
+$TLS_xls_jmexport_preconditions = 'Voorwaarden';
+$TLS_xls_jmexport_steps = 'Steps';
+$TLS_xls_jmexport_expected_result = 'Expected Result';
+$TLS_xls_jmexport_result = 'Result';
+$TLS_xls_jmexport_result_comment = 'Result comment';
+$TLS_link_report_test_plan_results_csv = 'Test Plan results (XLSX)';
+
+
+$TLS_upload_err_ini_size  = 'The uploaded file exceeds the upload_max_filesize directive in php.ini. (%s)';
+$TLS_upload_err_form_size  = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form (%s Bytes)';
+$TLS_upload_err_partial = 'The uploaded file was only partially uploaded.';
+$TLS_upload_err_no_file = 'No file was uploaded.';
+$TLS_upload_err_no_tmp_dir = 'Missing a temporary folder.';
+$TLS_upload_err_cant_write = 'Failed to write file to disk. Introduced in PHP 5.1.0.';
+$TLS_upload_err_extension = 'A PHP extension stopped the file upload.'; 
+
+
+// execHistory.php
+$TLS_btn_show_exec_history = 'Execution History';
+$TLS_tcase_never_executed = 'This Test Case has not been executed';
+
+
+// issueTrackerView.tpl
+$TLS_th_issuetracker = 'Issue Tracker';
+$TLS_th_issuetracker_type = 'Type';
+$TLS_th_issuetracker_env = 'Environment';
+$TLS_warning_empty_issuetracker_name = "Issue Tracker name cannot be empty";
+$TLS_warning_empty_issuetracker_type = "Issue Tracker type cannot be empty";
+
+
+// issueTrackerCommands.class.php
+$TLS_issuetracker_management = $TLS_href_issuetracker_management;
+$TLS_issuetracker_deleted = "Issue Tracker %s% has been deleted";
+
+
+// issueTrackerEdit.tpl
+$TLS_issuetracker_show_cfg_example = 'Show configuration example';
+$TLS_issuetracker_cfg_example = 'Configuration example';
+$TLS_used_on_testproject = 'Used on Test Project';
+
+
+// getissuetrackertemplate.php
+$TLS_issuetracker_invalid_type = 'Issue Tracker type %s is unknown';
+$TLS_issuetracker_interface_not_implemented = 'Issue Tracker interface %s is not implemented/available';
+
+
+// logger.class.php
+$TLS_mail_logger_email_subject = ' :: Log Message From TestLink :: ';
+
+
+// reqView.php
+$TLS_req_does_not_exist = "Requirement does not exist any more.";
+
+
+// resultsByTesterPerBuild.php
+$TLS_no_open_builds = 'There are no open builds';
+
+
+$TLS_collision_detected = 'Mid-air Collision Detected!';
+$TLS_collision_detected_some_one_else = 'On %s ,User %s (email: %s) has made changes to this item, at the same time you were trying to.';
+$TLS_collision_detected_choices = 'You have following choices:<br>' .
+								  'a. Submit your changes anyway, overwritten work done by User %s. <br>' .
+								  'b. Throw	away your changes, and go to see item current data.<br>';
+
+// ----- END ------------------------------------------------------------------
+?>
