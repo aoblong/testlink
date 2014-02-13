@@ -1296,11 +1296,36 @@ class TestlinkXMLRPCServer extends IXR_Server {
      */
     public function getRequirementByDocID($args){
             $this->_setArgs($args);            
-            $reqs = $this->reqMgr->getByDocID($this->args[self::$requirementIDParamName]);                                                                                
-            
+            $reqs = $this->reqMgr->getByDocID($this->args[self::$requirementIDParamName]);                                                                                            
             if(is_null($reqs)){                
                 $status = false;                              
                 $reqs = 'Requirement by specified doc id does not exist';
+            }
+            else{
+                $status = true;
+            }
+            $resultInfo[] = array("operation" => __FUNCTION__,                
+                "status" => $status, "requirements" => $reqs);
+            return $resultInfo;
+                
+    }
+    
+    /**
+     * Gets a requirement
+     *
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param int $args["requirementid"]
+     * @return mixed $resultInfo
+     *         
+     * @access public
+     */
+    public function getSpecRequirementByDocID($args){
+            $this->_setArgs($args);            
+            $reqs = $this->reqSpecMgr->getByDocID($this->args[self::$requirementIDParamName]);                                                                                            
+            if(is_null($reqs)){                
+                $status = false;                              
+                $reqs = 'Specification requirement by specified doc id does not exist';
             }
             else{
                 $status = true;
@@ -5111,7 +5136,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
             'tl.ping' => 'this:sayHello',
             'tl.sayHello' => 'this:sayHello',
             'tl.repeat' => 'this:repeat',
-            'tl.getRequirementByDocID' => 'this:getRequirementByDocID'
+            'tl.getRequirementByDocID' => 'this:getRequirementByDocID',
+            'tl.getSpecRequirementByDocID' => 'this:getSpecRequirementByDocID'            
         );
     }
 
