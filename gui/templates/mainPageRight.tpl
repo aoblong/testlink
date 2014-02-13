@@ -1,19 +1,9 @@
 {*
-Testlink Open Source Project - http://testlink.sourceforge.net/
-
-main page right side
+ Testlink Open Source Project - http://testlink.sourceforge.net/
+ @filesource mainPageRight.tpl
+ main page right side
+ @internal revisions
  
-@filesource	mainPageRight.tpl
-
-@internal revisions
-20110605 - franciscom - TICKET 4565: Current Test Plan resets every time portal page is loaded
-						1. added target to form in order to control on what frame is opened
-						2. changed action on form name="testplanForm"
-						
-20110502 - franciscom - added grant check in order to display test execution header
-20100825 - Julian - removed <p> tags from "test execution" and "test plan contents"
-					blocks to eliminate unused space
-					blocks are not draggable anymore
 *}
 {lang_get var="labels"
           s="current_test_plan,ok,testplan_role,msg_no_rights_for_tp,
@@ -27,73 +17,79 @@ main page right side
              href_metrics_dashboard,href_add_remove_test_cases"}
 
 
-{$menuLayout=$tlCfg->gui->layoutMainPageRight}
-{$display_right_block_1=false}
-{$display_right_block_2=false}
-{$display_right_block_3=false}
+{assign var="menuLayout" value=$tlCfg->gui->layoutMainPageRight}
+{assign var="display_right_block_1" value=false}
+{assign var="display_right_block_2" value=false}
+{assign var="display_right_block_3" value=false}
 
 {if $gui->grants.testplan_planning == "yes" || $gui->grants.mgt_testplan_create == "yes" ||
 	  $gui->grants.testplan_user_role_assignment == "yes" or $gui->grants.testplan_create_build == "yes"}
-   {$display_right_block_1=true}
+   {assign var="display_right_block_1" value=true}
 
     <script  type="text/javascript">
+    {literal}
     function display_right_block_1()
     {
         var rp1 = new Ext.Panel({
-                                title: '{$labels.title_test_plan_mgmt}',
+                                title: {/literal}'{$labels.title_test_plan_mgmt}'{literal},
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'test_plan_mgmt_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: 'menu_right_block_{$menuLayout.testPlan}',
+                                renderTo: {/literal}'menu_right_block_{$menuLayout.testPlan}'{literal},
                                 width:'100%'
                                 });
      }
+    {/literal}
     </script>
 
 {/if}
 
 {if $gui->countPlans > 0 && ($gui->grants.testplan_execute == "yes" || $gui->grants.testplan_metrics == "yes")}
-   {$display_right_block_2=true}
+   {assign var="display_right_block_2" value=true}
 
     <script  type="text/javascript">
+    {literal}
     function display_right_block_2()
     {
         var rp2 = new Ext.Panel({
-                                 title: '{$labels.title_test_execution}',
+                                 title: {/literal}'{$labels.title_test_execution}'{literal},
                                  collapsible:false,
                                  collapsed: false,
                                  draggable: false,
                                  contentEl: 'test_execution_topics',
                                  baseCls: 'x-tl-panel',
                                  bodyStyle: "background:#c8dce8;padding:3px;",
-                                 renderTo: 'menu_right_block_{$menuLayout.testExecution}',
+                                 renderTo: {/literal}'menu_right_block_{$menuLayout.testExecution}'{literal},
                                  width:'100%'
                                 });
      }
+    {/literal}
     </script>
 {/if}
 
 {if $gui->countPlans > 0 && $gui->grants.testplan_planning == "yes"}
-   {$display_right_block_3=true}
+   {assign var="display_right_block_3" value=true}
 
     <script  type="text/javascript">
+    {literal}
     function display_right_block_3()
     {
         var rp3 = new Ext.Panel({
-                            title: '{$labels.title_test_case_suite}',
+                            title: {/literal}'{$labels.title_test_case_suite}'{literal},
                             collapsible:false,
                             collapsed: false,
                             draggable: false,
                             contentEl: 'testplan_contents_topics',
                             baseCls: 'x-tl-panel',
                             bodyStyle: "background:#c8dce8;padding:3px;",
-                            renderTo: 'menu_right_block_{$menuLayout.testPlanContents}',
+                            renderTo: {/literal}'menu_right_block_{$menuLayout.testPlanContents}'{literal},
                             width:'100%'
                                 });
      }
+    {/literal}
     </script>
 
 {/if}
@@ -105,21 +101,13 @@ main page right side
 	  <div class="testproject_title">
      {lang_get s='help' var='common_prefix'}
      {lang_get s='test_plan' var="xx_alt"}
-     {$text_hint="$common_prefix: $xx_alt"}
+     {assign var="text_hint" value="$common_prefix: $xx_alt"}
      {include file="inc_help.tpl" helptopic="hlp_testPlan" show_help_icon=true 
               inc_help_alt="$text_hint" inc_help_title="$text_hint"  
               inc_help_style="float: right;vertical-align: top;"}
 
 
- 	   <form name="testplanForm" action="lib/general/navBar.php" target="titlebar">
- 	   
- 	   {* 
- 	   IMPORTANT NOTICE: 
- 	   because we are using this.form.submit, seems that URL arguments if added on
- 	   form action ARE IGNORED. 
- 	   *}
-       <input type="hidden" name="tproject_id" value="{$gui->testprojectID}">	
-       <input type="hidden" name="updateMainPage" value="1">	
+ 	   <form name="testplanForm" action="lib/general/mainPage.php">
        {if $gui->countPlans > 0}
 		     {$labels.current_test_plan}:<br/>
 		     <select style="z-index:1"  name="testplan" onchange="this.form.submit();">
@@ -157,13 +145,13 @@ main page right side
     
       {if $gui->grants.mgt_testplan_create == "yes"}
 	    	<img src="{$tlImages.bullet}" />
-       		<a href="lib/plan/planView.php?tproject_id={$gui->testprojectID}">{$labels.href_plan_management}</a>
+       		<a href="lib/plan/planView.php">{$labels.href_plan_management}</a>
 	    {/if}
 	    
 	    {if $gui->grants.testplan_create_build == "yes" and $gui->countPlans > 0}
 	    	<br />
 	    	<img src="{$tlImages.bullet}" />
-           	<a href="lib/plan/buildView.php?tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_build_new}</a>
+           	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
       {/if} {* testplan_create_build *}
 	    
 	    {if $gui->grants.testplan_user_role_assignment == "yes" && $gui->countPlans > 0}
@@ -175,7 +163,7 @@ main page right side
 	    {if $gui->grants.testplan_planning == "yes" and $gui->countPlans > 0}
             <br />
         	<img src="{$tlImages.bullet}" />
-           	<a href="lib/plan/planMilestonesView.php?tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_plan_mstones}</a>
+           	<a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
 	    {/if}
 	    
     </div>
@@ -187,21 +175,21 @@ main page right side
     <div id='test_execution_topics'>
 		{if $gui->grants.testplan_execute == "yes"}
 			<img src="{$tlImages.bullet}" />
-			<a href="{$gui->launcher}?feature=executeTest&tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_execute_test}</a>
+			<a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
 			
 			<br /> 
 			<img src="{$tlImages.bullet}" />
-			<a href="{$gui->url.testcase_assignments}?tproject_id={$gui->testprojectID}&tplan_id={$gui->testplanID}">{$labels.href_my_testcase_assignments}</a>
+			<a href="{$gui->url.testcase_assignments}">{$labels.href_my_testcase_assignments}</a>
 			<br />
 		{/if} 
       
 		{if $gui->grants.testplan_metrics == "yes"}
 			<img src="{$tlImages.bullet}" />
-			<a href="{$gui->launcher}?feature=showMetrics&tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_rep_and_metrics}</a>
+			<a href="{$gui->launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
 			
 			<br />
 			<img src="{$tlImages.bullet}" />
-			<a href="{$gui->url.metrics_dashboard}?tproject_id={$gui->testprojectID}">{$labels.href_metrics_dashboard}</a>
+			<a href="{$gui->url.metrics_dashboard}">{$labels.href_metrics_dashboard}</a>
 		{/if} 
     </div>
 	{/if}
@@ -211,28 +199,28 @@ main page right side
 	{if $display_right_block_3}
     <div id='testplan_contents_topics'>
 		<img src="{$tlImages.bullet}" />
-	    <a href="lib/platforms/platformsAssign.php?tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_platform_assign}</a>
+	    <a href="lib/platforms/platformsAssign.php?tplan_id={$gui->testplanID}">{$labels.href_platform_assign}</a>
 		  <br />
 		
 		<img src="{$tlImages.bullet}" />
-	    <a href="{$gui->launcher}?feature=planAddTC&tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_add_remove_test_cases}</a>
+	    <a href="{$gui->launcher}?feature=planAddTC">{$labels.href_add_remove_test_cases}</a>
 	    <br />
 		
 		<img src="{$tlImages.bullet}" />
-	   	<a href="{$gui->launcher}?feature=planUpdateTC&tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_update_tplan}</a>
+	   	<a href="{$gui->launcher}?feature=planUpdateTC">{$labels.href_update_tplan}</a>
 	    <br />
 
 		<img src="{$tlImages.bullet}" />
-	   	<a href="{$gui->launcher}?feature=newest_tcversions&tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_newest_tcversions}</a>
+	   	<a href="{$gui->launcher}?feature=newest_tcversions">{$labels.href_newest_tcversions}</a>
 	    <br />
 
 		<img src="{$tlImages.bullet}" />
-	   	<a href="{$gui->launcher}?feature=tc_exec_assignment&tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_tc_exec_assignment}</a>
+	   	<a href="{$gui->launcher}?feature=tc_exec_assignment">{$labels.href_tc_exec_assignment}</a>
 	    <br />
 
-		{if $gui->tprojectOptions->testPriorityEnabled}
+		{if $session['testprojectOptions']->testPriorityEnabled}
 			<img src="{$tlImages.bullet}" />
-	   		<a href="{$gui->launcher}?feature=test_urgency&tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_plan_assign_urgency}</a>
+	   		<a href="{$gui->launcher}?feature=test_urgency">{$labels.href_plan_assign_urgency}</a>
 		    <br />
 		{/if}
     </div>

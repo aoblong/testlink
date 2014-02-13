@@ -6,11 +6,13 @@
  * @filesource	overallPieChart.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2011, TestLink community
+ * @copyright 	2005-2012, TestLink community
+ * @copyright 	
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- *
+ * @since 1.9.4
+ * 20120531 - franciscom - refactored to use tlTestPlanMetrics class
  *
 **/
 require_once('../../config.inc.php');
@@ -18,15 +20,16 @@ require_once('common.php');
 define('PCHART_PATH','../../third_party/pchart');
 include(PCHART_PATH . "/pChart/pData.class");   
 include(PCHART_PATH . "/pChart/pChart.class");   
-
-testlinkInitPage($db);
-$args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
+testlinkInitPage($db,true,false,"checkRights");
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['overallPieChart'];
+
+$args = init_args();
 $tplan_mgr = new testplan($db);
-$totals = $tplan_mgr->getStatusTotals($args->tplan_id);
+
+$metricsMgr = new tlTestPlanMetrics($db);
+$totals = $metricsMgr->getExecCountersByExecStatus($args->tplan_id);
 unset($totals['total']);
 
 $values = array();
@@ -81,15 +84,14 @@ $Test->Stroke();
 
 
 /**
- * checkRights
+ * 
  *
  */
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
+	return $user->hasRight($db,'testplan_metrics');
 }
+
 
 /**
  * 
@@ -99,8 +101,8 @@ function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
-    $args->tplan_id = intval($_REQUEST['tplan_id']);
-    $args->tproject_id = intval($_REQUEST['tproject_id']);
+    $args->tplan_id = $_REQUEST['tplan_id'];
+    $args->tproject_id = $_SESSION['testprojectID'];
     return $args;
 }
 ?>

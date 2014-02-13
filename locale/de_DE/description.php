@@ -22,7 +22,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * Last Update according to en_GB description file with commit id 17640a4ea8c0d0ee1d63f86dea7b57012b19ff57
+ * Last Update according to en_GB description file with commit id 95ceb5362e5f3153fe224a0137981623077bce4f
  **/
 
 
@@ -205,6 +205,39 @@ which have a newest version is displayed (against the current set of the Test Pl
 </p>";
 
 
+// requirementsCoverage.html
+$TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
+<br />
+<p>This feature allows to map a coverage of user or system requirements by
+test cases. Navigate via link \"Requirement Specification\" in main screen.</p>
+
+<h3>Requirements Specification</h3>
+<p>Requirements are grouped by 'Requirements Specification' document which is related to 
+Test Project.<br /> TestLink doesn't support versions for both Requirements Specification  
+and Requirements itself. So, version of document should be added after 
+a Specification <b>Title</b>.
+An user can add simple description or notes to <b>Scope</b> field.</p> 
+
+<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for 
+evaluation Req. coverage in case that not all requirements are added (imported) in. 
+The value <b>0</b> means that current count of requirements is used for metrics.</p> 
+<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
+coverage is 25% (if all these added requirements will be tested).</i></p>
+
+<h3><a name=\"req\">Requirements</a></h3>
+<p>Click on title of a created Requirements Specification. You can create, edit, delete
+or import requirements for the document. Each requirement has title, scope and status.
+Status should be \"Normal\" or \"Not testable\". Not testable requirements are not counted
+to metrics. This parameter should be used for both unimplemented features and 
+wrong designed requirements.</p> 
+
+<p>You can create new test cases for requirements by using multi action with checked 
+requirements within the specification screen. These Test Cases are created into Test Suite
+with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
+\"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
+";
+
+
 // req_edit
 $TLS_hlp_req_edit = "<h3>Interne Links im Inhalt:</h3>
 <p>Interne Links können genutzt werden um Links zu anderen Anforderungen/Anforderungsspezifikation 
@@ -268,38 +301,6 @@ Link zu einer Anforderungsspezifikation: [req_spec]Anf_Spez_Dokument_ID[/req_spe
 Diese Syntax funktioniert auch für Anforderungsspezifikationen.</p>
 ";
 
-
-// requirementsCoverage.html
-$TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
-<br />
-<p>This feature allows to map a coverage of user or system requirements by
-test cases. Navigate via link \"Requirement Specification\" in main screen.</p>
-
-<h3>Requirements Specification</h3>
-<p>Requirements are grouped by 'Requirements Specification' document which is related to 
-Test Project.<br /> TestLink doesn't support versions for both Requirements Specification  
-and Requirements itself. So, version of document should be added after 
-a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p> 
-
-<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for 
-evaluation Req. coverage in case that not all requirements are added (imported) in. 
-The value <b>0</b> means that current count of requirements is used for metrics.</p> 
-<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
-coverage is 25% (if all these added requirements will be tested).</i></p>
-
-<h3><a name=\"req\">Requirements</a></h3>
-<p>Click on title of a created Requirements Specification. You can create, edit, delete
-or import requirements for the document. Each requirement has title, scope and status.
-Status should be \"Normal\" or \"Not testable\". Not testable requirements are not counted
-to metrics. This parameter should be used for both unimplemented features and 
-wrong designed requirements.</p> 
-
-<p>You can create new test cases for requirements by using multi action with checked 
-requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
-\"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
-";
 
 $TLS_hlp_req_coverage_table = "<h3>Abdeckung:</h3>
 Ein Wert von z.B. \"40% (8/20)\" bedeutet, dass 20 Testfälle erstellt werden müssen um die Anforderung

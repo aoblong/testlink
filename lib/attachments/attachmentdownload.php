@@ -3,47 +3,43 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	attachmentdownload.php
- * 
+ * Filename $RCSfile: attachmentdownload.php,v $
+ *
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
  *
  * Downloads the attachment by a given id
  */
 @ob_end_clean();
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
-testlinkInitPage($db);
+require_once('../functions/attachments.inc.php');
+testlinkInitPage($db,false,false,"checkRights");
 
 $args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
-
-
-if($args->id)
+if ($args->id)
 {
-	$repo = tlAttachmentRepository::create($db);
-	$attachInfo = $repo->getAttachmentInfo($args->id);
-	if($attachInfo)
+	$attachmentRepository = tlAttachmentRepository::create($db);
+	$attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
+	if ($attachmentInfo && checkAttachmentID($db,$args->id,$attachmentInfo))
 	{
-		$content = $repo->getAttachmentContent($args->id,$attachInfo);
+		$content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
 		if ($content != "")
 		{
 			@ob_end_clean();
 			header('Pragma: public');
 			header("Cache-Control: ");
 			if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"])))
-			{
 				header('Pragma: no-cache');
-			}
-			header('Content-Type: '.$attachInfo['file_type']);
-			header('Content-Length: '.$attachInfo['file_size']);
-			header("Content-Disposition: attachment; filename=\"{$attachInfo['file_name']}\"");
+			header('Content-Type: '.$attachmentInfo['file_type']);
+			header('Content-Length: '.$attachmentInfo['file_size']);
+			header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
 			header("Content-Description: Download Data");
 			echo $content;
 			exit();
 		}
 	}
 }
-
-// Attention: if everything is OK, we will never reach this piece of code.
 $smarty = new TLSmarty();
 $smarty->display('attachment404.tpl');
 
@@ -53,22 +49,22 @@ $smarty->display('attachment404.tpl');
 function init_args()
 {
 	//the id (attachments.id) of the attachment to be downloaded
-	$iParams = array("id" => array(tlInputParameter::INT_N));
+	$iParams = array(
+		"id" => array(tlInputParameter::INT_N),
+	);
 	$args = new stdClass();
 	G_PARAMS($iParams,$args);
 	
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 	return $args;
 }
 
 /**
+ * @param $db resource the database connection handle
+ * @param $user the current active user
+ * @return boolean returns true if the page can be accessed
  */
-function checkRights(&$db,&$userObj,$argsObjs)
+function checkRights(&$db,&$user)
 {
-	if(!(config_get("attachments")->enabled))
-	{
-		redirect($_SESSION['basehref'],"top.location");
-		exit();
-	}
+	return (config_get("attachments")->enabled);
 }
 ?>

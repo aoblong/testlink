@@ -1,22 +1,15 @@
 <?php
-/**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- *
- * Scope: test case print
- * 
- * @filesource	tcPrint.php
+ * @internal	filename: tcPrint.php 
  * @package 	TestLink
- * @author 		TestLink community
- * @copyright 	2007-2011, TestLink community 
+ * @author		Francisco Mancardi - francisco.mancardi@gmail.com
+ * @copyright 	2005-2013, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal revisions
- *
- * 20110305 - franciscom - 	BUGID 4286 Option to print single test case
- *							found issue regarding test case version
- * 
+ * Compares selected testcase versions with each other.
  */
 
 require_once("../../config.inc.php");
@@ -27,7 +20,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
-$args = init_args($tree_mgr);
+$args = init_args();
 $node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
 $node['tcversion_id'] = $args->tcversion_id;
 
@@ -49,13 +42,13 @@ $printingOptions = array('toc' => 0,'body' => 1,'summary' => 1, 'header' => 0,'h
 	                     'cfields' => 1, 'displayVersion' => 1, 'displayDates' => 1, 'docType' => SINGLE_TESTCASE,
 	                     'importance' => 1);
 
-
-
 $level = 0;
 $tplanID = 0;
 $prefix = null;
 $text2print = '';
-$text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],SINGLE_TESTCASE);
+$text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],
+								SINGLE_TESTCASE,array('gui/javascript/testlink_library.js'));
+
 $text2print .= renderTestCaseForPrinting($db,$node,$printingOptions, 
 										 $level,$tplanID,$prefix,$args->tproject_id);
 
@@ -69,22 +62,15 @@ echo $text2print;
   returns: 
 
 */
-function init_args(&$treeMgr)
+function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
     $args = new stdClass();
     $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
     $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
-
-    $args->tproject_name = '';
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-	if($args->tproject_id > 0)
-	{
-    	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id > 0);
-    	$args->tproject_name = $dummy['name'];
-	}
-    
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = $_SESSION['testprojectName'];
     $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 	$args->outputFormat = isset($_REQUEST['outputFormat']) ? $_REQUEST['outputFormat'] : null;
 
@@ -95,9 +81,6 @@ function init_args(&$treeMgr)
 	$args->outputFormat = isset($ofd[$args->outputFormat]) ? $ofd[$args->outputFormat] : null;
 	
 	$args->outputFormatDomain = array('NONE' => '') + $ofd;
-	
-    
-
     return $args;
 }
 ?>

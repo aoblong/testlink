@@ -1,29 +1,27 @@
 {*
-   TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   This script is distributed under the GNU General Public License 2 or later.
-   
-   Smarty template - see and manage inventory table 
-   
-   Author: Martin Havlat
-   @filesource	inventoryView.tpl
-   
-   @todo		escape shown text (renderer: Ext.util.Format.htmlEncode(???))
-   @todo           // Highlight the row for 3 seconds
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later.
+ * 
+ * Smarty template - see and manage inventory table 
+ *
+ * Author: Martin Havlat
+ * CVS: $Id: inventoryView.tpl,v 1.2.6.1 2011/01/18 14:16:27 mx-julian Exp $
+ *
+ * @todo		escape shown text (renderer: Ext.util.Format.htmlEncode(???))
+ * @todo           // Highlight the row for 3 seconds
 	  Ext.fly(row).highlight("ffff9c", {
 			    attr: "background-color",
 			    easing: 'easeOut',
 			    duration: 3
  
 	  });
-   @todo tooltip for buttons:         
+ * @todo tooltip for buttons:         
  		tooltip: {anchor: 'right', text:'Add new node to three menu.', title:'Add New Node'},
  
-   
-   @internal revisions
-      20110308 - Julian - BUGID 3410 - Smarty 3.0 compatibility
-                          TODO: get return /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(v); running
-                                with Smarty 3.x -> search for "TODO: insert line from revision log"
-*}
+ *
+ * Revision: None
+ *
+ *}
 {lang_get var="labels" 
           s="inventory_title,inventory_empty,sort_table_by_column,
           inventory_name,inventory_notes,inventory_ipaddress,
@@ -32,18 +30,20 @@
           btn_create,btn_save,btn_edit,btn_delete,btn_cancel,
           inventory_create_title, inventory_dlg_select_txt,
           inventory_dlg_delete_txt,
-          confirm, warning, error"}
+          confirm, warning, error
+          "}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_ext_js.tpl"}
 {config_load file="input_dimensions.conf" section="inventory"}
+{include file="inc_del_onclick.tpl"}
 
-<style type="text/css">
-.icon_device_copy { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_copy_16.png) !important; }
-.icon_device_create { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_new_16.png) !important; }
-.icon_device_delete { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_delete_16.png) !important; }
-.icon_device_edit { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_edit_16.png) !important; background-size: 50%; }
-</style>
+  	<style type="text/css">
+		.icon_device_copy {ldelim}background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_copy_16.png) !important;{rdelim}
+		.icon_device_create {ldelim}background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_new_16.png) !important;{rdelim}
+		.icon_device_delete {ldelim}background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_delete_16.png) !important;{rdelim}
+		.icon_device_edit {ldelim}background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_edit_16.png) !important; background-size: 50%;{rdelim}
+	</style>
+
 
 <script type="text/javascript">
 var tls_create = '{$labels.btn_create}';
@@ -63,27 +63,29 @@ var tls_dlg_select_txt = "{$labels.inventory_dlg_select_txt}";
 var tls_confirm = "{$labels.confirm}";
 var tls_warning = "{$labels.warning}";
 var tls_error = "{$labels.error}";
-var current_user_id = "{$session.userID}";
+var current_user_id = {$session.userID};
+{literal}
+
 
 Ext.onReady(function(){
 
 	/* ----- data inventory ---------------------------------------------------- */
 	var reader=new Ext.data.JsonReader
 	({},[
-			{ name: 'id', type: 'int' }, 
-			{ name: 'name', type: 'string' },            
-			{ name: 'ipaddress', type: 'string' }, 
-			{ name: 'purpose', type: 'string' }, 
-			{ name: 'hardware', type: 'string' }, 
-			{ name: 'owner', type: 'string' }, 
-			{ name: 'owner_id', type: 'int' }, 
-			{ name: 'notes', type: 'string' } 
+			{name: 'id', type: 'int'}, 
+			{name: 'name', type: 'string'},            
+			{name: 'ipaddress', type: 'string'}, 
+			{name: 'purpose', type: 'string'}, 
+			{name: 'hardware', type: 'string'}, 
+			{name: 'owner', type: 'string'}, 
+			{name: 'owner_id', type: 'int'}, 
+			{name: 'notes', type: 'string'} 
 		]
 	);
 		
 	var store=new Ext.data.Store
 	({
-		url:'lib/inventory/getInventory.php?tproject_id={$gui->tproject_id}',
+		url:'lib/inventory/getInventory.php',
 		reader: reader,
 		idProperty: 'id',
 		autoLoad: true
@@ -93,7 +95,7 @@ Ext.onReady(function(){
 	/* ----- data owners ------------------------------------------------------------ */
 	/* @TODO params should be extracted from url */
 	var ownersStore =  new Ext.data.JsonStore({
-		url: 'lib/ajax/getUsersWithRight.php?tproject_id={$gui->tproject_id}&right=project_inventory_view',
+		url: 'lib/ajax/getUsersWithRight.php?right=project_inventory_view',
 		root: 'rows',
 		fields: ['id','login'],
         autoLoad: true
@@ -135,12 +137,12 @@ Ext.onReady(function(){
         store: store,
         columns: 
         [
-            { header: tls_th_name, width: 120, dataIndex: 'name', sortable: true },
-            { header: tls_th_ip, dataIndex: 'ipaddress', sortable: true },
-            { header: tls_th_purpose, width: 360, dataIndex: 'purpose', sortable: true },
-            { header: tls_th_hw, width: 300, dataIndex: 'hardware', sortable: true },
-            { header: tls_th_owner, width: 100, dataIndex: 'owner', sortable: true },
-            { header: tls_th_notes, dataIndex: 'notes', sortable: true }
+            {header: tls_th_name, width: 120, dataIndex: 'name', sortable: true},
+            {header: tls_th_ip, dataIndex: 'ipaddress', sortable: true},
+            {header: tls_th_purpose, width: 360, dataIndex: 'purpose', sortable: true},
+            {header: tls_th_hw, width: 300, dataIndex: 'hardware', sortable: true},
+            {header: tls_th_owner, width: 100, dataIndex: 'owner', sortable: true},
+            {header: tls_th_notes, dataIndex: 'notes', sortable: true}
         ],
         renderTo:'inventoryTable',
 		autoWidth:true,
@@ -154,19 +156,20 @@ Ext.onReady(function(){
             iconCls: 'icon_device_create',
             text: tls_create,
 			scale: 'medium',
-			style: { padding: '0px 	10px' },
+			style: {padding: '0px 	10px'},
             handler: deviceNew
         },{
             iconCls: 'icon_device_edit',
             text: tls_edit,
 			scale: 'medium',
-			style: { padding: '0px 10px' },
+			style: {padding: '0px 10px'},
             handler: deviceEdit
         },{
+//            ref: '../removeBtn',
             iconCls: 'icon_device_delete',
             text: tls_delete,
  			scale: 'medium',
-			style: { padding: ' 0px 10px' },
+			style: {padding: ' 0px 10px'},
             handler: function()
             {
                 var rows = inventoryGrid.getSelectionModel().getSelections();
@@ -184,7 +187,7 @@ Ext.onReady(function(){
 		                    	store.remove(rows[0]);
 		                    	Ext.Ajax.request
 		                    	({
-									url : 'lib/inventory/deleteInventory.php?tproject_id={$gui->tproject_id}&machineID=' + id,
+									url : 'lib/inventory/deleteInventory.php?machineID=' + id,
 									success: function ( result, request ) 
 									{
 										var jsonData = Ext.util.JSON.decode(result.responseText);
@@ -213,8 +216,7 @@ Ext.onReady(function(){
 	// custom Vtype for vtype:'IPAddress' (used in form)
 	Ext.apply(Ext.form.VTypes, {
 	    IPAddress:  function(v) {
-			// TODO: insert line from revision log
-			return 1;
+	        return /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(v);
 	    },
 	    IPAddressText: 'Must be a numeric IP address',
 	    IPAddressMask: /[\d\.]/i
@@ -231,11 +233,13 @@ Ext.onReady(function(){
 				success:function(form, action, o) 
 				{
 					store.reload();
+	//				store.insert(action.result.record["machineID"],action.result.record);
 					if (action.result.success)
 					{
 						editWindow.hide();
 					}
 					showFeedback(action.result.success,action.result.userfeedback);
+	//				inventoryGrid.getView().refresh();
 				},
 				failure:function(form, action) 
 				{
@@ -251,8 +255,9 @@ Ext.onReady(function(){
         baseCls: 'x-plain',
         layout:'absolute',
 		method: 'POST',
-        url:'lib/inventory/setInventory.php?tproject_id={$gui->tproject_id}',
+        url:'lib/inventory/setInventory.php',
         defaultType: 'textfield',
+//		defaults: {width: 230},
         items:  
 	    [
 	    	{
@@ -377,14 +382,18 @@ Ext.onReady(function(){
         title: tls_dlg_set_title,
         width: 500,
         height: 400,
+//		autoHeight:true,
         minWidth: 300,
         minHeight: 200,
         layout: 'fit',
+//		layout:'absolute',
         plain: true,
         bodyStyle: 'padding:5px;',
         buttonAlign: 'center',
 		modal: true,
 		shadow: true,
+//		labelWidth: 80,
+//		frame: true,
         items: deviceEditForm,
         closeAction: 'hide',
 		buttons: 
@@ -403,7 +412,9 @@ Ext.onReady(function(){
 
 
 });	//Ext.onReady
-</script>
+
+
+{/literal}</script>
 
 </head>
 <body {$body_onload}>

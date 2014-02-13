@@ -1,15 +1,17 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	tcMove.tpl
+$Id: tcMove.tpl,v 1.9 2010/05/01 19:34:52 franciscom Exp $
 Purpose: smarty template - move/copy test case
 
-@internal revisions
+rev: 20090401 - franciscom - BUGID 2316 - copy options
+     20080104 - franciscom - added radio to choose position
+                             on destination (top/bottom) container.
 *}
 {include file="inc_head.tpl"}
 
 {lang_get var="labels"
           s="test_case,title_mv_cp_tc,inst_move,inst_copy,inst_copy_move_warning,
-             copy_requirement_assignments,copy_keyword_assignments,
+             copy_requirement_assignments,copy_keyword_assignments,btn_copy_ghost_zone,
              choose_container,as_first_testcase,as_last_testcase,btn_mv,btn_cp"}
 <body>
 <h1 class="title">{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->name|escape}</h1>
@@ -17,7 +19,7 @@ Purpose: smarty template - move/copy test case
 <div class="workBack">
 <h1 class="title">{$labels.title_mv_cp_tc}</h1>
 
-<form method="post" action="lib/testcases/tcEdit.php?tproject_id={$gui->tproject_id}&testcase_id={$gui->testcase_id}">
+<form method="post" action="lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}">
   <p>
   {if $gui->move_enabled}
 	  {$labels.inst_move}<br />
@@ -51,6 +53,7 @@ Purpose: smarty template - move/copy test case
 			  <input id="do_move" type="submit" name="do_move" value="{$labels.btn_mv}" />
 			{/if}
 			<input id="do_copy" type="submit" name="do_copy" value="{$labels.btn_cp}" />
+      <input id="do_copy_ghost_zone" type="submit" name="do_copy_ghost_zone" value="{$labels.btn_copy_ghost_zone}" />
 			<input type="hidden" name="old_container" value="{$gui->old_container}" />
 	</div>
 

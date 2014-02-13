@@ -8,14 +8,16 @@
  * @since 1.9.4
  *
  * @internal revisions
- * @since 2.0 
+ * @since 1.9.4
+ * 
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
 list($args,$gui,$commandMgr) = initScript($db);
+
 $pFn = $args->doAction;
 $op = null;
 if(method_exists($commandMgr,$pFn))
@@ -23,63 +25,71 @@ if(method_exists($commandMgr,$pFn))
 	$op = $commandMgr->$pFn($args,$_REQUEST);
 }
 
+// new dBug($op);
 renderGui($db,$args,$gui,$op,$templateCfg);
+
+
+
 
 /**
  */
 function renderGui(&$dbHandler,&$argsObj,$guiObj,$opObj,$templateCfg)
 {
-  $smartyObj = new TLSmarty();
-  $renderType = 'none';
+    $smartyObj = new TLSmarty();
+    $renderType = 'none';
     
-  // key: gui action
-  // value: next gui action (used to set value of action button on gui)
-  $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                           'doDelete' => '', 'doCreate' => 'doCreate', 
-                           'doUpdate' => 'doUpdate');
+    // key: gui action
+    // value: next gui action (used to set value of action button on gui)
+    $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
+                             'doDelete' => '', 'doCreate' => 'doCreate', 
+                             'doUpdate' => 'doUpdate');
 
 	// Get rendering type and set variable for template
-  switch($argsObj->doAction)
-  {
-    case "edit":
-    case "create":
-    case "doDelete":
+    switch($argsObj->doAction)
+    {
+        case "edit":
+        case "create":
+        case "doDelete":
 		case "doCreate":
-    case "doUpdate":
-          $key2loop = get_object_vars($opObj);
-          foreach($key2loop as $key => $value)
-          {
-            $guiObj->$key = $value;
-          }
-          $guiObj->operation = $actionOperation[$argsObj->doAction];
+      	case "doUpdate":
+            $key2loop = get_object_vars($opObj);
+            foreach($key2loop as $key => $value)
+            {
+                $guiObj->$key = $value;
+            }
+            $guiObj->operation = $actionOperation[$argsObj->doAction];
 
-          $renderType = 'redirect';
-          $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
-          $pos = strpos($tpl, '.php');
-          if($pos === false)
-          {
-            $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
-            $tpl = $tplDir . $tpl;      
-            $renderType = 'template';
-          }
-    break;
-  }
+            $renderType = 'redirect';
+            $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
+            $pos = strpos($tpl, '.php');
+           	if($pos === false)
+           	{
+            	$tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
+                $tpl = $tplDir . $tpl;      
+            	$renderType = 'template';
+            }
+        break;
+    }
 
-  switch($renderType)
-  {
-    case 'template':
-          $smartyObj->assign('gui',$guiObj);
-		      $smartyObj->display($tpl);
-    break;  
+	// execute rendering
+	// new dBug($tpl);
+	// new dBug($guiObj);
+	
+    switch($renderType)
+    {
+        case 'template':
+        	$smartyObj->assign('gui',$guiObj);
+		    $smartyObj->display($tpl);
+        	break;  
  
-    case 'redirect':
+        case 'redirect':
 		      header("Location: {$tpl}");
 	  		  exit();
-    break;
+        break;
 
-    default:
-   	break;
-  }
+        default:
+       	break;
+    }
 }
 
 /**
@@ -102,12 +112,13 @@ function init_args($whiteLists)
 	$args = new stdClass();
 
 	$iParams = array("id" => array(tlInputParameter::INT_N),
-	                 "tproject_id" => array(tlInputParameter::INT_N),
-					         "doAction" => array(tlInputParameter::STRING_N,0,20),
-					         "name" => array(tlInputParameter::STRING_N,0,100),
-					         "cfg" => array(tlInputParameter::STRING_N,0,2000),
-					         "type" => array(tlInputParameter::INT_N));
+					 "doAction" => array(tlInputParameter::STRING_N,0,20),
+					 "name" => array(tlInputParameter::STRING_N,0,100),
+					 "cfg" => array(tlInputParameter::STRING_N,0,2000),
+					 "type" => array(tlInputParameter::INT_N));
 	
+	//new dBug($_REQUEST);
+		
 	R_PARAMS($iParams,$args);
 
 	// sanitize via whitelist
@@ -158,6 +169,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$commandMgr)
 				$commandMgr->issueTrackerMgr->unlink($argsObj->id,$key);
 			}
 		}
+
+		// Now get good info
 		$gui->testProjectSet = $commandMgr->issueTrackerMgr->getLinks($argsObj->id);
 	}
 	return $gui;

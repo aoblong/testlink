@@ -4,13 +4,9 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	reqExport.php
- * @package 	TestLink
- * @copyright 	2008-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
  *
  * Allows users to export requirements.
  *
- * @internal revisions
 **/
 require_once("../../config.inc.php");
 require_once("csv.inc.php");
@@ -18,13 +14,11 @@ require_once("xml.inc.php");
 require_once("common.php");
 require_once("requirements.inc.php");
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 
 $args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
-
 $gui = initializeGui($args,$req_spec_mgr);
 
 switch($args->doAction)
@@ -46,11 +40,9 @@ switch($args->doAction)
  * checkRights
  *
  */
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
+	return $user->hasRight($db,'mgt_view_req');
 }
 
 
@@ -67,8 +59,11 @@ function init_args()
 	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
 	$args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : "";
 	
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+    if( $args->tproject_id == 0 )
+    {	
+		$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	}
 	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
 	return $args;  
 }
@@ -112,22 +107,6 @@ function initializeGui(&$argsObj,&$req_spec_mgr)
 	if($gui->export_filename == "")
 	{
 	    $gui->export_filename = $exportFileName;
-	}
-	
-	
-	$module = $_SESSION['basehref'] . 'lib/requirements/';
-	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
-	$gui->actions->req_export = $module . "reqExport.php?$context"; 
-	
-	// IMPORTANT NOTICE
-	// When user click on ROOT node of req spec tree (that is the testproject node)
-	// $argsObj->req_spec_id will be 0
-	// This happens when $argsObj->scope == tree.
-	// In this situation reqSpecView.php CAN NOT BE USED
-	$gui->actions->req_spec_view = $module . "reqSpecView.php?$context"; 
-	if($argsObj->scope == 'tree')
-	{
-		$gui->actions->req_spec_view = "lib/project/project_req_spec_mgmt.php?$context"; 
 	}
 	return $gui;  
 }

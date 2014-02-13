@@ -1,11 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcSearchResults.tpl,v 1.7 2010/11/17 09:12:23 mx-julian Exp $
+$Id: tcSearchResults.tpl,v 1.6 2010/09/21 10:03:18 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 
-rev:
-  20100921 - Julian - BUGID 3793 - use exttable to display search results
-  20080322 - franciscom - php errors clean up
 *}
 
 {include file="inc_head.tpl" openHead='yes'}

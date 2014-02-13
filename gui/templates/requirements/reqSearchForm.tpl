@@ -1,17 +1,21 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-
-show form for requirement search.
-
 @filesource	reqSearchForm.tpl
+Form for requirement search.
+
 @internal revisions
 
-@since 2.0
+@since 1.9.4
 20110815 - franciscom - TICKET 4700: Req Search Improvements
 
+@since 1.9.3
+20101026 - Julian - no validation for dates -> no manual input - input only via datepicker
+20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
+20100707 - Julian - BUGID 3584: replaced cf names by cf labels
+20100323 - asimon - added searching for req relation types (BUGID 1748)
 *}
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 
@@ -20,7 +24,7 @@ show form for requirement search.
              title_search_req, reqid, reqversion, caption_search_form_req, title, scope,
              coverage, status, type, version, th_tcid, has_relation_type,
              modification_date_from,modification_date_to,creation_date_from,creation_date_to,
-             show_calender,clear_date,log_message'}
+             show_calender,clear_date,log_message,'}
 
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -31,7 +35,7 @@ show form for requirement search.
 <h1 class="title">{$gui->mainCaption|escape}</h1>
 
 <div style="margin: 1px;">
-<form method="post" action="lib/requirements/reqSearch.php?tproject_id={$gui->tproject_id}" target="workframe">
+<form method="post" action="lib/requirements/reqSearch.php" target="workframe">
 	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form_req}</caption>
 		<tr>
@@ -112,7 +116,6 @@ show form for requirement search.
 		<tr>
 			<td>{$labels.creation_date_to}</td>
 			<td>
-				{* BUGID 3716 *}
            	    <input type="text" 
                        name="creation_date_to" id="creation_date_to" 
 				       value="{$gui->creation_date_to}" 
@@ -129,7 +132,6 @@ show form for requirement search.
 		<tr>
 			<td>{$labels.modification_date_from}</td>
 			<td>
-				{* BUGID 3716 *}
             	<input type="text" 
                        name="modification_date_from" id="modification_date_from" 
 				       value="{$gui->modification_date_from}" 
@@ -145,7 +147,6 @@ show form for requirement search.
 		<tr>
 			<td>{$labels.modification_date_to}</td>
 			<td>
-				{* BUGID 3716 *}
          	    <input type="text" 
                        name="modification_date_to" id="modification_date_to" 
 				       value="{$gui->modification_date_to}" 
@@ -188,6 +189,11 @@ show form for requirement search.
 		    	</td>
 	      </tr>
 	  {/if}
+	  
+		
+	  		
+		
+  			      
 	</table>
 	
 	<p style="padding-left: 20px;">

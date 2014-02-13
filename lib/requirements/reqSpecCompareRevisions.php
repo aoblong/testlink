@@ -95,6 +95,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * 
  *
  */
+/**
+ * 
+ *
+ */
 function getItemsToCompare($leftSideID,$rightSideID,&$itemSet)
 {
 
@@ -133,6 +137,8 @@ function getCFToCompare($sides,$tprojectID,&$itemMgr)
 	foreach($cfields as $item_side => $dummy)
 	{
 		$target_id = $sides[$dummy['key']];
+		// $target_id = $target_id['item_id'];
+		// $cfields[$item_side]['value'] = $itemMgr->get_linked_cfields(null,$target_id,$tprojectID);
 		$who['item_id'] = $target_id['item_id'];
 		$cfields[$item_side]['value'] = $itemMgr->get_linked_cfields($who);
 	}
@@ -227,8 +233,9 @@ function init_args()
 	$args->doCompare = isset($_REQUEST['doCompare']) ? true : false;
 	$args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
 	$args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->useDaisyDiff = (isset($_REQUEST['diff_method']) && ($_REQUEST['diff_method'] == 'htmlCompare')) ? 1 : 0;
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+	
 
 	$diffEngineCfg = config_get("diffEngine");
 	$args->context = null;
@@ -236,8 +243,6 @@ function init_args()
 	{
 		$args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? $_REQUEST['context'] : $diffEngineCfg->context;
 	}
-
-
 	
 	return $args;
 }

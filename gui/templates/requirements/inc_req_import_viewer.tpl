@@ -1,16 +1,20 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource inc_req_import_viewer.tpl
+$Id: inc_req_import_viewer.tpl,v 1.9 2010/11/06 11:42:47 amkhullar Exp $
 
-@internal revisions
+
+rev :
+
 *}
 {lang_get var="labels" s='btn_do,check_uncheck_all_checkboxes,th_id,
                           doc_id_short,scope,warning,check_uncheck_children_checkboxes,
                           title,version,assigned_to,assign_to,note_keyword_filter, priority'}
 
 <script type="text/javascript">
+//BUGID 3943: Escape all messages (string)
 	var check_msg="";
 	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+{literal}
 
 function check_action_precondition(container_id,action)
 {
@@ -22,19 +26,25 @@ function check_action_precondition(container_id,action)
 	return true;
 }
 </script>
+{/literal}
 
 {* prefix for checkbox name ADD*}   
-{$add_cb="achecked_req"}
+{assign var="add_cb" value="achecked_req"}
   {if $gui->has_items }
    <div class="workBack">
-	  {$top_level=$gui->items[0].level}
+	  {assign var=top_level value=$gui->items[0].level}
 	  {foreach from=$gui->items item=rspec key=idx name="div_drawing"}
-	    {$div_id=div_$idx}
+	    {assign var="div_id" value=div_$idx}
 	    {if $div_id != '' }
 	      <div id="{$div_id}" style="margin-left:{$rspec.level}0px; border:1;">
         {* check/uncheck on ALL contained Containers is implemented with this clickable image *}
         {if $rspec.req_spec !=''}
 	        <h3 class="testlink">
+	        {* 
+	        <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+			                              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$div_id}");'
+                                    title="{$labels.check_uncheck_children_checkboxes}" />
+          *}
           {$rspec.req_spec.doc_id|escape}::{$rspec.req_spec.title|escape}
 	        </h3>
         {/if}
@@ -68,13 +78,13 @@ function check_action_precondition(container_id,action)
           {/if}
 
       {if $gui->items_qty eq $smarty.foreach.div_drawing.iteration }
-          {$next_level=0}
+          {assign var=next_level value=0}
       {else}
-          {$next_level=$gui->items[$smarty.foreach.div_drawing.iteration].level}
+          {assign var=next_level value=$gui->items[$smarty.foreach.div_drawing.iteration].level}
       {/if}
       {if $rspec.level gte $next_level}
-          {$max_loop=$next_level}
-          {$max_loop=$rspec.level-$max_loop+1}
+          {assign var="max_loop" value=$next_level}
+          {assign var="max_loop" value=$rspec.level-$max_loop+1}
           {section name="div_closure" loop=$gui->support_array max=$max_loop} </div> {/section}
       {/if}
       {if $smarty.foreach.div_drawing.last}</div> {/if}

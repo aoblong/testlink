@@ -4,15 +4,19 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	testPlanWithCF.php
- * @author 		  Amit Khullar - amkhullar@gmail.com
+ * @author Amit Khullar - amkhullar@gmail.com
  *
- * For a test plan, list associated Custom Field Data
+ * Scope test plan, analize ONLY CF that have 'Test Plan Design SCOPE'
  *
  * @internal revisions
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db);
+require_once('exttable.class.php');
+testlinkInitPage($db,false,false,"checkRights");
+
+$smarty = new TLSmarty();
+$imgSet = $smarty->getImages();
 
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
@@ -20,25 +24,17 @@ $tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 $args = init_args($tplan_mgr);
-checkRights($db,$_SESSION['currentUser'],$args);
-
-
-$charset = config_get('charset');
-$glue_char = config_get('gui_title_separator_1');
 
 $gui = new stdClass();
-$gui->pageTitle = lang_get('caption_testPlanWithCF');
 $gui->warning_msg = '';
-$gui->path_info = null;
-$gui->resultSet = null;
-$gui->tproject_id = $args->tproject_id;
+$gui->path_info = $gui->resultSet = $gui->tableSet = null;
+$gui->pageTitle = lang_get('caption_testPlanWithCF');
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 
-$labels = init_labels(array('design' => null));
-$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
+$labels = init_labels(array('design' => null));
 $testCaseSet = array();
 
 if($tplan_mgr->count_testcases($args->tplan_id) > 0)
@@ -92,12 +88,12 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	}
 }
 
-$table = buildExtTable($gui,$tcase_mgr, $tplan_mgr, $args->tplan_id, $glue_char,$charset, $labels, $edit_icon);
+$table = buildExtTable($gui,$tcase_mgr, $tplan_mgr, $args->tplan_id,$labels, $imgSet['edit_icon']);
 
-if (!is_null($table)) {
+if (!is_null($table)) 
+{
 	$gui->tableSet[] = $table;
 }
-$smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -105,10 +101,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * 
  *
  */
-function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset, $labels, $edit_icon)
+function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $labels, $edit_icon)
 {
+	
+	$charset = config_get('charset');
+	$title_sep = config_get('gui_title_separator_1');
+	
 	$table = null;
-	if(count($gui->resultSet) > 0) {
+	if(count($gui->resultSet) > 0) 
+	{
 		$columns = array();
 		$columns[] = array('title_key' => 'test_suite');
 		$columns[] = array('title_key' => 'test_case', 'width' => 80, 'type' => 'text');
@@ -132,29 +133,22 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset
 			$rowData[] = $dummy['value'];
 
 			$name = buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
-			                              $gluechar . $item['tcase_name'];
+			                              $title_sep . $item['tcase_name'];
 
 			// create linked icons
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$item['tcase_id']});\">" .
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tcase_id']});\">" .
 						 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
 
-		    $link = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $edit_link . $name;
-
-			$rowData[] = $link;
-//			$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $item['tcase_id'] . '">' .
-//						 buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
-//						 $gluechar . $item['tcase_name'] . '</a>';
-			
+			$rowData[] = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $edit_link . $name;;
 			$hasValue = false;
-
 			foreach ($item['cfields'] as $cf_value)
 			{
 				$rowData[] = preg_replace('!\s+!', ' ', htmlentities($cf_value, ENT_QUOTES, $charset));
-				if ($cf_value) {
-					$hasValue = true;
-				}
+				$hasValue = $cf_value ? true : false;
 			}
-			if ($hasValue) {
+			
+			if ($hasValue) 
+			{
 				$matrixData[] = $rowData;
 			}
 		}
@@ -166,6 +160,10 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset
 		$table->setGroupByColumnName(lang_get('test_suite'));
 		$table->setSortByColumnName(lang_get('test_case'));
 		$table->sortDirection = 'ASC';
+		
+		$table->showToolbar = true;
+		$table->toolbarExpandCollapseGroupsButton = true;
+		$table->toolbarShowAllColumnsButton = true;
 	}
 	return($table);
 }
@@ -181,20 +179,20 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset
 function init_args(&$tplan_mgr)
 {
 	$iParams = array("format" => array(tlInputParameter::INT_N),
-					 "tproject_id" => array(tlInputParameter::INT_N),
 					 "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
 	
-	$args->tproject_name = '';
-    if($args->tproject_id > 0)
-    {
-    	$dummy = $tplan_mgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
-    	$args->tproject_name = $dummy['name'];
-    }
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
     $args->tplan_name = '';
+    if(!$args->tplan_id)
+    {
+        $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+    }
+
     if($args->tplan_id > 0)
     {
         $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
@@ -203,14 +201,8 @@ function init_args(&$tplan_mgr)
     return $args;
 }
 
-/**
- * 
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = $argsObj->tproject_id;
-	$env['tplan_id'] = $argsObj->tplan_id;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
+	return $user->hasRight($db,'testplan_metrics');
 }
 ?>

@@ -1,30 +1,33 @@
 {* 
 Testlink: smarty template - Edit own account 
-filesource	userInfo.tpl
+@filesource	userInfo.tpl
 
 @internal revisions
+@since 1.9.8
 *}
-{$cfg_section="login"}
+{assign var="cfg_section" value="login"}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels'
           s='title_account_settings,warning_empty_pwd,warning_different_pwd,never_logged,
              warning_enter_less1,warning_enter_at_least1,warning_enter_at_least2,
-             warning_enter_less2,th_login,th_first_name,th_last_name,title_personal_data,
+             warning_enter_less2,th_login,th_first_name,th_last_name,
              th_email,th_locale,btn_save,th_old_passwd,audit_login_history,none,
-             title_personal_passwd,title_api_interface,warn_demo,
              th_new_passwd,th_new_passwd_again,btn_change_passwd,audit_last_failed_logins,
              your_password_is_external,user_api_key,btn_apikey_generate,empty_email_address,
              audit_last_succesful_logins,warning,warning_empty_first_name,no_good_email_address,
              warning_empty_last_name,passwd_dont_match,empty_old_passwd,show_event_history,
              demo_update_user_disabled'}
 
-{$action_mgmt="lib/usermanagement/userInfo.php"}
+{assign var="action_mgmt" value="lib/usermanagement/userInfo.php"}
+
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 
+{literal}
 <script type="text/javascript">
+{/literal}
 var warning_empty_pwd = "{$labels.warning_empty_pwd|escape:'javascript'}";
 var warning_different_pwd = "{$labels.warning_different_pwd|escape:'javascript'}";
 var warning_enter_less1 = "{$labels.warning_enter_less1|escape:'javascript'}";
@@ -40,6 +43,7 @@ var warning_empty_old_password = "{$labels.empty_old_passwd|escape:'javascript'}
 var warning_empty_email_address = "{$labels.empty_email_address|escape:'javascript'}";
 var warning_no_good_email_address = "{$labels.no_good_email_address|escape:'javascript'}"; 
 
+{literal}
 function validatePersonalData(f)
 {
   var email_warning;
@@ -66,7 +70,7 @@ function validatePersonalData(f)
   }
   else 
   { 
-      if (!/\w{ldelim}1,{rdelim}[@][\w\-]{ldelim}1,{rdelim}([.]([\w\-]{ldelim}1,{rdelim})){ldelim}1,3{rdelim}$/.test(f.emailAddress.value))
+      if (!/\w{1,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/.test(f.emailAddress.value))
       {
           show_email_warning=true;
           email_warning=warning_no_good_email_address;
@@ -106,19 +110,21 @@ function refreshLastUpdate (last_update) {
 	document.getElementById("last_update").firstChild.nodeValue = last_update;
 }
 
+
 </script>
+{/literal}
 </head>
 
 <body>
 
 <h1 class="title">{$labels.title_account_settings}</h1>
 
-{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
+{include file="inc_update.tpl" user_feedback=$user_feedback}
 
 <div class="workBack">
 
 
-<h2>{$labels.title_personal_data}</h2>
+<h2>{lang_get s="title_personal_data"}</h2>
 <form method="post" action="{$action_mgmt}"	onsubmit="return validatePersonalData(this)">
 	<input type="hidden" name="doAction" value="editUser" />
 	<table class="common" width="50%">
@@ -143,7 +149,7 @@ function refreshLastUpdate (last_update) {
 		<tr>
 			<th>{$labels.th_email}</th>
 			<td><input type="text" name="emailAddress" value="{$user->emailAddress|escape}"
-			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
+			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" required />
 						  	 {include file="error_icon.tpl" field="emailAddress"}
 			</td>
 		</tr>
@@ -166,36 +172,36 @@ function refreshLastUpdate (last_update) {
 	</table>
 	<div class="groupBtn">
 		{if $tlCfg->demoMode}
-				{$labels.demo_update_user_disabled}
+			{$labels.demo_update_user_disabled}
 		{else}
 			<input type="submit" value="{$labels.btn_save}" />
-		{/if}
+		{/if}	
 	</div>
 </form>
 
 <hr />
-<h2>{$labels.title_personal_passwd}</h2>
-{if $gui->external_password_mgmt eq 0}
+<h2>{lang_get s="title_personal_passwd"}</h2>
+{if $external_password_mgmt eq 0}
 	<form name="changePass" method="post" action="{$action_mgmt}"
 		onsubmit="return checkPasswords('oldpassword','newpassword','newpassword_check');">
 		<input type="hidden" name="doAction" value="changePassword" />
 		<table class="common">
 			<tr><th>{$labels.th_old_passwd}</th>
 				<td><input type="password" name="oldpassword"  id="oldpassword"
-				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
+				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></td></tr>
 			<tr><th>{$labels.th_new_passwd}</th>
 				<td><input type="password" name="newpassword" id="newpassword"
-				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
+				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></td></tr>
 			<tr><th>{$labels.th_new_passwd_again}</th>
 				<td><input type="password" name="newpassword_check" id="newpassword_check"
-				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
+				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></td></tr>
 		</table>
 		<div class="groupBtn">
-			{if $tlCfg->demoMode}
-				{$labels.demo_update_user_disabled}
-			{else}
-				<input type="submit" value="{$labels.btn_change_passwd}" />
-			{/if}
+		{if $tlCfg->demoMode}
+			{$labels.demo_update_user_disabled}
+		{else}
+			<input type="submit" value="{$labels.btn_change_passwd}" />
+		{/if}	
 		</div>
 	</form>
 {else}
@@ -204,7 +210,7 @@ function refreshLastUpdate (last_update) {
 
 {if $tlCfg->api->enabled}
 <hr />
-<h2>{$labels.title_api_interface}</h2>
+<h2>{lang_get s="title_api_interface"}</h2>
 <div>
 	<form name="genApi" method="post" action="{$action_mgmt}">
 		<input type="hidden" name="doAction" value="genAPIKey" />
@@ -219,38 +225,40 @@ function refreshLastUpdate (last_update) {
 
 <hr />
 <h2>{$labels.audit_login_history}
-	{if $gui->mgt_view_events == "yes"}
+	{if $mgt_view_events == "yes"}
 	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user->dbID}','users')" alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 </h2>
 {/if}
 <div>
 	<h3>{$labels.audit_last_succesful_logins}</h3>
-	{if $gui->loginHistory->ok != ''}
-		{foreach from=$gui->loginHistory->ok item=event}
-			<span>{localize_timestamp ts=$event->timestamp}</span>
-			<span>{$event->description|escape}</span>
-			<br/>
-		{/foreach}
+	{if $loginHistory->ok != ''}
+	{foreach from=$loginHistory->ok item=event}
+	<span>{localize_timestamp ts=$event->timestamp}</span>
+	<span>{$event->description|escape}</span>
+	<br/>
+	{/foreach}
 	{else}
 	  {$labels.never_logged}
 	{/if}
 </div>
-  {if $gui->loginHistory->failed != ''}
+  {if $loginHistory->failed != ''}
 	<div>
 	  <h3>{$labels.audit_last_failed_logins}</h3>
-	  {foreach from=$gui->loginHistory->failed item=event}
-	 	 <span>{localize_timestamp ts=$event->timestamp}</span>
-	  	<span>{$event->description|escape}</span>
-	  	<br/>
+	  {foreach from=$loginHistory->failed item=event}
+	  <span>{localize_timestamp ts=$event->timestamp}</span>
+	  <span>{$event->description|escape}</span>
+	  <br/>
 	  {/foreach}
 	</div>
   {/if}
 
 </div>
-{if $gui->update_title_bar == 1}
+{if $update_title_bar == 1}
+{literal}
 <script type="text/javascript">
 	parent.titlebar.location.reload();
 </script>
+{/literal}
 {/if}
 </body>
 </html>

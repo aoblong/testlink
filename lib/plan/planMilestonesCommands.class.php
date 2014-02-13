@@ -177,8 +177,7 @@ class planMilestonesCommands
 		      	logAuditEvent(TLS("audit_milestone_created",$argsObj->tplan_name,$argsObj->name),
 		      	              "CREATE",$argsObj->id,"milestones");
 		      	$guiObj->user_feedback = sprintf(lang_get('milestone_created'), $argsObj->name);
-  		      	$guiObj->template = $basehref . $this->viewAction . "?tproject_id=" . $argsObj->tproject_id .
-			                 "&tplan_id=" . $argsObj->tplan_id;
+  		      	$guiObj->template = $basehref . $this->viewAction;
 		      }
 		}    
 		return $guiObj;	
@@ -270,8 +269,7 @@ class planMilestonesCommands
 		{
 			$obj->main_descr = '';
 			$obj->action_descr='';
-			$obj->template = $basehref . $this->viewAction ."?tproject_id=" . $argsObj->tproject_id .
-			                 "&tplan_id=" . $argsObj->tplan_id;
+			$obj->template = "planMilestonesView.php";
 			logAuditEvent(TLS("audit_milestone_saved",$argsObj->tplan_name,$argsObj->name),
 			                    "SAVE",$argsObj->id,"milestones");
 		}
@@ -303,8 +301,7 @@ class planMilestonesCommands
 		              "DELETE",$argsObj->id,"milestones");
   
 		$obj = new stdClass();
-		$obj->template = $basehref . $this->viewAction . "?tproject_id=" . $argsObj->tproject_id .
-			                 "&tplan_id=" . $argsObj->tplan_id;;
+		$obj->template = $basehref . $this->viewAction;
 		$obj->user_feedback = sprintf(lang_get('milestone_deleted'),$milestone['name']);
 		$obj->main_descr = null;
 		$obj->title = lang_get('delete_milestone');

@@ -20,6 +20,7 @@
 function getUniqueFileName($fExt)
 {
 	$destFName = md5(uniqid(rand(), true)).".".$fExt;
+
 	return $destFName;
 }
 
@@ -36,13 +37,10 @@ function getFileExtension($fName,$default)
 {
 	$fExt = pathinfo($fName);
 	if (isset($fExt['extension']))
-	{
 		$fExt = $fExt['extension'];
-	}
 	else
-	{
 		$fExt = $default;
-  }
+
 	return $fExt;
 }
 
@@ -78,9 +76,7 @@ function gzip_compress_file($srcName, $dstName)
 	$success = false;
 	$data = getFileContents($srcName);
 	if ($data != "")
-	{
 		$success = gzip_writeToFile($dstName,$data);
-	}
 	return $success;
 }
 
@@ -119,7 +115,7 @@ function gzip_uncompress_content($content,$fileSize)
 {
 	global $g_repositoryPath;
 
-	$dest = $g_repositoryPath . DIRECTORY_SEPARATOR . session_id() . ".dummy.gz";
+	$dest = $g_repositoryPath.DIRECTORY_SEPARATOR.session_id().".dummy.gz";
 	$fp = fopen($dest,"wb");
 	if ($fp)
 	{

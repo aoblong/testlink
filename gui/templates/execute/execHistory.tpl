@@ -1,6 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filsesource execHistory.tpl
+@internal revision
+@since 1.9.4
+20120802 - franciscom - TICKET 5121: Link to test case execution edit page is invalid
 *}	
 {lang_get var='labels' 
           s='title_test_case,th_test_case_id,version,date_time_run,platform,test_exec_by,
@@ -11,9 +14,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {include file="inc_head.tpl" openHead='yes'}
 {include file="inc_ext_js.tpl"}
 
-{* Initialize note panels. 
-	 The array panel_init_functions is filled with init functions (see below)
-	 or inc_exec_show_tc_exec.tpl and executed from onReady below *}
+{* 	Initialize note panels. 
+	The array panel_init_functions is filled with init functions (see below)
+	or inc_exec_show_tc_exec.tpl and executed from onReady below *}
 <script>
 {literal}
 panel_init_functions = new Array();
@@ -32,8 +35,8 @@ function load_notes(panel,exec_id)
 </script>
 </head>
 
-{$attachment_model = $gui->exec_cfg->att_model}
-{$my_colspan = $attachment_model->num_cols+2}
+{assign var="attachment_model" value=$gui->exec_cfg->att_model}
+{assign var="my_colspan" value=$attachment_model->num_cols+2}
 
 <body onUnload="storeWindowSize('execHistoryPopup')">
 {if $gui->main_descr != ''}
@@ -43,12 +46,13 @@ function load_notes(panel,exec_id)
 <div class="workBack">
 	{if $gui->warning_msg == ''}
 		<table cellspacing="0" class="exec_history">
+			{* Table Header *} 
 			<tr>
 				<th style="text-align:left">{$labels.date_time_run}</th>
 				<th style="text-align:left">{$labels.testplan}</th>
 				<th style="text-align:left">{$labels.build}</th>
 				{if $gui->displayPlatformCol}
-					{$my_colspan = $my_colspan+1}
+					{assign var="my_colspan" value=$my_colspan+1}
 					<th style="text-align:left">{$labels.platform}</th>
 				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
@@ -57,13 +61,14 @@ function load_notes(panel,exec_id)
 				<th style="text-align:left"><nobr>{$labels.run_mode}</nobr></th>
 			</tr>
 		
+			{* Table data *}
 		 	{foreach item=tcv_exec_set from=$gui->execSet}
 		 		{foreach item=tcv_exec from=$tcv_exec_set}
 					{cycle values='#eeeeee,#d0d0d0' assign="bg_color"}
 					<tr style="border-top:1px solid black; background-color: {$bg_color}">
 						<td>
-							{if $gui->user_is_admin}
-								<img src="{$tlImages.note_edit}" style="vertical-align:middle" 
+							{if $gui->exec_cfg->edit_notes}
+								<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" style="vertical-align:middle" 
 								     title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
 								     {$tcv_exec.execution_id},{$tcv_exec.id},{$tcv_exec.testplan_id},{$gui->tproject_id});">
 							{/if}
@@ -73,7 +78,7 @@ function load_notes(panel,exec_id)
 						<td>
 						{*
 						{if !$tcv_exec.build_is_open}
-							<img src="{$tlImages.lock}" title="{$labels.closed_build}">
+							<img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">
 						{/if}
 						*}
 						{$tcv_exec.build_name|escape}
@@ -82,15 +87,20 @@ function load_notes(panel,exec_id)
 						<td title="{$tcv_exec.tester_first_name|escape} {$tcv_exec.tester_last_name|escape}">
 						{$tcv_exec.tester_login|escape}
 						</td>
-						{$tc_status_code = $tcv_exec.status}
+						{assign var="tc_status_code" value=$tcv_exec.status}
 						<td class="{$tlCfg->results.code_status.$tc_status_code}" style="text-align:center">
 						    {localize_tc_status s=$tcv_exec.status}
 						</td>
 						<td  style="text-align:center">{$tcv_exec.tcversion_number}</td>
 		
 						<td class="icon_cell" align="center">
-						<img src="{$tcv_exec.execution_run_type_icon}" title="{$tcv_exec.execution_run_type_label}"
+						{if $tcv_exec.execution_run_type == $smarty.const.TESTCASE_EXECUTION_TYPE_MANUAL}
+						<img src="{$smarty.const.TL_THEME_IMG_DIR}/user.png" title="{$labels.execution_type_manual}"
 						     style="border:none" />
+						{else}
+						<img src="{$smarty.const.TL_THEME_IMG_DIR}/bullet_wrench.png" title="{$labels.execution_type_auto}"
+						     style="border:none" />
+						{/if}
 						</td>
 					</tr>
 		
@@ -128,11 +138,8 @@ function load_notes(panel,exec_id)
 					<tr style="background-color: {$bg_color}">
 					<td colspan="{$my_colspan}">
 						{if isset($gui->cfexec[$tcv_exec.execution_id])}
-							{*
 							{assign var="cf_value_info" value=$gui->cfexec[$tcv_exec.execution_id]}
 							{$cf_value_info}
-							*}
-							{$gui->cfexec[$tcv_exec.execution_id]}
 						{/if}	
 					</td>
 					</tr>

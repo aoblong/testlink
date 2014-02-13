@@ -3,34 +3,48 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filespurce	platformPieChart.php
- * @package 	TestLink
- * @author 		franciscom
- * @copyright 	2005-2009, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @filesource  platformPieChart.php
+ * @package     TestLink
+ * @author      franciscom
+ * @copyright   2005-2013, TestLink community
+ * @link        http://www.teamst.org/index.php
  *
- * @internal Revisions:
- * 20100922 - Julian - BUGID 3798
+ * @internal revisions
+ * @since 1.9.6
+ * 20130123 - franciscom - TICKET 5481: Error in pie chart for platforms without testcases
  *
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
-define('PCHART_PATH','../../third_party/pchart');
-include(PCHART_PATH . "/pChart/pData.class");   
-include(PCHART_PATH . "/pChart/pChart.class");   
-testlinkInitPage($db);
+include("../../third_party/pchart/pChart/pData.class");   
+include("../../third_party/pchart/pChart/pChart.class");   
+testlinkInitPage($db,true,false,"checkRights");
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['platformPieChart'];
 
 $args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
+$metricsMgr = new tlTestPlanMetrics($db);
+$dummy = $metricsMgr->getStatusTotalsByPlatformForRender($args->tplan_id);
 
-$tplan_mgr = new testplan($db);
-$totalsByPlatform = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
+// if platform has no test case assigned $dummy->info[$args->platform_id] does not exists
+if( isset($dummy->info[$args->platform_id]) )
+{
+  $totals = $dummy->info[$args->platform_id]['details'];
+}
+else
+{
+  // create empty set
+  $status = $metricsMgr->getStatusForReports();
+  foreach($status as $statusVerbose)
+  {
+    $totals[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
+  }
+  unset($status);
+}
 
-$totals=$totalsByPlatform[$args->platform_id]['details'];
-unset($totals['total']);
+unset($dummy);
+unset($metricsMgr);
 
 $values = array();
 $labels = array();
@@ -42,8 +56,8 @@ foreach($totals as $key => $value)
     $labels[] = lang_get($resultsCfg['status_label'][$key]) . " ($value)";
     if( isset($resultsCfg['charts']['status_colour'][$key]) )
     {
-    	$series_color[] = $resultsCfg['charts']['status_colour'][$key];
-    }	
+      $series_color[] = $resultsCfg['charts']['status_colour'][$key];
+    }  
 }
 
 // Dataset definition    
@@ -61,7 +75,6 @@ $pChartCfg->radius = $chart_cfg['radius'];
 $pChartCfg->legendX = $chart_cfg['legendX'];                    
 $pChartCfg->legendY = $chart_cfg['legendY'];
 
-// BUGID 3798
 $pChartCfg->centerX = intval($pChartCfg->XSize/2);                    
 $pChartCfg->centerY = intval($pChartCfg->YSize/2);
 
@@ -85,16 +98,11 @@ $Test->drawPieLegend($pChartCfg->legendX,$pChartCfg->legendY,$graph->data,$graph
 $Test->Stroke();
 
 
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
+  return $user->hasRight($db,'testplan_metrics');
 }
+
 
 /**
  * 
@@ -104,8 +112,8 @@ function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
-    $args->tplan_id = intval($_REQUEST['tplan_id']);
-    $args->tproject_id = intval($_REQUEST['tproject_id']);
+    $args->tplan_id = $_REQUEST['tplan_id'];
+    $args->tproject_id = $_SESSION['testprojectID'];
     $args->platform_id = $_REQUEST['platform_id'];
     return $args;
 }

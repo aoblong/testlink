@@ -6,7 +6,7 @@ Form for searching through requirement specifications.
 @internal revisions
 *}
 
-{cfg_section = $smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 
@@ -22,7 +22,7 @@ Form for searching through requirement specifications.
 <h1 class="title">{$gui->mainCaption|escape}</h1>
 
 <div style="margin: 1px;">
-<form method="post" action="lib/requirements/reqSpecSearch.php?tproject_id={$gui->tproject_id}" target="workframe">
+<form method="post" action="lib/requirements/reqSpecSearch.php" target="workframe">
 	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form_req_spec}</caption>
 		<tr>
@@ -42,7 +42,7 @@ Form for searching through requirement specifications.
 			<td>{$labels.type}</td>
 			<td>
 				<select name="reqSpecType" id="reqSpecType">
-					<option value="">&nbsp;</option>
+					<option value="notype">&nbsp;</option>
   					{html_options options=$gui->types}
   				</select>
   			</td>
@@ -72,14 +72,19 @@ Form for searching through requirement specifications.
 			<td><input type="text" name="log_message" id="log_message" 
 					   size="{#LOGMSG_SIZE#}" maxlength="{#LOGMSG_MAXLEN#}" /></td>
 		</tr>
+	  		
+		
+  			      
 	</table>
 	
 	<p style="padding-left: 20px;">
+		
 		<input type="submit" name="doSearch" value="{$labels.btn_find}" />
 	</p>
 </form>
 
 </div>
+
 
 
 </body>

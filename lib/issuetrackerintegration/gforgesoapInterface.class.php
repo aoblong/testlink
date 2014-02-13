@@ -382,12 +382,13 @@ class gforgesoapInterface extends issueTrackerInterface
     }
 
   public static function checkEnv()
-	{
-	  $ret = array();
-	  $ret['status'] = extension_loaded('soap');
-	  $ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
-	  return $ret;
-	}
+  {
+    $ret = array();
+    $ret['status'] = extension_loaded('soap');
+    $ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
+    return $ret;
+  }
+
 
 /*    
 getTrackerItem() 

@@ -1,9 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: cfieldsImport.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $
+Purpose: smarty template - manage import of custom fields
 
-manage import of custom fields
-
-@filesource cfieldsImport.tpl
+rev: 
 *}
 
 {lang_get var="labels"
@@ -11,15 +11,18 @@ manage import of custom fields
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
              btn_goback,not_imported,imported,btn_cancel,title_imp_tc_data'}
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_ext_js.tpl"}
-
+{include file="inc_del_onclick.tpl"}
+{literal}
 <script type="text/javascript">
+{/literal}
+// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
+{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.targetFilename.value)) 
@@ -31,6 +34,7 @@ function validateForm(f)
   return true;
 }
 </script>
+{/literal}
 </head>
 
 
@@ -55,7 +59,6 @@ function validateForm(f)
 	  {/if} 
 	  <form method="post" action="{$SCRIPT_NAME}">
 	      <br>
-	  		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	  		<input type="button" name="goback" value="{$labels.btn_goback}"
     		                     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
     		                     {else}  onclick="javascript:history.back();" {/if} />
@@ -85,9 +88,8 @@ function validateForm(f)
     		{* restrict file size - input name must be UPPER CASE ??? *}
     		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitKB}" /> 
     		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
-    		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
     		<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    		                     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}?tproject_id={$gui->tproject_id}'"
+    		                     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
     		                     {else}  onclick="javascript:history.back();" {/if} />
     	</div>
     </form> 

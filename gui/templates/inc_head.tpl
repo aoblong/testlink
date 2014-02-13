@@ -1,17 +1,18 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-
+$Id: inc_head.tpl,v 1.36 2010/08/28 14:47:54 franciscom Exp $
 Purpose: smarty template - HTML Common Header
+
 
 Critic Smarty Global Variables expected
 
-@filesource	inc_head.tpl
-@internal revisions
+editorType: used to understand if code for tinymce need to be loaded 
+
 *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset={$tlCfg->charset}" />
+	<meta http-equiv="Content-Type" content="text/html; charset={$pageCharset}" />
 	<meta http-equiv="Content-language" content="en" />
 	<meta http-equiv="expires" content="-1" />
 	<meta http-equiv="pragma" content="no-cache" />
@@ -20,12 +21,15 @@ Critic Smarty Global Variables expected
 	<meta name="robots" content="NOFOLLOW" />
 	<base href="{$basehref}"/>
 	<title>{$pageTitle|default:"TestLink"}</title>
-	<link rel="icon" href="{$basehref}{$tlImages.favicon}" type="image/x-icon" />
+	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
 	
 {* ----- load CSS ------------------------------------------------------------------- *} 
 	<style media="all" type="text/css">@import "{$css}";</style>
-	<style media="all" type="text/css">@import "{$custom_css}";</style>
 
+	{if $use_custom_css}
+	<style media="all" type="text/css">@import "{$custom_css}";</style>
+	{/if}
+	
 	{if $testproject_coloring eq 'background'}
   	<style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
 	{/if}
@@ -33,10 +37,6 @@ Critic Smarty Global Variables expected
 	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
 
 {* ----- load javascripts libraries -------------------------------------------------- *} 
-	{if $smarty.const.TL_USE_LOG4JAVASCRIPT}
-  <script type="text/javascript" src="{$basehref}third_party/log4javascript/log4javascript.js"></script>
-	{/if}
-
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}gui/javascript/test_automation.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}third_party/prototype/prototype.js" language="javascript"></script>
@@ -45,9 +45,9 @@ Critic Smarty Global Variables expected
     {include file="inc_jsCfieldsValidation.tpl"}
 	{/if}
    
-	{if property_exists($gui,'editorType') &&  $gui->editorType == 'tinymce'}
+	{if $editorType == 'tinymce'}
     <script type="text/javascript" language="javascript"
-    		src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+    	src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
     {include file="inc_tinymce_init.tpl"}
 	{/if}
 
@@ -55,9 +55,6 @@ Critic Smarty Global Variables expected
 	<script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" 
 		language="javascript"></script>
 	{/if}
-
-  
-
 
 	<script type="text/javascript" language="javascript">
 	<!--

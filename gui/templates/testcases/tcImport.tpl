@@ -1,24 +1,24 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-
+$Id: tcImport.tpl,v 1.15 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
-@filesource	tcImport.tpl
-@internal revisions
-20100821 - franciscom - refactoring to use $gui 
+rev:
+    20100821 - franciscom - refactoring to use $gui 
+    20091122 - franciscom - refactoring to use alert_message()
 *}
 
 {lang_get var="labels"
           s='file_type,view_file_format_doc,local_file,
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
-             duplicate_criteria,action_for_duplicates,
+             duplicate_criteria,action_for_duplicates,testcase,
              action_on_duplicated_name,warning,btn_cancel,title_imp_tc_data'}
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_del_onclick.tpl"}
 </head>
 <body>
 
@@ -29,22 +29,6 @@ Purpose: smarty template - manage import of test cases and test suites
 
 {if $gui->resultMap eq null}
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
-
-  {* restrict file size *}
-  {* 
-  	***** Info from PHP Manual *****
-  	The MAX_FILE_SIZE hidden field (measured in bytes) must precede the file input field, 
-  	and its value is the maximum filesize accepted by PHP. 
-  	This form element should always be used as it saves users the trouble of waiting for a big file being 
-  	transferred only to find that it was too large and the transfer failed. 
-  	Keep in mind: fooling this setting on the browser side is quite easy, 
-  	so never rely on files with a greater size being blocked by this feature. 
-  	It is merely a convenience feature for users on the client side of the application. 
-  	The PHP settings (on the server side) for maximum-size, however, cannot be fooled. 
-  *}
-  
-  
-  <input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> 
 
   <table>
   <tr>
@@ -80,26 +64,29 @@ Purpose: smarty template - manage import of test cases and test suites
 	</table>
 	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB} {$labels.max_size_cvs_file2}</p>
 	<div class="groupBtn">
-		<input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
 		<input type="hidden" name="bIntoProject" value="{$gui->bIntoProject}" />
 		<input type="hidden" name="containerID" value="{$gui->containerID}" />
+		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
-		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />
+		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
+			                   onclick="javascript:history.back();" />
 	</div>
 </form>
 {else}
-	{foreach item=result from=$gui->resultMap}
-		{$labels.title_imp_tc_data} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
-	{/foreach}
-  {$tlRefreshTreeByReloadJS}
+  {foreach item=result from=$gui->resultMap}
+    {$labels.testcase} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br>
+  {/foreach}
+
+  {include file="inc_refreshTree.tpl"}
 {/if}
 
-{if $gui->bImport > 0} {$tlRefreshTreeByReloadJS} {/if}
+{if $gui->bImport > 0}
+	{include file="inc_refreshTree.tpl"}
+{/if}
 
-{if $gui->file_check.status_ok == 0}
+{if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
-  // just for debug alert("{$gui->file_check.msg}");
   alert_message("{$labels.warning|escape:'javascript'}","{$gui->file_check.msg|escape:'javascript'}");
   </script>
 {/if}  

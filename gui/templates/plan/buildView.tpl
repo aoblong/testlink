@@ -1,14 +1,24 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	buildView.tpl
+$Id: buildView.tpl,v 1.18 2010/10/17 09:46:37 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
-@internal revisions
-20101017 - franciscom - image access refactored (tlImages)
+Rev:
+    20120731 - kinow - TICKET 4977: CSRF token
+    20101017 - franciscom - image access refactored (tlImages)
+    20090509 - franciscom - BUGID - display release_date
+    20070921 - franciscom - BUGID  - added strip_tags|strip to notes
 *}
-{$cfg_section = $smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
+
+{* Configure Actions *}
+{assign var="managerURL" value="lib/plan/buildEdit.php"}
+{assign var="editAction" value="$managerURL?do_action=edit&amp;build_id="}
+{assign var="deleteAction" value="$managerURL?do_action=do_delete&build_id="}
+{assign var="createAction" value="$managerURL?do_action=create"}
+
 
 {lang_get s='warning_delete_build' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -20,20 +30,11 @@ Purpose: smarty template - Show existing builds
              builds_description,sort_table_by_column,th_id,release_date'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
-{include file="inc_action_onclick.tpl"}
-
-{* Configure Actions *}
-{$tproject_id=$gui->tproject_id}
-{$tplan_id=$gui->tplan_id}
-{$managerURL = "lib/plan/buildEdit.php?tproject_id=$tproject_id&tplan_id=$tplan_id"}
-{$editAction = "$managerURL&do_action=edit&build_id="}
-{$deleteAction = "$managerURL&do_action=do_delete&build_id="}
-{$createAction = "$managerURL&do_action=create"}
-
+{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
-var target_action=fRoot+'{$deleteAction}';
+/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+var del_action=fRoot+'{$deleteAction}';
 </script>
 </head>
 
@@ -42,7 +43,7 @@ var target_action=fRoot+'{$deleteAction}';
 <h1 class="title">{$labels.title_build_2}{$smarty.const.TITLE_SEP_TYPE3}{$labels.test_plan}{$smarty.const.TITLE_SEP}{$gui->tplan_name|escape}</h1>
 
 <div class="workBack">
-{include file="inc_update.tpl" result=$sqlResult item="build"}
+{include file="inc_update.tpl" result=$sqlResult item="build" user_feedback=$gui->user_feedback}
 
 {* ------------------------------------------------------------------------------------------- *}
 <div id="existing_builds">
@@ -68,7 +69,7 @@ var target_action=fRoot+'{$deleteAction}';
   					  </a>   
   				</td>
   				<td>{$build.notes|strip_tags|strip|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
-  				<td style="text-align: center;">{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
+  				<td>{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
   				<td class="clickable_icon">
   				   {if $build.active == 1} 
   				     <img style="border:none"  title="{$labels.alt_active_build}"  alt="{$labels.alt_active_build}" 
@@ -88,7 +89,7 @@ var target_action=fRoot+'{$deleteAction}';
   				<td class="clickable_icon">
 				       <img style="border:none;cursor: pointer;"  title="{$labels.alt_delete_build}" 
   				            alt="{$labels.alt_delete_build}" 
- 					            onclick="action_confirmation({$build.id},'{$build.name|escape:'javascript'|escape}',
+ 					            onclick="delete_confirmation({$build.id},'{$build.name|escape:'javascript'|escape}',
  					                                         '{$del_msgbox_title}','{$warning_msg}');"
   				            src="{$tlImages.delete}"/>
   				</td>
@@ -103,7 +104,6 @@ var target_action=fRoot+'{$deleteAction}';
 
  <div class="groupBtn">
     <form method="post" action="{$createAction}" id="create_build">
-      <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
       <input type="submit" name="create_build" value="{$labels.btn_build_create}" />
     </form>
   </div>

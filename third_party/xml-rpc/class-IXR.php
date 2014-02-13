@@ -6,7 +6,7 @@
  * @internal revisions
  * 20111022 - franciscom -	due to use of is_a() without checking that object was REALLY an object
  *							and tlAutoload(), result was CRASH trying to creating NON EXISTENT class
- *							when method return type is SIMPLE (string,int)		
+ *							when method return type is SIMPLE (string,int)	 
  */
 
 /*
@@ -297,14 +297,16 @@ class IXR_Server {
             $this->error(-32600, 'server error. invalid xml-rpc. not conforming to spec. Request must be a methodCall');
         }
         $result = $this->call($this->message->methodName, $this->message->params);
+
         // Is the result an error?
-        // 20111022 - francisco.mancardi@gmail.com
+        // 20111022 - franciscom
         // seems that due to use of autoload if $results type is a SIMPLE one (string,int)
         // autoload is called.
         // added new check $result has TO BE AN OBJECT
         if (is_object($result) && is_a($result, 'IXR_Error')) {
             $this->error($result);
         }
+
         // Encode the result
         $r = new IXR_Value($result);
         $resultxml = $r->getXml();
@@ -419,15 +421,14 @@ EOD;
             } else {
                 $result = $this->call($method, $params);
             }
-	        // 20111022 - francisco.mancardi@gmail.com
+
+	        // 20111022 - franciscom
     	    // seems that due to use of autoload if $results type is a SIMPLE one (string,int)
         	// autoload is called.
         	// added new check $result has TO BE AN OBJECT
         	if (is_object($result) && is_a($result, 'IXR_Error')) {
-                $return[] = array(
-                    'faultCode' => $result->code,
-                    'faultString' => $result->message
-                );
+                $return[] = array('faultCode' => $result->code,
+                    			  'faultString' => $result->message);
             } else {
                 $return[] = array($result);
             }

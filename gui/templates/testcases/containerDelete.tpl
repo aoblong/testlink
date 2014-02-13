@@ -1,20 +1,24 @@
 {* 
-TestLink Open Source Project - http://testlink.sourceforge.net/
-Purpose: smarty template - delete containers in test specification
+	TestLink Open Source Project - http://testlink.sourceforge.net/
+	$Id: containerDelete.tpl,v 1.6.4.1 2010/12/06 08:20:59 asimon83 Exp $ 
+	Purpose: smarty template - delete containers in test specification
 
-@filesource containerDelete.tpl
-
-@internal revisions 
-20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases
-20101202 - asimon - BUGID 4067: refresh tree problems
+rev : 
+     20101202 - asimon - BUGID 4067: refresh tree problems
+     20070218 - franciscom - changed refresh management
+     20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
 *}
 {include file="inc_head.tpl"}
 {lang_get var='labels'
-          s='test_case,th_link_exec_status,question_del_testsuite,btn_yes_del_comp,btn_no'}
+          s='test_case,th_link_exec_status,question_del_testsuite,
+          	 btn_yes_del_comp,btn_no'}
 
 <body>
 <h1 class="title">{$page_title}{$smarty.const.TITLE_SEP}{$objectName|escape}</h1> 
-{include file="inc_update.tpl" result=$sqlResult item=$level action='delete' refresh=$gui->refreshTree}
+
+{* BUGID 4067 *}
+{include file="inc_update.tpl" result=$sqlResult item=$level action='delete' 
+         refresh=$gui->refreshTree}
 
 <div class="workBack">
 
@@ -41,19 +45,23 @@ Purpose: smarty template - delete containers in test specification
 		{/if}
 	{/if}
   
-	<form method="post" action="lib/testcases/containerEdit.php?sure=yes&objectID={$objectID}">
-		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+	<form method="post" action="lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID}">
 		{if $can_delete}
 			<p>{$labels.question_del_testsuite}</p>
 			<input type="submit" name="delete_testsuite" value="{$labels.btn_yes_del_comp}" />
 		
 			<input  type="button" name="cancel_delete_testsuite" value="{$labels.btn_no}"
 					onclick='javascript: location.href=fRoot+
-					"lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}&edit=testsuite&id={$objectID}";' />
+					"lib/testcases/archiveData.php?&amp;edit=testsuite&amp;id={$objectID}";' />
 		{/if}
 	</form>
 {/if}
-{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
+
+{if $refreshTree}
+   	{include file="inc_refreshTreeWithFilters.tpl"}
+	{*include file="inc_refreshTree.tpl"*}
+{/if}
+
 </div>
 </body>
 </html>

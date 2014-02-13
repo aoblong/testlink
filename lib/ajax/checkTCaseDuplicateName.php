@@ -6,12 +6,14 @@
  * Checks if a test case with this name already exist. Used to warn user
  * if non-unique test case name is entered.
  *
- * @package 	  TestLink
- * @author 		  Erik Eloff
- * @copyright   2010,2012 TestLink community
- * @filesource  checkTCaseDuplicateName.php
+ * @package 	TestLink
+ * @author 		Erik Eloff
+ * @copyright 	2010, TestLink community
+ * @version    	CVS: $Id: checkTCaseDuplicateName.php,v 1.3 2010/10/10 13:41:13 franciscom Exp $
  *
- * @internal revisions
+ * @internal Revisions:
+ * 20101010 - franciscom - added testsuite_id as parameter, needed to do checks when creating test case
+ * 20100225 - eloff - initial commit
  *
  **/
 
@@ -20,15 +22,12 @@ require_once('common.php');
 testlinkInitPage($db);
 $data = array('success' => true, 'message' => '');
 
-// take care of proper escaping when magic_quotes_gpc is enabled
-$_REQUEST=strings_stripSlashes($_REQUEST);
-
 $iParams = array("name" => array(tlInputParameter::STRING_N,0,100),
-	               "testcase_id" => array(tlInputParameter::INT),
-	               "testsuite_id" => array(tlInputParameter::INT));
+	             "testcase_id" => array(tlInputParameter::INT),
+	             "testsuite_id" => array(tlInputParameter::INT));
 $args = G_PARAMS($iParams);
 
-if($_SESSION['currentUser']->hasRight($db, 'mgt_view_tc'))
+if (has_rights($db, 'mgt_view_tc'))
 {
 	$tree_manager = new tree($db);
 	$node_types_descr_id=$tree_manager->get_available_node_types();
@@ -56,4 +55,3 @@ else
 }
 
 echo json_encode($data);
-?>

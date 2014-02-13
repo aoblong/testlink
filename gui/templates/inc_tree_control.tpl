@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tree_control.tpl,v 1.2 2010/11/22 09:46:23 asimon83 Exp $
+ * $Id: inc_tree_control.tpl,v 1.1.2.3 2010/11/22 09:46:26 asimon83 Exp $
  *
  * Shows some buttons which perform actions on the displayed tree.
  * Is included from filter panel template.

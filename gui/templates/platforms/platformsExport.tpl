@@ -1,26 +1,26 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-
-@filesource	platformsExport.tpl
-
+$Id: platformsExport.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $ 
 Purpose: smarty template - platforms export
-
-@internal revisions
+rev:
 
 *}
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 {lang_get var="labels" 
           s='btn_export,btn_cancel,warning,export_filename,file_type,
              view_file_format_doc,warning_empty_filename'}
 
+{literal}
 <script type="text/javascript">
+{/literal}
+// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-
+{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
@@ -32,6 +32,7 @@ function validateForm(f)
   return true;
 }
 </script>
+{/literal}
 </head>
 
 
@@ -64,12 +65,11 @@ function validateForm(f)
   	</table>
   	
   	<div class="groupBtn">
-    	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" /> 
   	  	<input type="hidden" name="doAction" id="doAction" value="" />
   		<input type="submit" name="doExport" id="doExport" value="{$labels.btn_export}" 
   		                     onclick="doAction.value=this.id" />
     	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    		  {if $gui->goback_url  != ''}  onclick="location='{$gui->goback_url}'"
+    		  {if $gui->goback_url  != ''}  onclick="location='{$gui->goback_url }'"
     		  {else}  onclick="javascript:history.back();" {/if} />
   	</div>
   </form>

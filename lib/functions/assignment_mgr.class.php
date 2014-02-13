@@ -6,25 +6,12 @@
  * Manager for assignment activities
  *
  * @filesource  assignment_mgr.class.php
- * @package 	TestLink
- * @author 		Francisco Mancardi
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi
  * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  * 
  * @internal revisions:
- * 20110326 - franciscom - new methods 	getExecAssignmentsCountByBuild($buildID)
- *										getNotRunAssignmentsCountByBuild($buildID)
- * 
- * 20110207 - asimon - BUGID 4203 - use build_id when updating or deleting assignments because
- *                                  of assignments per build
- * 20101222 - franciscom - BUGID 4121: get_not_run_tc_count_per_build() crashes
- * 20101206 - asimon - introduced new query for get_not_run_tc_count_per_build(), 
- *                     proposed by Francisco per mail
- * 20101204 - franciscom - BUGID 4070 get_not_run_tc_count_per_build()
- * 20100722 - asimon - BUGID 3406 - added copy_assignments(), delete_by_build_id(),
- *                                  get_not_run_tc_count_per_build() and
- *                                  get_count_of_assignments_per_build_id(),
- *                                  modified assign() and update() to include build_id
  */
  
 /**
@@ -87,8 +74,7 @@ class assignment_mgr extends tlObjectWithDB
 		$result = $this->db->exec_query($sql);
 	}
 	
-	// BUGID 4203 - new function to delete assignments by feature id
-	//              and build_id
+	// new function to delete assignments by feature id and build_id
 	 
 	function delete_by_feature_id_and_build_id($feature_map) 
 	{
@@ -100,7 +86,8 @@ class assignment_mgr extends tlObjectWithDB
 		// build_id is the same for all entries because of assignment form
 		// -> skip foreach after first iteration
 		$build_id = 0;
-		foreach ($feature_map as $key => $feature) {
+		foreach ($feature_map as $key => $feature) 
+    {
 			$build_id = $feature['build_id'];
 			break;
 		}
@@ -114,12 +101,11 @@ class assignment_mgr extends tlObjectWithDB
   	 * 
   	 * @param $feature_map
   	 * $feature_map['feature_id']['user_id']
-	 * $feature_map['feature_id']['type']
+	   * $feature_map['feature_id']['type']
   	 * $feature_map['feature_id']['status']
   	 * $feature_map['feature_id']['assigner_id']
   	 * 
-  	 * @internal revisions:
-  	 *   20100714 - asimon - BUGID 3406: modified to include build ID
+  	 * @internal revisions
   	 */
 	function assign($feature_map) 
 	{
@@ -138,13 +124,13 @@ class assignment_mgr extends tlObjectWithDB
 				$values .="," . $elem['deadline_ts']; 
 			}     
 			
-			// BUGID 3406
 			if (isset($elem['build_id'])) {
 				$sql .= ",build_id";
 				$values .= "," . $elem['build_id'];
 			}
 			
 			$sql .= ") " . $values . ")";
+			tLog(__METHOD__ . '::' . $sql,"DEBUG");
 			$this->db->exec_query($sql);
 		}
 	}
@@ -217,6 +203,8 @@ class assignment_mgr extends tlObjectWithDB
 	    $sql = " SELECT COUNT(id) AS count FROM {$this->tables['user_assignments']} " .
 		       " WHERE build_id = {$build_id} {$user_sql} {$type_sql} ";
 	    
+	    // new dBug($sql);
+	    
 	    $count = $this->db->fetchOneValue($sql);
 	    
 		return $count;
@@ -254,6 +242,7 @@ class assignment_mgr extends tlObjectWithDB
 		       "     AND E.platform_id = TPTCV.platform_id " .
 		       "     AND E.build_id = UA.build_id " .
 		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";		   
+		   
 		   
 		if (isset($build_id) && is_numeric($build_id)) {
 			$count = count($this->db->fetchRowsIntoMap($sql, 'assignment_id'));
@@ -329,6 +318,7 @@ class assignment_mgr extends tlObjectWithDB
 	} // end of method
 
 
+
 	/**
 	 * get hash with build id and amount of test cases assigned to testers
 	 * 
@@ -384,11 +374,33 @@ class assignment_mgr extends tlObjectWithDB
 				" WHERE UA.build_id IN ( " . implode(",",(array)$buildID) . " ) " .
 				" AND E.status IS NULL " . 		   
 				" AND type = {$execAssign} " .
-				" GROUP BY build_id ";
+				" GROUP BY UA.build_id ";
 	    
 	    $rs = $this->db->fetchRowsIntoMap($sql,'build_id');
 	    
 		return $rs;
 	}
+
+
+	function getUsersByFeatureBuild($featureSet,$buildID,$assignmentType)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$rs = null;
+		
+		if(is_null($assignmentType) || !is_numeric($assignmentType) )
+		{
+		  throw new Exception(__METHOD__ . ' assignmentType can not be NULL or not numeric ');  
+		}
+		$sql = 	"/* $debugMsg */ ".
+				    " SELECT UA.user_id,UA.feature_id ".
+				    " FROM {$this->tables['user_assignments']} UA " .
+				    " WHERE UA.build_id = " . intval($buildID) . 
+				    " AND UA.feature_id IN(" . implode(",",(array)$featureSet)  . " )" . 		   
+				    " AND type = " . intval($assignmentType);
+				    
+	  $rs = $this->db->fetchRowsIntoMap($sql,'feature_id');
+		return $rs;
+  }
+   
 }
 ?>

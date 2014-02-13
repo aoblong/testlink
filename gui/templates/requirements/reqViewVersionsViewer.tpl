@@ -4,45 +4,40 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 viewer for requirement
 
 @internal revisions
-20110603 - asimon - BUGID 4298: merged functionality for direct links to open specific requirement versions
-20110305 - franciscom - display printer friendly button always
-20110305 - franciscom - BUGID 4273: Option to print single requirement
-20101127 - franciscom - BUGID 4056: Requirement Revisioning
-20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20101111 - asimon - replaced openTCaseWindow() by openTCEditWindow() to save popup size
+@since 1.9.8
 *}
 {lang_get var="labels"
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link"}
+             revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link,
+             design,execution_history,btn_unfreeze_this_version,addLinkToTestCase,btn_save,
+             removeLinkToTestCase,title_test_case"}
 
-             
-{$hrefReqSpecMgmt="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
-{$hrefReqSpecMgmt="$basehref$hrefReqSpecMgmt"}
+{assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
+{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
 
-{$hrefReqMgmt="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
-{$hrefReqMgmt="$basehref$hrefReqMgmt"}
+{assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
+{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
 
-{$module='lib/requirements/'}
-{$req_id=$args_req.id}
-{$req_version_id=$args_req.version_id}
+{assign var="module" value='lib/requirements/'}
+{assign var="req_id" value="$args_req.id"}
+{assign var="req_version_id" value="$args_req.version_id"}
 
-{if $args_show_title}
-    {if $args_tproject_name != ''}
-     <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
-    {/if}
-    {if $args_req_spec_name != ''}
-     <h2>{$labels.req_spec} {$args_req_spec_name|escape} </h2>
-    {/if}
-	  <h2>{$tlImages.toggle_direct_link} &nbsp; {$labels.title_test_case} {$args_req.title|escape} </h2>
-	  <div class="direct_link" style='display:none'>
-		  <a href="{$gui->direct_link}&version={$args_req.version}" target="_blank">{$labels.specific_direct_link}</a><br/>
-	  </div>
+{if $args_show_title }
+  {if isset($args_tproject_name) && $args_tproject_name != ''}
+    <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
+  {/if}
+  {if isset($args_reqspec_name) && $args_reqspec_name != ''}
+    <h2>{$labels.req_spec} {$args_reqspec_name|escape} </h2>
+  {/if}
+  <h2>{$tlImages.toggle_direct_link} &nbsp; {$labels.title_test_case} {$args_req.title|escape} </h2>
+  <div class="direct_link" style='display:none'>
+    <a href="{$gui->direct_link}&version={$args_req.version}" target="_blank">{$labels.specific_direct_link}</a><br/>
+  </div>
 {/if}
-{$warning_edit_msg=""}
+{assign var="warning_edit_msg" value=""}
 
 <div style="display: inline;" class="groupBtn">
 {if $args_grants->req_mgmt == "yes"}
@@ -50,10 +45,9 @@ viewer for requirement
 	        action="lib/requirements/reqEdit.php" method="post">
 	  	<input type="hidden" name="requirement_id" value="{$args_req.id}" />
 	  	<input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
-		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
 	  	<input type="hidden" name="doAction" value="" />
 	  	
-	  	{* IMPORTANT NOTICE: name can not be dynamic because PHP uses name not ID *}
+	  	{* IMPORTANT NOTICE: name can not be dynamic becasue PHP uses name not ID *}
 	  	<input type="hidden" name="log_message" id="log_message_{$req_version_id}" value="" />
 	  	
 	  	
@@ -64,26 +58,33 @@ viewer for requirement
 	  	{* BUGID 4588 - If more than one version is displayed show "Delete" and "Delete this Version" button*}
 	  	{if $args_can_delete_req && !$gui->version_option}
 	  	<input type="button" name="delete_req" value="{$labels.btn_delete}"
-	  	       onclick="action_confirmation({$args_req.id},
+	  	       onclick="delete_confirmation({$args_req.id},
 	  	                                    '{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
-	  	                                    '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"/>
+	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"	/>
 	  	{/if}
 	  	
 	  	{* BUGID 4588 - If a single version is displayed do only show "Delete this Version" button *}
 	  	{if $args_can_delete_version || $gui->version_option}
 	  	<input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
-	  	       onclick="action_confirmation({$args_req.version_id},
+	  	       onclick="delete_confirmation({$args_req.version_id},
 	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req_version);"	/>
 	  				                                
 	  	{/if}
 
-		{* freeze, BUGID 3089 *}
 		{if $args_frozen_version eq null}
 	  	<input type="button" name="freeze_req_version" value="{$labels.btn_freeze_this_version}"
-	  	       onclick="action_confirmation({$args_req.version_id},
+	  	       onclick="delete_confirmation({$args_req.version_id},
 	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  				                              '{$freeze_msgbox_title}', '{$freeze_warning_msg}',pF_freeze_req_version);"	/>
+
+		{else}
+			{if $args_grants->unfreeze_req}
+	  		<input type="button" name="unfreeze_req_version" value="{$labels.btn_unfreeze_this_version}"
+	  	       onclick="delete_confirmation({$args_req.version_id},
+	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
+	  				                              '{$unfreeze_msgbox_title}', '{$unfreeze_warning_msg}',pF_unfreeze_req_version);"	/>
+			{/if}
 	  	{/if}
 
 	    {if $args_can_copy}  				                                
@@ -95,23 +96,22 @@ viewer for requirement
 	  	       onclick="doAction.value='doCreateVersion';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
 	  </form>
 {/if}
-
-{* compare versions *}
-{if $gui->req_has_history}
+	
+	{* compare versions *}
+	{if $gui->req_has_history}
 	<form style="display: inline;" method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">
-		<input type="hidden" name="requirement_id" value="{$args_req.id}" />
-		<input type="hidden" name="tproject_id" id="history_tproject_id" value="{$gui->tproject_id}">
-		<input type="submit" name="compare_versions" value="{$labels.btn_view_history}" />
-	</form>
-{/if}
+			<input type="hidden" name="requirement_id" value="{$args_req.id}" />
+			<input type="submit" name="compare_versions" value="{$labels.btn_view_history}" />
+		</form>
+	{/if}
 
 {* BUGID 4273: Option to print single requirement *}
 <form style="display: inline;" method="post" action="" name="reqPrinterFriendly">
 	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
-	       onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},{$args_req.revision},
-	       										'lib/requirements/reqPrint.php?tproject_id={$gui->tproject_id}');"/>
+	       onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
+		                                          {$args_req.revision},'lib/requirements/reqPrint.php');"/>
 </form>
-</div> {* class="groupBtn" *}
+  </div> {* class="groupBtn" *}
 <br/><br/>
 
 {* warning message when req is frozen *}
@@ -119,27 +119,27 @@ viewer for requirement
 <div class="messages" align="center">{$labels.can_not_edit_req}</div>
 {/if}
 
-{* BUGID 4038 *}
+{*  BUGID 4038 *}
 {* notification message if we display a specific version *}
 {if $gui->version_option > 0}
 <div class="messages" align="center">{$labels.showing_version} {$args_req.version}</div>
 {/if}
 
 <table class="simple">
-  {if $args_show_title}
-	<tr>
-		<th colspan="2">
-		{$args_req.req_doc_id}{$smarty.const.TITLE_SEP}{$args_req.title|escape}</th>
-	</tr>
-  {/if}
 	<tr>
     <th>{$args_req.req_doc_id|escape}{$tlCfg->gui_title_separator_1}{$args_req.title|escape}</th>
 	</tr>
 
   {if $args_show_version}
 	  <tr>
-	  	<td class="bold" colspan="2">{$labels.version}
+	    {if $args_req.revision_id gt 0}
+	    	{assign var="tpt" value=$args_req.revision_id}
+	    {else}
+	    	{assign var="tpt" value=$args_req.version_id}
+	    {/if}
+	  	<td class="bold" colspan="2" id="tooltip-{$tpt}">{$labels.version}
 	  	{$args_req.version} {$labels.revision} {$args_req.revision}
+	  	<img src="{$tlImages.log_message_small}" style="border:none" />
 	  	</td>
 	  </tr>
 	{/if}
@@ -164,25 +164,54 @@ viewer for requirement
 		</td>
 	</tr>
 	<td>
-	  <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
-	  {if $args_req_coverage != ''}
-	  {section name=row loop=$args_req_coverage}
-	    <span>
-	    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
-	         onclick="javascript:openExecHistoryWindow({$args_req_coverage[row].id});"
-	         title="{$labels.execution_history}" />
-	    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-	         onclick="javascript:openTCaseWindow({$gui->tproject_id},{$args_req_coverage[row].id});"
-	         title="{$labels.design}" />
-	    {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}
-	    </span><br />
-	   {sectionelse}
-	  <span>{$labels.req_msg_notestcase}</span>
-	  {/section}
-	  {/if}
-	  
+    <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
+    {if $gui->user_feedback != ''}
+      <img class="clickable" src="{$tlImages.warning}"/>
+      {$gui->user_feedback}<br><p>
+    {/if}
+    
+    {if $args_req_coverage != ''}
+      <form style="display: inline;" id="reqRemoveTestCase_{$req_version_id}" name="reqRemoveTestCase_{$req_version_id}" 
+            action="lib/requirements/reqEdit.php" method="post">
+        <input type="hidden" id="rtRID" name="requirement_id" value="{$args_req.id}" />
+        <input type="hidden" id="rtRVID" name="req_version_id" value="{$args_req.version_id}" />
+        <input type="hidden" id="rtAction" name="doAction" value="removeTestCase" />
+        <input type="hidden" id="rtTCID" name="tcaseIdentity" value="" />
+
+      {section name=row loop=$args_req_coverage}
+        <span>
+        <input type="image"  class="clickable" src="{$tlImages.disconnect_small}" 
+               title="{$labels.removeLinkToTestCase}" onClick="tcaseIdentity.value={$args_req_coverage[row].id}">
+        <img class="clickable" src="{$tlImages.history_small}"
+             onclick="javascript:openExecHistoryWindow({$args_req_coverage[row].id});"
+             title="{$labels.execution_history}" />
+        <img class="clickable" src="{$tlImages.edit_icon}"
+             onclick="javascript:openTCaseWindow({$args_req_coverage[row].id});"
+             title="{$labels.design}" />
+        {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}
+        </span><br />
+      {/section}
+      </form>
+    {/if}
+    {if is_null($args_frozen_version) || !$args_frozen_version}
+    <form style="display: inline;" id="reqAddTestCase_{$req_version_id}" name="reqAddTestCase_{$req_version_id}" 
+          action="lib/requirements/reqEdit.php" method="post">
+      <input type="hidden" id="atRID" name="requirement_id" value="{$args_req.id}" />
+      <input type="hidden" id="atRVID" name="req_version_id" value="{$args_req.version_id}" />
+      <input type="hidden" id="atAction" name="doAction" value="addTestCase" />
+    
+      <img class="clickable" src="{$tlImages.add}" onclick="javascript:toogleShowHide('addTestCase');"
+           title="{$labels.addLinkToTestCase}" /> 
+           
+      <div id="addTestCase"  name="addTestCase" style="display:none;">
+        <input type="input" name="tcaseIdentity" value=" " >
+        <input type="submit" name="sex" value="{$labels.btn_save}"/>
+      </div>
+    </form>   
+    {/if}
+    	  
 	  </fieldset>
-			</td>
+		</td>
 	 </tr>
 	<tr>
 			<td>&nbsp;</td>
@@ -190,7 +219,7 @@ viewer for requirement
 
 	<tr class="time_stamp_creation">
   		<td >
-      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_req.creation_ts}&nbsp;
+      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_req.creation_ts }&nbsp;
       		{$labels.by}&nbsp;{$args_req.author|escape}
   		</td>
   </tr>

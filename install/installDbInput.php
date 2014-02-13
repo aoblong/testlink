@@ -6,16 +6,14 @@
  * Collect DB input data
  * every HTML input defined, will create an entry on $_SESSION array  automagically.
  * 
+ * @filesource	installDbInput.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installDbInput.php,v 1.7 2010/10/02 18:02:30 franciscom Exp $
+ * @copyright 	2009,2012 TestLink community 
  *
- * @internal Revisions:
- * 20101002 - franciscom - BUGID 3083	
- * 20100705 - asimon - added warning regarding user assignments migration
- * 20090603 - franciscom - added table prefix management
- * 
+ * @internal revisions
+ * @since 1.9.4
+ * 20120823 - franciscom - no more support for MSSQL 2000 
  **/
 
 require_once("installUtils.php");
@@ -39,7 +37,6 @@ include 'installHead.inc';
 				return false;
 			}
       
-			// 20060215 - franciscom
 			if( f.databasename.value.indexOf('/') >= 0 ||
 			    f.databasename.value.indexOf('\\') >= 0 ||
           		f.databasename.value.indexOf('.') >= 0 )
@@ -68,7 +65,6 @@ include 'installHead.inc';
 				return false;
 			}
 
-			// 20101002 - franciscom (using code attached on BUGID 3083)
 			if(f.tableprefix.value != "") 
 			{
 				if( f.tableprefix.value.search(/^[A-Za-z0-9_]*$/) == -1)
@@ -138,12 +134,9 @@ include 'installHead.inc';
 			<label for="databasetype">Database Type</label>
 		</div>
 		<select id="databasetype" name="databasetype">
-			<option value="mysql" selected>MySQL (5.0 and later)</option>
+			<option value="mysql" selected>MySQL (5.0.3 and later)</option>
 			<option value="postgres" >Postgres (8.0 and later)</option>
-			<option value="mssql" >Microsoft SQL Server 2000/2500</option>
-			<!--- 
-			20100124 - franciscom - Not ready => disabled
-			<option value="mssql" >Microsoft SQL Server 2000/2500</option> --->
+			<option value="mssql" >Microsoft SQL Server 2005/2008 (Experimental)</option>
 		</select>	
 		</p>
 		<p>

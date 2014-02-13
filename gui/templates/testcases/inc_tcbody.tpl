@@ -1,9 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource inc_tcbody.tpl
+$Id: inc_tcbody.tpl,v 1.2 2010/10/24 07:21:23 mx-julian Exp $
 viewer for test case in test specification
 
-@internal revisions
 *}
 <table class="simple">
   {if $inc_tcbody_show_title == "yes"}
@@ -16,7 +15,17 @@ viewer for test case in test specification
 	  <tr>
 	  	<td class="bold" colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_labels.version}
 	  	{$inc_tcbody_testcase.version|escape}
+		<img class="clickable" src="{$tlImages.ghost_item}"
+             title="{$inc_tcbody_labels.show_ghost_string}"
+             onclick="showHideByClass('tr','ghostTC');">
 	  	</td>
+	  </tr>
+
+	  <tr class="ghostTC" style="display:none;">
+	  	<td colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_testcase.ghost}</td>	
+	  </tr>
+	  <tr class="ghostTC" style="display:none;">
+	  	<td colspan="{$inc_tcbody_tableColspan}">&nbsp;</td>	
 	  </tr>
 	  
 	{if $inc_tcbody_author_userinfo != ''}  
@@ -36,6 +45,7 @@ viewer for test case in test specification
     	</td>
   </tr>
  {/if}
+	  <tr><td>&nbsp;</td></tr>
 
 	<tr>
 		<td class="bold" colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_labels.summary}</td>

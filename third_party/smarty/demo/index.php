@@ -1,16 +1,13 @@
 <?php
-require('../libs/Smarty.class.php');
+
+require '../libs/Smarty.class.php';
 
 $smarty = new Smarty;
 
-
-
-//$smarty->force_compile = true;
+$smarty->compile_check = true;
 $smarty->debugging = true;
-$smarty->caching = true;
-$smarty->cache_lifetime = 120;
 
-$smarty->assign("Name","Fred Irving Johnathan Bradley Peppergill",true);
+$smarty->assign("Name","Fred Irving Johnathan Bradley Peppergill");
 $smarty->assign("FirstName",array("John","Mary","James","Henry"));
 $smarty->assign("LastName",array("Doe","Smith","Johnson","Case"));
 $smarty->assign("Class",array(array("A","B","C","D"), array("E", "F", "G", "H"),
@@ -24,4 +21,5 @@ $smarty->assign("option_output", array("New York","Nebraska","Kansas","Iowa","Ok
 $smarty->assign("option_selected", "NE");
 
 $smarty->display('index.tpl');
+
 ?>

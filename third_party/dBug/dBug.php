@@ -2,10 +2,6 @@
 /*********************************************************************************************************************\
  * LAST UPDATE
  * ============
- * 20110911 - franciscom
- * added new option 'calledFrom' (absolutely simple echo, quality of info depends on how call is done)
- *
- * ============
  * 20100109 - franciscom
  * Adapted for Test Link
  *
@@ -66,19 +62,17 @@ class dBug {
 	
 	// constructor
     // function dBug($var,$forceType="",$bCollapsed=false) {
-	function dBug($var,$options=null) 
-	{
+	function dBug($var,$options=null) {
 		
-		if( !defined('DBUG_ON') ) return; // >>----> Bye!
+		if( !defined('DBUG_ON') && !isset($_REQUEST['DBUG_ON'])) return; // >>----> Bye!
 
-        $my['options'] = array('forceType' => '', 'collapsed' => true, 'label'=> '', 'calledFrom' => '');
+        $my['options'] = array('forceType' => '', 'collapsed' => true, 'label'=> '');
    	    $my['options'] = array_merge($my['options'], (array)$options);
         $forceType =  $my['options']['forceType'];
         
     
-		// include js and css scripts
-		if(!defined('BDBUGINIT')) 
-		{
+		//include js and css scripts
+		if(!defined('BDBUGINIT')) {
 			define("BDBUGINIT", TRUE);
 			$this->initJSandCSS();
 		}
@@ -89,40 +83,21 @@ class dBug {
         {
         	echo $my['options']['label'] . '<br>';
         } 
-
-        if( $my['options']['calledFrom'] != '')
-        {
-        	echo '<b>dBug() Called From:' .  $my['options']['calledFrom'] . '<b><br>';
-        }
-		
 		if(in_array($forceType,$arrAccept))
-		{
 			$this->{"varIs".ucfirst($forceType)}($var);
-		}
 		else
-		{
 			$this->checkType($var);
-		}	
 	}
 
 	//get variable name
-	function getVariableName() 
-	{
+	function getVariableName() {
 		$arrBacktrace = debug_backtrace();
 
-		if( defined('DBUG_BACKTRACE') )
-		{
-			echo '<pre>';
-			var_dump($arrBacktrace);
-			echo '</pre>';
-		}
 		//possible 'included' functions
 		$arrInclude = array("include","include_once","require","require_once");
 		
-		// check for any included/required files. if found, get array of the last included file 
-		// (they contain the right line numbers)
-		for($i=count($arrBacktrace)-1; $i>=0; $i--) 
-		{
+		//check for any included/required files. if found, get array of the last included file (they contain the right line numbers)
+		for($i=count($arrBacktrace)-1; $i>=0; $i--) {
 			$arrCurrent = $arrBacktrace[$i];
 			if(array_key_exists("function", $arrCurrent) && 
 				(in_array($arrCurrent["function"], $arrInclude) || (0 != strcasecmp($arrCurrent["function"], "dbug"))))
@@ -133,8 +108,7 @@ class dBug {
 			break;
 		}
 		
-		if(isset($arrFile)) 
-		{
+		if(isset($arrFile)) {
 			$arrLines = file($arrFile["file"]);
 			$code = $arrLines[($arrFile["line"]-1)];
 	
@@ -148,10 +122,8 @@ class dBug {
 	}
 	
 	//create the main table header
-	function makeTableHeader($type,$header,$colspan=2) 
-	{
-		if(!$this->bInitialized) 
-		{
+	function makeTableHeader($type,$header,$colspan=2) {
+		if(!$this->bInitialized) {
 			$header = $this->getVariableName() . " (" . $header . ")";
 			$this->bInitialized = true;
 		}
@@ -262,7 +234,7 @@ class dBug {
 			$arrObjVars=get_object_vars($var);
 			foreach($arrObjVars as $key=>$value) {
 
-				$value = (!is_object($value) && !is_array($value) && !is_resource($value) && trim($value)=="") ? "[empty string]" : $value;
+				$value=(!is_object($value) && !is_array($value) && trim($value)=="") ? "[empty string]" : $value;
 				$this->makeTDHeader("object",$key);
 				
 				//check for recursion

@@ -3,22 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	reqCompareVersions.php
- * @package 	TestLink
- * @author 		asimon
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author      asimon
+ * @copyright   2005-2012, TestLink community 
+ * @filesource  reqCompareVersions.php
+ * @link 		    http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
  *
- * @internal Revisions:
- * 20110107 - asimon - added daisydiff (html diff engine which handles tags well)
+ * @internal revisions
+ * @since 1.9.6
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
-
-// code for different diff engines
 require('../../third_party/diff/diff.php');
 require('../../third_party/daisydiff/src/HTMLDiff.php');
 
@@ -32,14 +30,13 @@ $labels = init_labels(array("num_changes" => null,"no_changes" => null,
 					  		"expected_coverage" => null,
 					  		"revision_short" => null, "version_revision" => null) );
 
+
+
 $reqMgr = new requirement_mgr($db);
 $differ = new diff();
 $args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
-
-
-
 $gui = initializeGui($db,$args,$labels,$reqMgr);
+
 
 // if already two versions are selected, display diff
 // else display template with versions to select
@@ -249,10 +246,8 @@ function init_args()
 	$args->compare_selected_versions = isset($_REQUEST['compare_selected_versions']);
 	$args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
 	$args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
-
-
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    // 20110107 - new diff engine
 	$args->use_daisydiff = isset($_REQUEST['use_html_comp']);
 
 	$diffEngineCfg = config_get("diffEngine");
@@ -261,7 +256,7 @@ function init_args()
 	{
 		$args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? $_REQUEST['context'] : $diffEngineCfg->context;
 	}
-
+	
 	return $args;
 }
 
@@ -273,8 +268,8 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$reqMgr)
 {
 	$reqCfg = config_get('req_cfg');
 	$guiObj = new stdClass();
-
-    $guiObj->items = $reqMgr->get_history($argsObj->req_id,array('output' => 'array','decode_user' => true));
+  $guiObj->items = $reqMgr->get_history($argsObj->req_id,array('output' => 'array','decode_user' => true));
+  
 	
 	// Truncate log message
 	if( $reqCfg->log_message_len > 0 )
@@ -295,7 +290,6 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$reqMgr)
 	$guiObj->context = $argsObj->context;
 	$guiObj->version_short = $lbl['version_short'];
 	$guiObj->diff = null;
-	$guiObj->tproject_id = $argsObj->tproject_id;
 	return $guiObj;
 }
 
@@ -342,16 +336,5 @@ function getAttrDiff($leftSide,$rightSide,$labels)
 		}                   
 	}		
 	return $cmp;	
-}
-
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
 ?>

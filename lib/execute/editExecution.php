@@ -6,8 +6,8 @@
  * @filesource	editExecution.php
  *
  * Edit an execution notes and custom fields
- *
- * @internal revisions
+ * @since 1.9.7
+ * 
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -17,18 +17,11 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('execution');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $tcase_mgr = new testcase($db);
+
 $args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
-
-
-$gui = new stdClass();
-$gui->exec_id = $args->exec_id;
-$gui->tcversion_id = $args->tcversion_id;
-$gui->tplan_id = $args->tplan_id;
-$gui->tproject_id = $args->tproject_id;
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg);
 switch ($args->doAction)
@@ -37,14 +30,14 @@ switch ($args->doAction)
 	break;
         
   case 'doUpdate':
-	  doUpdate($db,$args,$tcase_mgr,$_REQUEST);
+    doUpdate($db,$args,$tcase_mgr,$_REQUEST);
   break;  
 }
 $map = get_execution($db,$args->exec_id);
 $owebeditor->Value = $map[0]['notes'];
-$gui->cfields_exec = $tcase_mgr->html_table_of_custom_field_inputs($args->tcversion_id,null,'execution','_cf',
-                                                                   $args->exec_id,$args->tplan_id,$args->tproject_id);
 
+// order on script is critic 
+$gui = initializeGui($args,$tcase_mgr);
 $gui->notes = $owebeditor->CreateHTML();
 $gui->editorType = $editorCfg['type'];
 
@@ -58,46 +51,54 @@ function doUpdate(&$db,&$args,&$tcaseMgr,&$request)
  	updateExecutionNotes($db,$args->exec_id,$args->notes);
     
  	$cfield_mgr = new cfield_mgr($db);
-    $cfield_mgr->execution_values_to_db($request,$args->tcversion_id,$args->exec_id,$args->tplan_id);
+  $cfield_mgr->execution_values_to_db($request,$args->tcversion_id,$args->exec_id,$args->tplan_id);
 }
 
 function init_args()
 {
-	$iParams = array("exec_id" => array(tlInputParameter::INT_N),
-		             "doAction" => array(tlInputParameter::STRING_N,0,100),
-   		             "notes" => array(tlInputParameter::STRING_N),
-					"tcversion_id" => array(tlInputParameter::INT_N),
-					"tplan_id" => array(tlInputParameter::INT_N),
-					"tproject_id" => array(tlInputParameter::INT_N),
-			);
-	$args = new stdClass();
-    R_PARAMS($iParams,$args);
-    
-    $args->basehref = $_SESSION['basehref'];
-    
-    // BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
+  // Take care of proper escaping when magic_quotes_gpc is enabled
+  $_REQUEST=strings_stripSlashes($_REQUEST);
 
-	return $args; 
+	$iParams = array("exec_id" => array(tlInputParameter::INT_N),
+		               "doAction" => array(tlInputParameter::STRING_N,0,100),
+   		             "notes" => array(tlInputParameter::STRING_N),
+					         "tcversion_id" => array(tlInputParameter::INT_N),
+					         "tplan_id" => array(tlInputParameter::INT_N),
+					         "tproject_id" => array(tlInputParameter::INT_N));
+
+	$args = new stdClass();
+  R_PARAMS($iParams,$args);
+    
+  $args->basehref = $_SESSION['basehref'];
+  $args->user = $_SESSION['currentUser'];
+
+  return $args; 
 }
 
 
-/**
- * Checks the user rights for using the page
- * 
- */
-function checkRights(&$db,&$userObj,$argsObj)
+function initializeGui(&$argsObj,&$tcaseMgr)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	if($userObj->hasRight($dbHandler,"exec_edit_notes",$env['tproject_id'],$env['tplan_id']) )
-	{
-		checkSecurityClearance($db,$userObj,$env,array('testplan_execute'),'and');
-	}
-	else
-	{
-    redirect($_SESSION['basehref'],"top.location");
-		exit();
-	}
+  $guiObj = new stdClass();
+  $guiObj->exec_id = $argsObj->exec_id;
+  $guiObj->tcversion_id = $argsObj->tcversion_id;
+  $guiObj->tplan_id = $argsObj->tplan_id;
+  $guiObj->tproject_id = $argsObj->tproject_id;
+  $guiObj->edit_enabled = $argsObj->user->hasRight($db,"exec_edit_notes") == 'yes' ? 1 : 0;
+  $guiObj->cfields_exec = $tcaseMgr->html_table_of_custom_field_inputs($argsObj->tcversion_id,null,'execution','_cf',
+                                                                       $argsObj->exec_id,$argsObj->tplan_id,$argsObj->tproject_id);
+  return $guiObj;
+}
+
+/**
+ * Checks the user rights for viewing the page
+ * 
+ * @param $db resource the database connection handle
+ * @param $user tlUser the object of the current user
+ *
+ * @return boolean return true if the page can be viewed, false if not
+ */
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,"testplan_execute") && $user->hasRight($db,"exec_edit_notes");
 }
 ?>

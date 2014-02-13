@@ -1,29 +1,37 @@
 <?php
 /**
- * 	TestLink Open Source Project - http://testlink.sourceforge.net/
- *
- * 	@filesource	listTestCases.php
- * 	@package 	  TestLink
- * 	@author 	  Martin Havlat
- * 	@copyright 	2007-2012, TestLink community 
- * 	@link 		  http://www.teamst.org/index.php
- *
- *
- * 	Generates tree menu with test specification.
- *  It builds the javascript tree that allows the user to choose testsuite or testcase.
- *
- *	@internal revisions
- *
- */
+* 	TestLink Open Source Project - http://testlink.sourceforge.net/
+*
+* 	@version 	$Id: listTestCases.php,v 1.60 2010/09/15 20:55:12 franciscom Exp $
+* 	@author 	Martin Havlat
+*
+* 	Generates tree menu with test specification.
+*   It builds the javascript tree that allows the user to choose testsuite or testcase.
+*
+*	@internal revision
+*
+*   20100628 - asimon - removal of constants from filter control class
+*   20100624 - asimon - CVS merge (experimental branch to HEAD)
+*   20100622 - asimon - huge refactorization for new tlTestCaseFilterControl class
+*   20100517 - asimon - BUGID 3301 and related - huge refactoring for first implementation
+*                       of filter panel class hierarchy to simplify/standardize
+*                       filter panel handling for test cases and requirements
+*   20100428 - asimon - BUGID 3301 and related issues - changed name or case
+*                       of some variables used in new common template,
+*                       added custom field filtering logic
+*	20091210 - franciscom - test case execution type filter
+*   20090308 - franciscom - added option Any in keywords filter
+*   20090210 - BUGID 2062 - franciscom -
+*/
 require_once('../../config.inc.php');
 require_once("common.php");
-// require_once("treeMenu.inc.php");
+require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
-$control = new tlTestCaseFilterControl($db, 'edit_mode');
 
-new dBug($control);
+// new class for filter controlling/handling
+$control = new tlTestCaseFilterControl($db, 'edit_mode');
 
 $gui = initializeGui($db, $control);
 $control->build_tree_menu($gui);
@@ -57,8 +65,7 @@ function initializeGui(&$dbHandler, &$control)
 	                      'keywordsAssign' => "lib/keywords/keywordsAssign.php",
 	                      'assignReqs' => "lib/requirements/reqTcAssign.php");
 
-	$gui->tree_drag_and_drop_enabled = array('edit_tc' => 
-	                                          ($control->user->HasRight($dbHandler, "mgt_modify_tc") == 'yes'),
+	$gui->tree_drag_and_drop_enabled = array('edit_tc' => (has_rights($dbHandler, "mgt_modify_tc") == 'yes'),
 	                                         'keywordsAssign' => false,
 	                                         'assignReqs' => false);
 

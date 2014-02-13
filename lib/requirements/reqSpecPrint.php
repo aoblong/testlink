@@ -9,27 +9,29 @@
  * @copyright 	2005-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
- * create printer friendly information for ONE Requirement Specification
+ * create printer friendly information for ONE requirement
  *
  * @internal revisions:
+ * 20110319 - franciscom - BUGID 4321: Requirement Spec - add option to print single Req Spec
  */
 
 require_once("../../config.inc.php");
 require_once("../../cfg/reports.cfg.php"); 
 require_once("print.inc.php"); 
 require_once("common.php");
-
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $req_cfg = config_get('req_cfg');
 
 $tree_mgr = new tree($db);
 $reqspec_mgr = new requirement_spec_mgr($db);
-$args = init_args($tree_mgr);
-checkRights($db,$_SESSION['currentUser'],$args);
+$args = init_args();
 
+$target_id = $args->reqspec_revision_id;
+$target_id = ($target_id <= 0) ? $args->reqspec_id : $target_id;
 
-$node = $tree_mgr->get_node_hierarchy_info($args->reqspec_id);
+// $node = $tree_mgr->get_node_hierarchy_info($args->reqspec_id);
+$node = $tree_mgr->get_node_hierarchy_info($target_id);
 
 $gui = new stdClass();
 $gui->object_name='';
@@ -84,31 +86,16 @@ echo $text2print;
   returns: 
 
 */
-function init_args(&$treeMgr)
+function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
     $args = new stdClass();
     $args->reqspec_id = isset($_REQUEST['reqspec_id']) ? intval($_REQUEST['reqspec_id']) : 0;
+    $args->reqspec_revision_id = isset($_REQUEST['reqspec_revision_id']) ? intval($_REQUEST['reqspec_revision_id']) : 0;
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+    $args->tproject_name = $_SESSION['testprojectName'];
 
-	$args->tproject_name = '';
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-	if($args->tproject_id > 0)
-	{
-		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
-		$args->tproject_name = $dummy['name'];    
-	}
     return $args;
-}
-
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
 ?>

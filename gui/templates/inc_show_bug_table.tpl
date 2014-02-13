@@ -1,15 +1,17 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-@filespurce	inc_show_bug_table.tpl
+@filesource inc_show_bug_table.tpl
 
 @internal revisions
+20110702 - franciscom - removed column with delete icon if can not delete
 *}
+
 {* -------------------------------------------------------------------------------------- *}
 {* Manage missing arguments                                                               *}
-{if !isset($tableClassName)}
+{if !isset($tableClassName) }
     {assign var="tableClassName"  value="simple"}
 {/if}
-{if !isset($tableStyles)}
+{if !isset($tableStyles) }
     {assign var="tableStyles"  value="font-size:12px"}
 {/if}
 {* -------------------------------------------------------------------------------------- *}
@@ -17,7 +19,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
   <tr>
 	  <th style="text-align:left">{lang_get s='build'}</th>
 	  <th style="text-align:left">{lang_get s='caption_bugtable'}</th>
-	  <th style="text-align:left">&nbsp;</th>
+	  {if $can_delete} <th style="text-align:left">&nbsp;</th> {/if}
   </tr>
   
  	{foreach from=$bugs_map key=bug_id item=bug_elem}
@@ -26,13 +28,10 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 		<td>{$bug_elem.link_to_bts}</td>
 		{if $can_delete}
 		  <td class="clickable_icon">
-		  	<img class="clickable" onclick="action_confirmation('{$exec_id}-{$bug_id|escape:'javascript'|escape}','{$bug_id|escape:'javascript'|escape}',
+		  	<img class="clickable" onclick="delete_confirmation('{$exec_id}-{$bug_id|escape:'javascript'|escape}','{$bug_id|escape:'javascript'|escape}',
 			            '{lang_get s='delete_bug'}','{lang_get s='del_bug_warning_msg'} ({lang_get s='bug_id'} {$bug_id})',deleteBug);" style="border:none" title="{lang_get s='delete_bug'}" alt="{lang_get s='delete_bug'}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></td>
-		{else}
-		  <td class="clickable_icon">
-		  	<img style="border:none" src="{$smarty.const.TL_THEME_IMG_DIR}/trash_greyed.png"/ title="{$labels.closed_build}">
-		  </td>
 		{/if}
 	</tr>
 	{/foreach}
-</table>		
+</table>
+		

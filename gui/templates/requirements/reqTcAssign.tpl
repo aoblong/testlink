@@ -1,14 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	reqAssign.tpl
-
+@filesource reqAssign.tpl
 assign REQ to one test case
-
-@internal revisions
-20110308 - Julian - BUGID 3410, BUGID 4190 - Smarty 3.0 compatibility
-20100403 - franciscom - SCOPE_SHORT_TRUNCATE
 *}
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels"
@@ -17,14 +12,16 @@ assign REQ to one test case
              req_title_assigned,check_uncheck_all_checkboxes,
              req_msg_norequirement,btn_unassign,req_title_unassigned,
              check_uncheck_all_checkboxes,req_msg_norequirement,btn_assign,
-             requirement"}
+             req_doc_id,req,scope,assigned_by,timestamp,requirement"}
           
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
+{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
 var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
+{literal}
 
 function check_action_precondition(form_id,action)
 {
@@ -35,6 +32,7 @@ function check_action_precondition(form_id,action)
 	}
 	return true;
 }
+{/literal}
 </script>
 </head>
 
@@ -46,16 +44,14 @@ function check_action_precondition(form_id,action)
 </h1>
 
 <div class="workBack">
-
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
-{if $gui->arrReqSpec eq ""}
+{if $gui->arrReqSpec eq "" }
    {$labels.warning_req_tc_assignment_impossible}
 {else}
-
   <h2>{$labels.req_title_assign}</h2>
   <form id="SRS_switch" name="SRS_switch" method="post">
-    <p><span class="labelHolder">{$labels.req_spec}</span>
-  	<select name="idSRS" onchange="form.submit()">
+    <p><span class="labelHolder">{$labels.req_spec}</span>   
+  	<select name="idSRS" id="idSRS" onchange="form.submit()">
   		{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}
   	</select>
   </form>
@@ -78,22 +74,22 @@ function check_action_precondition(form_id,action)
       		             onclick='cs_all_checkbox_in_div("div_assigned_req","assigned_req","memory_assigned_req");'
       		             title="{$labels.check_uncheck_all_checkboxes}" />
       		</th>
-    		<th>{lang_get s="req_doc_id"}</th>
-    		<th>{lang_get s="req"}</th>
-    		<th>{lang_get s="scope"}</th>
+    		<th>{$labels.req_doc_id}</th>
+    		<th>{$labels.req}</th>
+    		<th>{$labels.scope}</th>
+        <th>{$labels.assigned_by}</th>
+        <th>{$labels.timestamp}</th>
     	</tr>
     	{section name=row loop=$gui->arrAssignedReq}
     	<tr>
     		<td><input type="checkbox" id="assigned_req{$gui->arrAssignedReq[row].id}" value="{$gui->arrAssignedReq[row].id}"
     		                           name="req_id[{$gui->arrAssignedReq[row].id}]" /></td>
-    		<td><span>{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
-    		<td>
-    			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-    			     onclick="javascript:openLinkedReqWindow({$gui->tproject_id},{$gui->arrAssignedReq[row].id});"
-    			     title="{$labels.requirement}" />
-    			{$gui->arrAssignedReq[row].title|escape}
-    		</td>
+    		<td><span class="bold">{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
+    		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
+    			{$gui->arrAssignedReq[row].title|escape}</a></span></td>
     		<td>{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
+        <td>{$gui->arrAssignedReq[row].coverageAuthor}</td>
+        <td>{localize_timestamp ts=$gui->arrAssignedReq[row].coverageTS}</td>
     	</tr>
     	{sectionelse}
     	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>
@@ -142,17 +138,13 @@ function check_action_precondition(form_id,action)
       		           id="free_req{$gui->arrUnassignedReq[row2].id}" value="{$gui->arrUnassignedReq[row2].id}"
       		           name="req_id[{$gui->arrUnassignedReq[row2].id}]" /></td>
 
-      		<td>{$gui->arrUnassignedReq[row2].req_doc_id|escape}</td>
-      		<td>
-      			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-      			     onclick="javascript:openLinkedReqWindow({$gui->tproject_id},{$gui->arrUnassignedReq[row2].id});"
-      			     title="{$labels.requirement}" />
-      			{$gui->arrUnassignedReq[row2].title|escape}
-      		</td>
+      		<td><span class="bold">{$gui->arrUnassignedReq[row2].req_doc_id|escape}</span></td>
+      		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrUnassignedReq[row2].id}">
+      			{$gui->arrUnassignedReq[row2].title|escape}</a></span></td>
       		<td>{$gui->arrUnassignedReq[row2].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
       	</tr>
       	{sectionelse}
-      	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement66}</span></td></tr>
+      	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>
       	{/section}
       </table>
 	  </div>

@@ -1,25 +1,26 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource	execExport.tpl
+$Id: execExport.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $ 
 
 execution test case set export
 
-@internal revisions
+Revisions:
 20100926- franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
 *}
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
+// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-
+{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
@@ -30,6 +31,7 @@ function validateForm(f)
   }
   return true;
 }
+{/literal}
 </script>
 </head>
 
@@ -70,6 +72,10 @@ function validateForm(f)
   	</table>
   	
   	<div class="groupBtn">
+  		<input type="hidden" name="testcase_id" value="{$gui->tcID}" />
+  		<input type="hidden" name="tcversion_id" value="{$gui->tcVersionID}" />
+  		<input type="hidden" name="containerID" value="{$gui->containerID}" />
+  		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
   		<input type="submit" name="export" value="{$labels.btn_export}" />
       {if $gui->drawCancelButton}
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"

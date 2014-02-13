@@ -1,23 +1,28 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource workAreaSimple.tpl
+$Id: workAreaSimple.tpl,v 1.5 2009/05/18 20:22:10 schlundus Exp $
 Purpose: show workarea with simple structure title + content + link
 *}
 {include file="inc_head.tpl"}
 
 <body>
-{if isset($gui->title) && $gui->title != ''}
-	<h1 class="title">{$gui->title|escape}</h1>
+
+{if isset($title) && $title ne ''}
+	<h1 class="title">{$title|escape}</h1>
 {/if}
 
 <div class="workBack">
-{if $gui->content != ''}
-	{$gui->content}
+
+{if $content ne ''}
+	{$content}
 {/if}
 
-{if $gui->link_to_op != ''}
-  <p><a href="{$basehref}{$gui->link_to_op}">{$gui->hint_text}</a>
+{* 20060809 - franciscom - if user can solve the problem give him/her the url *}
+{if $link_to_op ne ''}
+  <p><a href="{$basehref}{$link_to_op}">{$hint_text}</a>
 {/if}
+	
 </div>
+
 </body>
 </html>

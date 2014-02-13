@@ -1,9 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filespurce	planImport.tpl
+$Id: planImport.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: manage import of test plan links (test cases and platforms)
 
-@internal revisions
+rev:
 *}
 
 {lang_get var="labels"
@@ -12,11 +12,11 @@ Purpose: manage import of test plan links (test cases and platforms)
              duplicate_criteria,action_for_duplicates,
              action_on_duplicated_name,warning,btn_cancel,title_imp_tc_data'}
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_del_onclick.tpl"}
 </head>
 <body>
 
@@ -57,14 +57,18 @@ Purpose: manage import of test plan links (test cases and platforms)
 	{foreach item=result from=$gui->resultMap}
 		<b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
 	{/foreach}
-  {$tlRefreshTreeByReloadJS}
+  {include file="inc_refreshTree.tpl"}
 {/if}
 
-{if $gui->import_done} {$tlRefreshTreeByReloadJS} {/if}
+{if $gui->import_done}
+	{include file="inc_refreshTree.tpl"}
+{/if}
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
+//  BUGID 3943: Escape all messages (string)
   alert_message("{$labels.warning}","{$gui->file_check.msg|escape:'javascript'}");
+  // alert("{$gui->file_check.msg}");
   </script>
 {/if}  
 </div>

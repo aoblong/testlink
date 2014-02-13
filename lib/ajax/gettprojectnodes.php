@@ -1,14 +1,14 @@
 <?php
 /** 
-* 	TestLink Open Source Project - http://testlink.sourceforge.net/
+*   TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@filesource gettprojectnodes.php
-* 	@author 	  Francisco Mancardi
+*   @version  $Id: gettprojectnodes.php,v 1.22 2010/10/10 14:47:57 franciscom Exp $
+*   @author   Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
 *   Created using Ext JS example code
 *
-* 	Is the tree loader, will be called via AJAX.
+*   Is the tree loader, will be called via AJAX.
 *   Ext JS automatically will pass $_REQUEST['node']   
 *   Other arguments will be added by TL php code that needs the tree.
 *   
@@ -18,78 +18,75 @@
 *   - Assign keywords to test cases
 *   - Assign requirements to test cases
 *
-* 	EXT-JS - Important:
-* 	Custom keys can be added, and will be access on EXT-JS code using
-* 	public property 'attributes' of object of Class Ext.tree.TreeNode 
-* 	
+*   EXT-JS - Important:
+*   Custom keys can be added, and will be access on EXT-JS code using
+*   public property 'attributes' of object of Class Ext.tree.TreeNode 
+*   
 *
-* @internal revisions 
+* @internal revisions
+* @since 1.9.7
 *
 */
 require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-//take care of proper escaping when magic_quotes_gpc is enabled
-$_REQUEST=strings_stripSlashes($_REQUEST);
+$root_node = isset($_REQUEST['root_node']) ? intval($_REQUEST['root_node']): null;
+$node = isset($_REQUEST['node']) ? intval($_REQUEST['node']) : $root_node;
+$filter_node = isset($_REQUEST['filter_node']) ? intval($_REQUEST['filter_node']) : null;
+$show_tcases = isset($_REQUEST['show_tcases']) ? intval($_REQUEST['show_tcases']) : 1;
 
-$root_node = isset($_REQUEST['root_node']) ? $_REQUEST['root_node']: null;
-$env['tproject_id'] = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-$env['tplan_id'] = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-
-$node = isset($_REQUEST['node']) ? $_REQUEST['node'] : $root_node;
-$filter_node = isset($_REQUEST['filter_node']) ? $_REQUEST['filter_node'] : null;
 $tcprefix = isset($_REQUEST['tcprefix']) ? $_REQUEST['tcprefix'] : '';
-
-// useful only for feature: test plan add test case
-$show_tcases = isset($_REQUEST['show_tcases']) ? $_REQUEST['show_tcases'] : 1;
-
 $operation = isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
 
-// for debug - 
-// file_put_contents(config_get('log_path') . 'request.txt', serialize($_REQUEST));                            
-$nodes = display_children($db,$env,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation);
+// for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
+$nodes = display_children($db,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation);
+// file_put_contents('/tmp/gettp.txt',serialize($nodes));
 echo json_encode($nodes);
 
-
-function display_children($dbHandler,$env,$root_node,$parent,$filter_node,
+function display_children($dbHandler,$root_node,$parent,$filter_node,
                           $tcprefix,$show_tcases = 1,$operation = 'manage') 
 {             
   static $showTestCaseID;
-  
+    
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','node_types'));
   
+  $forbidden_parent = array('testproject' => 'none','testcase' => 'testproject', 'testsuite' => 'none');
   $external = '';
   $nodes = null;
   $filter_node_type = $show_tcases ? '' : ",'testcase'";
-      
+        
   switch($operation)
   {
-      case 'print':
-        $js_function = array('testproject' => 'TPROJECT_PTP',
-                             'testsuite' =>'TPROJECT_PTS', 'testcase' => 'TPROJECT_PTS');
-     	break;
-      
-      case 'manage':
-      default:
-        $js_function = array('testproject' => 'EP','testsuite' =>'ETS', 'testcase' => 'ET');
-      break;  
+    case 'print':
+      $js_function = array('testproject' => 'TPROJECT_PTP',
+                           'testsuite' =>'TPROJECT_PTS', 'testcase' => 'TPROJECT_PTS');
+    break;
+        
+    case 'manage':
+    default:
+      $js_function = array('testproject' => 'EP','testsuite' =>'ETS', 'testcase' => 'ET');
+    break;  
   }
     
   $sql = " SELECT NHA.*, NT.description AS node_type " . 
          " FROM {$tables['nodes_hierarchy']} NHA, {$tables['node_types']} NT " .
          " WHERE NHA.node_type_id = NT.id " .
-         " AND parent_id = {$parent} " .
+         " AND parent_id = " . intval($parent) .
          " AND NT.description NOT IN " .
          " ('testcase_version','testplan','requirement_spec','requirement'{$filter_node_type}) ";
 
   if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
   {
-     $sql .=" AND NHA.id = {$filter_node} ";  
+    $sql .=" AND NHA.id = " . intval($filter_node);  
   }
   $sql .= " ORDER BY NHA.node_order ";    
     
+    
+  // for debug 
+  //file_put_contents('/tmp/sql_display_node.txt', $sql); 
   $nodeSet = $dbHandler->get_recordset($sql);
+       
   if($show_tcases)
   {  
     // Get external id, used on test case nodes   
@@ -97,64 +94,68 @@ function display_children($dbHandler,$env,$root_node,$parent,$filter_node,
             " FROM {$tables['tcversions']} TCV " .
             " JOIN {$tables['nodes_hierarchy']} NHA  ON NHA.id = TCV.id  " .
             " JOIN {$tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " . 
-            " WHERE NHB.parent_id = {$parent} AND NHA.node_type_id = 4"; 
+            " WHERE NHB.parent_id = " . intval($parent) . " AND NHA.node_type_id = 4"; 
     $external = $dbHandler->fetchRowsIntoMap($sql,'parent_id');
   }
     
-	if(!is_null($nodeSet)) 
-	{
+  // print_r(array_values($nodeSet));
+  //file_put_contents('/tmpsql_display_node.txt', serialize(array_values($nodeSet))); 
+  if(!is_null($nodeSet)) 
+  {
     $tproject_mgr = new testproject($dbHandler);
-	  foreach($nodeSet as $key => $row)
-	  {
+    
+    foreach($nodeSet as $key => $row)
+    {
       $path['text'] = htmlspecialchars($row['name']);
-	    $path['id'] = $row['id'];                                                           
-        
+      $path['id'] = $row['id'];                                                           
+      
       // this attribute/property is used on custom code on drag and drop
-	    $path['position'] = $row['node_order'];                                                   
+      $path['position'] = $row['node_order'];                                                   
       $path['leaf'] = false;
- 	    $path['cls'] = 'folder';
+      $path['cls'] = 'folder';
 
-			// customs key will be accessed using node.attributes.[key name]
-	    $path['testlink_node_type'] = $row['node_type'];
-	    $path['testlink_node_name'] = $path['text']; // already htmlspecialchars() done
-	       
-	    $tcase_qty = null;
-	    switch($row['node_type'])
-	    {
+      // customs key will be accessed using node.attributes.[key name]
+      $path['testlink_node_type'] = $row['node_type'];
+      $path['testlink_node_name'] = $path['text']; // already htmlspecialchars() done
+      $path['forbidden_parent'] = 'none';
+
+      $tcase_qty = null;
+      switch($row['node_type'])
+      {
         case 'testproject':
           // at least on Test Specification seems that we do not execute this piece of code.
-	        $path['href'] = "javascript:EP({$env['tproject_id']},{$env['tplan_id']},{$path['id']})";
+          $path['href'] = "javascript:EP({$path['id']})";
+          $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
         break;
-	              
-	      case 'testsuite':
-	        $tcase_qty = $tproject_mgr->count_testcases($row['id']);
-	        $path['href'] = "javascript:" . $js_function[$row['node_type']] . 
-	                				"({$env['tproject_id']},{$env['tplan_id']},{$path['id']})";
+              
+        case 'testsuite':
+          $tcase_qty = $tproject_mgr->count_testcases($row['id']);
+          $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+          $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
         break;
-	              
-	      case 'testcase':
-       		$path['href'] = "javascript:" . $js_function[$row['node_type']] . 
-	                 				"({$env['tproject_id']},{$path['id']})";
-
-         	if(is_null($showTestCaseID))
+                
+        case 'testcase':
+          $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+          $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
+          if(is_null($showTestCaseID))
           {
-              $showTestCaseID = config_get('treemenu_show_testcase_id');
+            $showTestCaseID = config_get('treemenu_show_testcase_id');
           }
-          
           if($showTestCaseID)
-	        {
-	          $path['text'] = htmlspecialchars($tcprefix . $external[$row['id']]['tc_external_id'] . ":") . $path['text'];
-	        }
-          $path['leaf']	= true;
+          {
+            $path['text'] = htmlspecialchars($tcprefix . $external[$row['id']]['tc_external_id'] . ":") . $path['text'];
+          }
+          $path['leaf'] = true;
         break;
       }
+         
       if(!is_null($tcase_qty))
-	    {
-	      $path['text'] .= " ({$tcase_qty})";   
-	    }
+      {
+        $path['text'] .= " ({$tcase_qty})";   
+      }
       $nodes[] = $path;                                                                        
-	  }
+    }
   }
-	return $nodes;                                                                             
+  return $nodes;                                                                             
 }                                                                                               
 ?>

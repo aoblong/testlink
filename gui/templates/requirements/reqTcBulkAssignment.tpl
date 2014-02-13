@@ -1,16 +1,17 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	reqAssign.tpl
+Id: reqAssign.tpl,v 1.6 2006/07/15 19:55:30 schlundus Exp $
 
 Author: Francisco Mancardi
 
-Requirements Bulk Assignment
+Purpose: Requirements Bulk Assignment
          
-@internal revisions
-20100408 - franciscom - BUGID 3361 FatalError after trying to assign requirements to an empty test suite
-20100403 - franciscom - added config_load
+rev: 
+    20100408 - franciscom - BUGID 3361 FatalError after trying to assign requirements to an empty test suite
+    20100403 - franciscom - added config_load
+    20081130 - franciscom - BUGID 1852 - Bulk Assignment Feature         
 *}
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels"
@@ -22,11 +23,14 @@ Requirements Bulk Assignment
              req_msg_norequirement,btn_assign,requirement"}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
+{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
-var alert_box_title = "{$labels.warning|escape:'javascript'}";
+//BUGID 3943: Escape all messages (string)
+	var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
+	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+{literal}
 
 function check_action_precondition(form_id,action)
 {
@@ -38,8 +42,8 @@ function check_action_precondition(form_id,action)
 	return true;
 }
 </script>
+{/literal}
 </head>
-
 <body>
 <h1 class="title">
 	{$gui->pageTitle|escape}
@@ -94,7 +98,7 @@ function check_action_precondition(form_id,action)
           		<td><span>{$gui->requirements[row].req_doc_id|escape}</span></td>
           		<td>
           			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-          			     onclick="javascript:openLinkedReqWindow({$gui->tproject_id},{$gui->requirements[row].id});"
+          			     onclick="javascript:openLinkedReqWindow({$gui->requirements[row].id});"
           			     title="{$labels.requirement}" />
           			{$gui->requirements[row].title|escape}
           		</td>

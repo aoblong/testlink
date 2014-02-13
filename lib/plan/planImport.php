@@ -17,10 +17,6 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions
- * 20110308 - franciscom - get_basic_info() interface changes
- * 20101031 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
- * 20101030 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
- * 20101017 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  *
  **/
 require('../../config.inc.php');
@@ -31,9 +27,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tplan_mgr = new testplan($db);
-$args = init_args($tplan_mgr->tree_manager);
-checkRights($db,$_SESSION['currentUser'],$args);
-
+$args = init_args();
 $gui = initializeGui($args,$tplan_mgr);
 $dest_common = TL_TEMP_PATH . session_id(). "-planImport" ;
 $dest_files = array('XML' => $dest_common . ".xml");
@@ -104,6 +98,7 @@ if ($args->do_upload)
 	}
 }
 
+$gui->testprojectName = $_SESSION['testprojectName'];
 $gui->importTypes = $tplan_mgr->get_import_file_types();
 
 $smarty = new TLSmarty();
@@ -125,10 +120,10 @@ function checkRights(&$db,&$user)
  *
  * @global array _REQUEST
  *
- * @internal revisions
+ * @internal Revisions
  * 20101017 - franciscom - creation
  */
-function init_args(&$treeMgr)
+function init_args()
 {
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -138,15 +133,8 @@ function init_args(&$treeMgr)
     $args->do_upload = isset($_REQUEST['uploadFile']) ? 1 : 0;
     
     $args->userID = $_SESSION['userID'];
-    
-    $args->tproject_name = '';
+    $args->tproject_id = $_SESSION['testprojectID'];
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0 ;
-	if($args->tproject_id >0)
-	{
-		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
-		$args->tproject_name = $dummy['name'];
-	}
     
     return $args;
 }
@@ -171,7 +159,6 @@ function initializeGui(&$argsObj,&$tplanMgr)
 	$guiObj->main_descr = lang_get('testplan') . ' ' . $info['name'];
 	$guiObj->tplan_id = $argsObj->tplan_id;
 	$guiObj->import_done = false;
-	$guiObj->testprojectName = $argsObj->tproject_name;
 	return $guiObj;
 }
 
@@ -369,9 +356,10 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 							// for same test plan there is a different version already linked ?
 							// if YES => error.
 							//
-							$linkedVersions = $tcaseMgr->get_linked_versions($dummy[0]['id'],'ALL','ALL',$contextObj->tplan_id);
+							$lvFilters = array('tplan_id' => $contextObj->tplan_id);
+							$linkedVersions = $tcaseMgr->get_linked_versions($dummy[0]['id'],$lvFilters);
 							$updateLink = false;
-							
+							$doUpdateFeedBack = true;  // TICKET 5189: Import a test plan does not import test cases execution order
 							// new dBug($linkedVersions);   
 							if( !($createLink = is_null($linkedVersions)) )
 							{
@@ -417,14 +405,23 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 									$dummy_msg .= sprintf($labels['link_to_platform'],$targetName);
 								}
 								$msg[] = array($dummy_msg,$labels['ok']);
+								
+								// TICKET 5189: Import a test plan does not import test cases execution order
+								$updateLink = true;
+								$doUpdateFeedBack = false;
 							}
+							
 							if( $updateLink )
 							{
 								$newOrder = array( $dummy[0]['tcversion_id'] => $execOrder);
 								$tplanMgr->setExecutionOrder($contextObj->tplan_id,$newOrder);
-								$dummy_msg = sprintf($labels['tcase_link_updated'],$tcasePrefix . $externalID . ' ' . 
+								
+								if( $doUpdateFeedBack )
+								{
+									$dummy_msg = sprintf($labels['tcase_link_updated'],$tcasePrefix . $externalID . ' ' . 
 													$tcaseName,$version);
-								$msg[] = array($dummy_msg,$labels['ok']);
+									$msg[] = array($dummy_msg,$labels['ok']);
+								}	
 							}
 						}
 						else
@@ -499,15 +496,4 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 	}
 	return $ret;
  }
-
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('mgt_testplan_create'),'and');
-}
 ?>

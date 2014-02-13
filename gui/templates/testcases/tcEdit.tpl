@@ -4,32 +4,38 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - edit test specification: test case
 
 @internal revisions
-20111016 - franciscom - logic to check estimated_execution_duration
 *}
 
 {lang_get var="labels"
-          s="warning,warning_empty_tc_title,btn_save,warning_required_cf,
-             version,title_edit_tc,cancel,warning_unsaved,warning_estimated_execution_duration_format"}
+          s="warning,warning_empty_tc_title,btn_save,warning_estimated_execution_duration_format,
+             version,title_edit_tc,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_ext_js.tpl"}
 
+{include file="inc_del_onclick.tpl"}
+<script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/tcase_utils.js" type="text/javascript"></script>
 
-<script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
-<script language="JavaScript" type="text/javascript">
-var {$gui->optionTransfer->jsName} = setUpOptionTransferEngine('{$gui->optionTransferJSObject}');
+{assign var="opt_cfg" value=$gui->opt_cfg}
+<script type="text/javascript" language="JavaScript">
+var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
+{$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
+{$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
+{$opt_cfg->js_ot_name}.saveAddedLeftOptions("{$opt_cfg->js_ot_name}_addedLeft");
+{$opt_cfg->js_ot_name}.saveAddedRightOptions("{$opt_cfg->js_ot_name}_addedRight");
+{$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
+{$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 </script>
-
 
 <script type="text/javascript">
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 var warning_estimated_execution_duration_format = "{$labels.warning_estimated_execution_duration_format|escape:'javascript'}";
 
+
+{literal}        
 /**
  * validate certain form controls before submitting
  *
@@ -44,21 +50,39 @@ function validateForm(the_form)
 		selectField(the_form,'testcase_name');
 		return false;
 	}
-	
-	val2check = the_form.estimated_execution_duration.value;
+
+	var val2check = the_form.estimated_execution_duration.value;
 	if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
 	{
 		alert_message(alert_box_title,warning_estimated_execution_duration_format);
 		return false;
 	}
-	
-	if(!checkCustomFields('cfields_design_time',alert_box_title,warning_required_cf))
-	{
-		return false;
-	}
 
+	var cf_designTime = document.getElementById('cfields_design_time');
+	if (cf_designTime)
+ 	{
+ 		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		var cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  	{
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	return false;
+		}
+
+        // 20090421 - franciscom - BUGID 
+ 		cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 		cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  	{
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	return false;
+		}
+	}
 	return Ext.ux.requireSessionAndSubmit(the_form);
 }
+{/literal}
 </script>
 
 {if $tlCfg->gui->checkNotSaved}
@@ -70,7 +94,7 @@ function validateForm(the_form)
 {/if}
 </head>
 
-<body onLoad="{$gui->optionTransfer->jsName}.init(document.forms[0]);focusInputField('testcase_name')">
+<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
 {config_load file="input_dimensions.conf" section="tcNew"}
 <h1 class="title">{$labels.title_edit_tc}{$smarty.const.TITLE_SEP}{$gui->tc.name|escape}
 	{$smarty.const.TITLE_SEP_TYPE3}{$labels.version} {$gui->tc.version}</h1> 
@@ -84,7 +108,7 @@ function validateForm(the_form)
 
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
       onSubmit="return validateForm(this);">
-	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
+
 	<input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->tc.testsuite_id}" />
 	<input type="hidden" name="testcase_id" id="testcase_id" value="{$gui->tc.testcase_id}" />
 	<input type="hidden" name="tcversion_id" value="{$gui->tc.id}" />
@@ -112,10 +136,13 @@ function validateForm(the_form)
 </form>
 
 <script type="text/javascript" defer="1">
-document.forms[0].testcase_name.focus();
+   	document.forms[0].testcase_name.focus();
 </script>
 
-{if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
+{if isset($gui->refreshTree) && $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
+
 </div>
 </body>
 </html>

@@ -1,24 +1,24 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource	planExport.tpl
+$Id: planExport.tpl,v 1.7 2010/11/06 11:42:47 amkhullar Exp $ 
 
 test plan export
 
-@internal revisions
+internal revisions
 *}
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
 
-{$cfg_section = $smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-
+{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
@@ -29,6 +29,7 @@ function validateForm(f)
   }
   return true;
 }
+{/literal}
 </script>
 </head>
 
@@ -52,7 +53,7 @@ function validateForm(f)
     {$labels.export_filename}
     </td>
     <td>
-  	<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
+  	<input type="text" id="export_filename" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
 			           value="{$gui->export_filename|escape}" size="{#FILENAME_SIZE#}"/>
 			  				{include file="error_icon.tpl" field="export_filename"}
   	</td>
@@ -62,7 +63,7 @@ function validateForm(f)
   	<select name="exportType">
   		{html_options options=$gui->exportTypes}
   	</select>
-	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$labels.view_file_format_doc}</a>
+	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
   	</td>
   	</tr>
   	</table>
@@ -71,7 +72,7 @@ function validateForm(f)
   		<input type="submit" name="export" value="{$labels.btn_export}" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
-    		     {else}  onclick="javascript:window.close();" {/if} />
+    		     {else}  onclick="javascript:history.back();" {/if} />
   	</div>
   </form>
 {else}

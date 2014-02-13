@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Erik Eloff
  * @copyright 	2010, TestLink community
- * @version    	CVS: $Id: checkDuplicateName.php,v 1.2 2010/12/01 14:37:08 asimon83 Exp $
+ * @version    	CVS: $Id: checkDuplicateName.php,v 1.1 2010/03/06 16:43:14 erikeloff Exp $
  *
  * @internal Revisions:
  * 20100225 - eloff - initial commit
@@ -21,14 +21,13 @@ require_once('common.php');
 testlinkInitPage($db);
 $data = array('success' => true, 'message' => '');
 
-// take care of proper escaping when magic_quotes_gpc is enabled
-$_REQUEST=strings_stripSlashes($_REQUEST);
-
-$iParams = array(	"name" => array(tlInputParameter::STRING_N,0,100),
-	                "testcase_id" => array(tlInputParameter::INT));
+$iParams = array(
+	"name" => array(tlInputParameter::STRING_N,0,100),
+	"testcase_id" => array(tlInputParameter::INT),
+);
 $args = G_PARAMS($iParams);
 
-if($_SESSION['currentUser']->hasRight($db, 'mgt_view_tc'))
+if (has_rights($db, 'mgt_view_tc'))
 {
 	$tree_manager = new tree($db);
 
@@ -50,4 +49,4 @@ else
 }
 
 echo json_encode($data);
-?>
+

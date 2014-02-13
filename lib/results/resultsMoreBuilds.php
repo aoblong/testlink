@@ -3,38 +3,31 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * This page will forward the user to a form where they can select
- * the builds they would like to query results against.
+ * Called from resultsMoreBuildsGUI.php to do the effective job.
  * 
  * @filesource	resultsMoreBuilds.php
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
- * @copyright 	2009, TestLink community 
+ * @copyright 	2009,2012 TestLink community 
  *
  * @internal revisions
- *  20101202 - asimon - BUGID 4027: Query metrics start date and end date are not working - getting all results
- *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
- *  20101022 - asimon - BUGID 3716 - replaced old separated inputs for day/month/year by ext js calendar
- *	20101019 - eloff - BUGID 3794 - added contribution by rtessier
+ * @since 1.9.4
  * 
  **/
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('results.class.php');
 require_once('users.inc.php');
 require_once('displayMgr.php');
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $date_format_cfg = config_get('date_format');
-$args = init_args($db);
-checkRights($db,$_SESSION['currentUser'],$args);
 
+$args = init_args();
 $gui = initializeGui($db,$args,$date_format_cfg);
 $mailCfg = buildMailCfg($gui);
 
 $smarty = new TLSmarty();
-
 $smarty->assign('gui', $gui);
 $smarty->assign('report_type', $args->report_type);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->report_type,$mailCfg);
@@ -45,50 +38,48 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
  */
 function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 {
+	
+	new dBug($argsObj);
+	
+/*		$my['filters'] = array('exec_ts_from' => null, 'exec_ts_to' => null,
+							   'assigned_to' => null, 'tester_id' => null,
+							   'keywords' => null, 'builds' => null,
+							   'plaforms' => null, 'top_level_tsuites' => null);
+	
+*/	
     $reports_cfg = config_get('reportsCfg');
+    $tplan_mgr = new tlTestPlanMetrics($dbHandler);
+    $tproject_mgr = new testproject($dbHandler);
     
     $gui = new stdClass();
-    $tplan_mgr = new testplan($dbHandler);
-    $tproject_mgr = new testproject($dbHandler);
- 
+    $gui->resultsCfg = config_get('results');
+    $gui->title = lang_get('query_metrics_report');
+    $gui->tplan_id = $argsObj->tplan_id;
+    $gui->tproject_id = $argsObj->tproject_id;
+
+    $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
+    $tproject_info = $tproject_mgr->get_by_id($gui->tproject_id);
+    $gui->tplan_name = $tplan_info['name'];
+    $gui->tproject_name = $tproject_info['name'];
+
     $getOpt = array('outputFormat' => 'map');
     $gui->platformSet = $tplan_mgr->getPlatforms($argsObj->tplan_id,$getOpt);
-
-
-    $gui->title = lang_get('query_metrics_report');
-
-    $gui->showPlatforms=true;
+    $gui->showPlatforms = true;
 	if( is_null($gui->platformSet) )
 	{
-		$gui->platformSet = array('');
-		$gui->showPlatforms=false;
+		$gui->platformSet = null;
+		$gui->showPlatforms = false;
+	}
+	else
+	{
+		$filters['platforms'] = array_keys($gui->platformSet);
 	}
    
-    $gui->resultsCfg = config_get('results');
+	// convert starttime to iso format for database usage
+	list($gui->startTime,$gui->endTime) = helper2ISO($_REQUEST);
+	
+	//die();
 
-    // BUGID 3716, BUGID 3930
-	// convert starttime to iso format for database usage
-    if (isset($_REQUEST['selected_start_date']) && $_REQUEST['selected_start_date'] != '') {
-		$date_array = split_localized_date($_REQUEST['selected_start_date'], $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			$gui->startTime = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
-		}
-	}
-	
-	// convert starttime to iso format for database usage
-    if (isset($_REQUEST['selected_end_date']) && $_REQUEST['selected_end_date'] != '') {
-		$date_array = split_localized_date($_REQUEST['selected_end_date'], $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			$gui->endTime = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
-		}
-	}
-	
-	$start_hour = isset($_REQUEST['start_Hour']) ? $_REQUEST['start_Hour'] : "00";
-	$gui->startTime = $gui->startTime . " " . $start_hour . ":00:00";
-	$end_hour = isset($_REQUEST['end_Hour']) ? $_REQUEST['end_Hour'] : "00";
-	$gui->endTime = $gui->endTime . " " . $end_hour . ":59:59";
 	   
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
@@ -97,30 +88,29 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 
     $gui->search_notes_string = $argsObj->search_notes_string;
 
-    $gui->tplan_id = $argsObj->tplan_id;
-    $gui->tproject_id = $argsObj->tproject_id;
-   
-    $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
-    $tproject_info = $tproject_mgr->get_by_id($gui->tproject_id);
-    $gui->tplan_name = $tplan_info['name'];
-    $gui->tproject_name = $tproject_info['name'];
-
-    $testsuiteIds = null;
     $testsuiteNames = null;
-            
+	$everest = $tplan_mgr->getRootTestSuites($gui->tplan_id,$gui->tproject_id,array('output' => 'plain'));
     $tsuites_qty = sizeOf($argsObj->testsuitesSelected);
-    for ($id = 0; $id < $tsuites_qty ; $id++)
+    
+    $userWantsAll = ($tsuits_qty == 0 || $tsuits_qty == count($everest));
+    $filters['top_level_tsuites'] = ($tsuites_qty == 0 || $tsuites_qty == count($everest)) ? null : $argsObj->testsuitesSelected;
+	$gui->testsuitesSelected = array();
+	foreach($argsObj->testsuitesSelected as $dmy)
+	{
+		$gui->testsuitesSelected[$dmy] = $everest[$dmy]['name'];
+	} 
+
+    $filters['builds'] = null;
+    if (sizeof($argsObj->buildsSelected)) 
     {
-    	list($suiteId, $suiteName) = preg_split("/\,/", $argsObj->testsuitesSelected[$id], 2);
-    	$testsuiteIds[$id] = $suiteId;
-    	$testsuiteNames[$id] = $suiteName;	
+    	$filters['builds'] = implode(",", $argsObj->buildsSelected);
     }
-
-    $buildsToQuery = -1;
-    if (sizeof($argsObj->buildsSelected)) {
-    	$buildsToQuery = implode(",", $argsObj->buildsSelected);
+    
+    $filters['keywords'] = (array)$argsObj->keywordSelected;
+    if(in_array(0,$filters['keywords']))  // Sorry for MAGIC 0 => ANY
+    {
+    	$filters['keywords'] = null;
     }
-
 
     // statusForClass is used for results.class.php
     // lastStatus is used to be displayed 
@@ -129,42 +119,47 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     // amitkhullar - added this parameter to get the latest results. 
 	$latest_resultset = $argsObj->display->latest_results;
 	
-	// BUGID 2500
-    // $assignee = $argsObj->ownerSelected ? TL_USER_ANYBODY : null;
-    // $tester = $argsObj->executorSelected ? TL_USER_ANYBODY : null;
     $assignee = $argsObj->ownerSelected > 0 ? $argsObj->ownerSelected : TL_USER_ANYBODY;
     $tester = $argsObj->executorSelected > 0 ? $argsObj->executorSelected : TL_USER_ANYBODY  ;
     
-    // BUGID 4027
+    
+    
+    
+    //$rs = $tplan_mgr->queryMetrics($gui->tplan_id,$filters);
+    //new dBug($rs);
+	// die();
+    
+    //$re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
+    //                  	 $testsuiteIds, $buildsToQuery,
+    //                     $argsObj->platformsSelected, $statusForClass,
+    //                     $latest_resultset, $argsObj->keywordSelected,
+    //                     $assignee, $gui->startTime,
+    //                     $gui->endTime, $tester,
+    //                     $argsObj->search_notes_string, null);
+    //                  
+    //$gui->suiteList = $re->getSuiteList();  // test executions results
+    //// Filter test cases on selected platforms
+    //foreach ($gui->suiteList as $suiteid => $tcases) 
+    //{
+    //    $filtered = array();
+    //    foreach ($tcases as $index => $tcase) {
+    //        if ($tcase['platform_id'] == 0 ||
+    //            $argsObj->platformsSelected[0] == ALL_PLATFORMS ||
+    //            array_search($tcase['platform_id'], $argsObj->platformsSelected) !== false) {
+    //            array_push($filtered, $tcase);
+    //        }
+    //    }
+    //    unset($gui->suiteList[$suiteid]);
+    //    $gui->suiteList[$suiteid] = $filtered;
+    //}
+    //$gui->flatArray = $re->getFlatArray();
+    //$gui->mapOfSuiteSummary =  $re->getAggregateMap();
+    //
 
-    
-    $re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
-                      	 $testsuiteIds, $buildsToQuery,
-                         $argsObj->platformsSelected, $statusForClass,
-                         $latest_resultset, $argsObj->keywordSelected,
-                         $assignee, $gui->startTime,
-                         $gui->endTime, $tester,
-                         $argsObj->search_notes_string, null);
-                      
-    $gui->suiteList = $re->getSuiteList();  // test executions results
-    // Filter test cases on selected platforms
-    foreach ($gui->suiteList as $suiteid => $tcases) {
-        $filtered = array();
-        foreach ($tcases as $index => $tcase) {
-            if ($tcase['platform_id'] == 0 ||
-                $argsObj->platformsSelected[0] == ALL_PLATFORMS ||
-                array_search($tcase['platform_id'], $argsObj->platformsSelected) !== false) {
-                array_push($filtered, $tcase);
-            }
-        }
-        unset($gui->suiteList[$suiteid]);
-        $gui->suiteList[$suiteid] = $filtered;
-    }
-    $gui->flatArray = $re->getFlatArray();
-    $gui->mapOfSuiteSummary =  $re->getAggregateMap();
-    
+
+	// Prepare User Feedback    
     $gui->totals = new stdClass();
-    $gui->totals->items = $re->getTotalsForPlan();
+    $gui->totals->items = 0;
     $gui->totals->labels = array();
     
     foreach($gui->totals->items as $key => $value)
@@ -173,9 +168,8 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
         $gui->totals->labels[$key] = lang_get($l18n);  
     }
 
-    // BUGID 2012 - franciscom
     $gui->keywords = new stdClass();             
-    $gui->keywords->items[0] = $gui->str_option_any;
+    $gui->keywords->items[0] = $gui->str_option_any;  // Sorry MAGIC 0
     if(!is_null($tplan_keywords_map = $tplan_mgr->get_keywords_map($gui->tplan_id)))
     {
         $gui->keywords->items += $tplan_keywords_map; 
@@ -189,7 +183,6 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 
     $gui->ownerSelected = $gui->users[$argsObj->ownerSelected];      
     $gui->executorSelected = $gui->users[$argsObj->executorSelected];
-    $gui->testsuitesSelected = $testsuiteNames;
     $gui->buildsSelected = $argsObj->buildsSelected;
     $gui->platformsSelected = $argsObj->platformsSelected;
     $gui->display = $argsObj->display;
@@ -222,38 +215,34 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 /**
  * Initialize input data
  */
-function init_args(&$dbHandler)
+function init_args()
 {
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
-	$iParams = array(
-		"format" => array(tlInputParameter::INT_N),
-		"report_type" => array(tlInputParameter::INT_N),
-		"tplan_id" => array(tlInputParameter::INT_N),
-		"tproject_id" => array(tlInputParameter::INT_N),
-		"build" => array(tlInputParameter::ARRAY_INT),
-		"platform" => array(tlInputParameter::ARRAY_INT),
-		"keyword" => array(tlInputParameter::INT_N),
-		"owner" => array(tlInputParameter::INT_N),
-		"executor" => array(tlInputParameter::INT_N),
-		"display_totals" => array(tlInputParameter::INT_N,1),
-		"display_query_params" => array(tlInputParameter::INT_N,1),
-		"display_test_cases" => array(tlInputParameter::INT_N,1),
-		"display_latest_results" => array(tlInputParameter::INT_N,1),
-		"display_suite_summaries" => array(tlInputParameter::INT_N,1),
-		"lastStatus" => array(tlInputParameter::ARRAY_STRING_N),
-		"testsuite" => array(tlInputParameter::ARRAY_STRING_N),
-		"search_notes_string" => array(tlInputParameter::STRING_N),
-	);
+	$iParams = array("format" => array(tlInputParameter::INT_N),
+					 "report_type" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N),
+					 "build" => array(tlInputParameter::ARRAY_INT),
+					 "platform" => array(tlInputParameter::ARRAY_INT),
+					 "keyword" => array(tlInputParameter::INT_N),
+					 "owner" => array(tlInputParameter::INT_N),
+					 "executor" => array(tlInputParameter::INT_N),
+					 "display_totals" => array(tlInputParameter::INT_N,1),
+					 "display_query_params" => array(tlInputParameter::INT_N,1),
+					 "display_test_cases" => array(tlInputParameter::INT_N,1),
+					 "display_latest_results" => array(tlInputParameter::INT_N,1),
+					 "display_suite_summaries" => array(tlInputParameter::INT_N,1),
+					 "lastStatus" => array(tlInputParameter::ARRAY_STRING_N),
+					 "testsuite" => array(tlInputParameter::ARRAY_STRING_N),
+					 "search_notes_string" => array(tlInputParameter::STRING_N));
 	$args = new stdClass();
 
+	$_REQUEST=strings_stripSlashes($_REQUEST);
 	$pParams = R_PARAMS($iParams);
 	
 	$args->format = $pParams["format"];
 	$args->report_type = $pParams["report_type"];
 	$args->tplan_id = $pParams["tplan_id"];
 	
-	$args->tproject_id = $pParams["tproject_id"];
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     
     $args->display = new stdClass();
     $args->display->suite_summaries = $pParams["display_suite_summaries"];
@@ -274,16 +263,6 @@ function init_args(&$dbHandler)
     return $args;  
 }
 
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
-}
 
 /**
  * 
@@ -291,12 +270,47 @@ function checkRights(&$db,&$userObj,$argsObj)
  */
 function buildMailCfg(&$guiObj)
 {
-	$labels = array('testplan' => lang_get('testplan'), 'testproject' => lang_get('testproject'));
+	$labels = init_labels(array('testplan' => null, 'testproject' => null));
 	$cfg = new stdClass();
 	$cfg->cc = ''; 
-	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name . 
-	                ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
-	                 
+	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . 
+					$guiObj->tproject_name . ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
 	return $cfg;
+}
+
+function helper2ISO($userInput)
+{                   
+	$dateFormatMask = config_get('date_format');
+	$zy = array();
+	$key2loop = array('selected_start_date' => 'startTime','selected_end_date' => 'endTime');
+	foreach($key2loop as $target => $prop)
+	{
+	    if (isset($userInput[$target]) && $userInput[$target] != '') 
+	    {
+			$dummy = split_localized_date($userInput[$target], $dateFormatMask);
+			if($dummy != null) 
+			{
+				$zy[$prop] = $dummy['year'] . "-" . $dummy['month'] . "-" . $dummy['day'];
+			}
+		}
+	}                      
+	
+	$dummy = isset($userInput['start_Hour']) ? $userInput['start_Hour'] : "00";
+	$zy['startTime'] .= " " . $dummy . ":00:00";
+	$dummy = isset($userInput['end_Hour']) ? $userInput['end_Hour'] : "00";
+	$zy['endTime'] .= " " . $dummy . ":59:59";
+
+	return(array($zy['startTime'],$zy['endTime']));
+}
+
+
+
+/**
+ * 
+ *
+ */
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_metrics');
 }
 ?>

@@ -1,7 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
---
--- @filesource	testlink_create_tables.sql
+-- $Id: testlink_create_tables.sql,v 1.63.2.2 2010/12/11 17:25:21 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -23,77 +22,7 @@
 --        convention regarding case and spaces between DDL keywords.
 --
 -- 
--- @internal revisions
---	20110409 - franciscom - BUGID 4342
---							using ideas from Mantis
---	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
---							can be added to new test plans
---							tcversions.status
---u
---  20101219 - franciscom - BUGID 4111 - cfield_testprojects ALTER
---  20101204 - franciscom - BUGID 4070 - changed executions_idx1
---                          ("testplan_id","tcversion_id","platform_id","build_id");
---
---  20100912 - franciscom - requirements index ("srs_id","req_doc_id") changed to UNIQUE
---  20100705 - asimon - added column build_id to user_assignments
---  20100308 - franciscom - req_relations table added
---  20100124 - franciscom - is_open,active added to req_versions table
---  20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
---  20100106 - franciscom - Test Case Step feature
---
---  20091228 - franciscom - requirements table changes and new table req_versions
---                          to implement requirements versioning.
--- 
---  20091124 - franciscom - requirements table - new field expected_coverage
---  20091119 - franciscom - req_specs added doc_id field
---  20091010 - franciscom - added testplan_platforms,platforms
---                          platform_id to tables
---  20090910 - franciscom - tcversions.preconditions
---                          milestones.start_date
---  20090717 - franciscom - added cfield_testprojects.location field
---  20090611 - franciscom - builds.closed_on_date 
---  20090512 - franciscom - BUGID - is_public attribute for testprojects and testplans
---  20090507 - franciscom - BUGID  new builds structure
---  20090411 - franciscom - BUGID 2369 - testplan_tcversions
---  
---  20090315 - franciscom - req_spec, requirements id can not be big serial
---                          because are nodes on nodes_hierarchy.
---  
---  20090204 - franciscom - object_keywords - bad type for ID column
---  20090103 - franciscom - milestones table - added new unique index
---                          custom_fields - added missing unique constraint
---  20081018 - franciscom - new indexes (suggested by schlundus) on events table 
---  20080831 - franciscom - BUGID 1650 (REQ)
---             custom_fields.show_on_testplan_design
---             custom_fields.enable_on_testplan_design
---             new table cfield_testplan_design_values 
---  
---  20080709 - franciscom - Added Foreing Keys (REFERENCES)
---  20080102 - franciscom - added changes for API feature (DB 1.2)
---                          added notes fields on db_version
---  
---  20071202 - franciscom - added tcversions.execution_type
---  20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
---  20070519 - franciscom - milestones table date -> target_date, because
---                          date is reserved word for Oracle
---  
---  20070414 - franciscom - table requirements: added field node_order 
---  20070204 - franciscom - changes in tables priorities, risk_assignments 
---  20070131 - franciscom - requirements -> req_doc_id(32), 
---  
---  20070120 - franciscom - following BUGID 458 ( really a new feature request)
---                          two new fields on builds table
---                          active, open
---  
---  20070117 - franciscom - create_ts -> creation_ts
---  
---  20070116 - franciscom - fixed BUGID 545
---  
---  20070113 - franciscom - table cfield_testprojects added fields
---                          required_on_design,required_on_execution
---  20060515 - franciscom - creation
---
-
+--  @internal revisions
 --
 -- Table structure for table "node_types"
 --
@@ -164,6 +93,8 @@ CREATE UNIQUE INDEX /*prefix*/roles_uidx1 ON /*prefix*/roles ("description");
 --
 -- Table structure for table "users"
 --
+-- TICKET 4342 - cookie_string
+--
 CREATE TABLE /*prefix*/users(  
   "id" BIGSERIAL NOT NULL ,
   "login" VARCHAR(30) NOT NULL DEFAULT '',
@@ -176,7 +107,7 @@ CREATE TABLE /*prefix*/users(
   "default_testproject_id" INTEGER NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
   "script_key" VARCHAR(32) NULL,
-  "cookie_string" varchar(64) NOT NULL DEFAULT '',  
+  "cookie_string" varchar(64) NOT NULL DEFAULT '', 
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/users_uidx1 ON /*prefix*/users ("login");
@@ -201,6 +132,7 @@ CREATE TABLE /*prefix*/tcversions(
   "active" INT2 NOT NULL DEFAULT '1',
   "is_open" INT2 NOT NULL DEFAULT '1',
   "execution_type" INT2 NOT NULL DEFAULT '1',
+  "estimated_exec_duration" numeric(6,2) NULL,
   PRIMARY KEY ("id")
 ); 
 
@@ -270,7 +202,7 @@ CREATE TABLE /*prefix*/executions(
   "tcversion_number" INTEGER NOT NULL DEFAULT '1',
   "platform_id" BIGINT NOT NULL DEFAULT '0',
   "execution_type" INT2 NOT NULL DEFAULT '1',
-  "estimated_execution_duration" numeric(6,2) NULL,
+  "execution_duration" numeric(6,2) NULL,
   "notes" TEXT NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 ); 
@@ -313,7 +245,6 @@ CREATE TABLE /*prefix*/custom_fields(
   "enable_on_execution" SMALLINT NOT NULL DEFAULT '0',
   "show_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
   "enable_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
-  "required" INT2 NOT NULL default '0',
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/custom_fields_uidx1 ON /*prefix*/custom_fields ("name");
@@ -322,7 +253,7 @@ CREATE UNIQUE INDEX /*prefix*/custom_fields_uidx1 ON /*prefix*/custom_fields ("n
 -- Table structure for table "testprojects"
 --
 CREATE TABLE /*prefix*/testprojects(  
-  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE,
   "notes" TEXT NULL DEFAULT NULL,
   "color" VARCHAR(12) NOT NULL DEFAULT '#9BD',
   "active" INT2 NOT NULL DEFAULT '1',
@@ -333,6 +264,8 @@ CREATE TABLE /*prefix*/testprojects(
   "prefix" varchar(16) NOT NULL,
   "tc_counter" int NOT NULL default '0',
   "is_public" INT2 NOT NULL DEFAULT '1',
+  "issue_tracker_enabled" INT2 NOT NULL DEFAULT '0',
+  "reqmgr_integration_enabled" INT2 NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/testprojects_uidx1 ON /*prefix*/testprojects ("prefix");
@@ -343,11 +276,15 @@ CREATE INDEX /*prefix*/testprojects_id_active ON /*prefix*/testprojects ("id","a
 --
 
 CREATE TABLE /*prefix*/cfield_testprojects(  
-  "field_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
-  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+  "field_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id) ON DELETE CASCADE,
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
   "display_order" INTEGER NOT NULL default '1',
   "active" INT2 NOT NULL default '1',
   "location" INT2 NOT NULL default '1',
+  "required" INT2 NOT NULL default '0',
+  "required_on_design" INT2 NOT NULL default '0',
+  "required_on_execution" INT2 NOT NULL default '0',
+
   PRIMARY KEY ("field_id","testproject_id")
 ); 
 
@@ -356,8 +293,8 @@ CREATE TABLE /*prefix*/cfield_testprojects(
 -- Table structure for table cfield_design_values
 --
 CREATE TABLE /*prefix*/cfield_design_values(  
-  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
-  "node_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id) ON DELETE CASCADE,
+  "node_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE,
   "value" VARCHAR(4000) NOT NULL DEFAULT '',
   PRIMARY KEY ("field_id","node_id")
 ); 
@@ -368,10 +305,10 @@ CREATE INDEX /*prefix*/IX_cfield_design_values ON /*prefix*/cfield_design_values
 -- Table structure for table cfield_execution_values
 --
 CREATE TABLE /*prefix*/cfield_execution_values(  
-  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
-  "execution_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id),
-  "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
-  "tcversion_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id),
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id) ON DELETE CASCADE,
+  "execution_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id) ON DELETE CASCADE,
+  "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id) ON DELETE CASCADE,
+  "tcversion_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id) ON DELETE CASCADE,
   "value" VARCHAR(4000) NOT NULL DEFAULT '',
   PRIMARY KEY ("field_id","execution_id","testplan_id","tcversion_id")
 ); 
@@ -380,8 +317,8 @@ CREATE TABLE /*prefix*/cfield_execution_values(
 -- Table structure for table cfield_testplan_design_values
 --
 CREATE TABLE /*prefix*/cfield_testplan_design_values(  
-  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
-  "link_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplan_tcversions (id),
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id) ON DELETE CASCADE,
+  "link_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplan_tcversions (id) ON DELETE CASCADE,
   "value" VARCHAR(4000) NOT NULL DEFAULT '',
   PRIMARY KEY ("field_id","link_id")
 ); 
@@ -391,8 +328,8 @@ CREATE INDEX /*prefix*/IX_cfield_tplan_design_val ON /*prefix*/cfield_testplan_d
 -- Table structure for table cfield_node_types
 --
 CREATE TABLE /*prefix*/cfield_node_types(  
-  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
-  "node_type_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/node_types (id),
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id) ON DELETE CASCADE,
+  "node_type_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/node_types (id) ON DELETE CASCADE,
   PRIMARY KEY ("field_id","node_type_id")
 ); 
 CREATE INDEX /*prefix*/cfield_node_types_idx_custom_fields_assign ON /*prefix*/cfield_node_types ("node_type_id");
@@ -445,7 +382,8 @@ CREATE TABLE /*prefix*/attachments(  "id" BIGSERIAL NOT NULL ,
 CREATE TABLE /*prefix*/db_version(  
    "version" VARCHAR(50) NOT NULL DEFAULT 'unknown',
    "upgrade_ts" TIMESTAMP NOT NULL DEFAULT now(),
-   "notes" TEXT NULL
+   "notes" TEXT NULL,
+   PRIMARY KEY ("version")
 ); 
 
 
@@ -455,8 +393,8 @@ CREATE TABLE /*prefix*/db_version(
 -- Table structure for table "execution_bugs"
 --
 CREATE TABLE /*prefix*/execution_bugs(  
-  "execution_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id),
-  "bug_id" VARCHAR(16) NOT NULL DEFAULT '0',
+  "execution_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id) ON DELETE CASCADE,
+  "bug_id" VARCHAR(64) NOT NULL DEFAULT '0',
   PRIMARY KEY ("execution_id","bug_id")
 ); 
 
@@ -467,7 +405,7 @@ CREATE TABLE /*prefix*/execution_bugs(
 CREATE TABLE /*prefix*/keywords(  
   "id" BIGSERIAL NOT NULL ,
   "keyword" VARCHAR(100) NOT NULL DEFAULT '',
-  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
   "notes" TEXT NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 ); 
@@ -480,7 +418,7 @@ CREATE INDEX /*prefix*/keywords_keyword ON /*prefix*/keywords ("keyword");
 --
 CREATE TABLE /*prefix*/milestones(  
   "id" BIGSERIAL NOT NULL ,
-  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id) ON DELETE CASCADE,
   "target_date" DATE NOT NULL ,
   "start_date" DATE NULL ,
   "a" SMALLINT NOT NULL DEFAULT '0',
@@ -500,7 +438,7 @@ CREATE TABLE /*prefix*/object_keywords(
   "id" BIGSERIAL NOT NULL ,
   "fk_id" BIGINT NOT NULL DEFAULT '0',
   "fk_table" VARCHAR(30) NULL DEFAULT '',
-  "keyword_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/keywords (id),
+  "keyword_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/keywords (id) ON DELETE CASCADE,
   PRIMARY KEY ("id")
 ); 
 
@@ -508,17 +446,11 @@ CREATE TABLE /*prefix*/object_keywords(
 --
 -- Table structure for table "req_specs"
 --
+-- TICKET 4661
 CREATE TABLE /*prefix*/req_specs(  
-  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),  
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE,
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,  
   "doc_id" VARCHAR(64) NOT NULL,
-  "scope" TEXT NULL DEFAULT NULL,
-  "total_req" INTEGER NOT NULL DEFAULT '0',
-  "type" CHAR(1) NULL DEFAULT 'N',
-  "author_id" BIGINT NULL DEFAULT NULL,
-  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
-  "modifier_id" BIGINT NULL DEFAULT NULL,
-  "modification_ts" TIMESTAMP NULL,
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/req_specs_uidx1 ON /*prefix*/req_specs ("doc_id","testproject_id");
@@ -540,7 +472,7 @@ CREATE TABLE /*prefix*/req_suites(
 --
 CREATE TABLE /*prefix*/requirements (  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-  "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id),
+  "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id) ON DELETE CASCADE,
   "req_doc_id" VARCHAR(64) NOT NULL,
   PRIMARY KEY ("id")
 ); 
@@ -549,7 +481,7 @@ CREATE UNIQUE INDEX /*prefix*/requirements_idx1 ON /*prefix*/requirements ("srs_
 CREATE TABLE /*prefix*/req_versions(  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "version" INTEGER NOT NULL DEFAULT '1',
-  "revision" INTEGER NOT NULL DEFAULT '1',   --- BUGID 4056
+  "revision" INTEGER NOT NULL DEFAULT '1',
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
@@ -569,8 +501,12 @@ CREATE TABLE /*prefix*/req_versions(
 -- Table structure for table "req_coverage"
 --
 CREATE TABLE /*prefix*/req_coverage(  
-  "req_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id),
-  "testcase_id" INTEGER NOT NULL DEFAULT '0'
+  "req_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
+  "testcase_id" INTEGER NOT NULL DEFAULT '0',
+  "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "review_requester_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  "review_request_ts" TIMESTAMP NULL DEFAULT NULL
 ); 
 CREATE INDEX /*prefix*/req_coverage_req_testcase ON /*prefix*/req_coverage ("req_id","testcase_id");
 
@@ -591,7 +527,7 @@ CREATE UNIQUE INDEX /*prefix*/rights_uidx1 ON /*prefix*/rights ("description");
 --
 CREATE TABLE /*prefix*/risk_assignments(  
   "id" BIGSERIAL NOT NULL ,
-  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id) ON DELETE CASCADE,
   "node_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "risk" INT2 NOT NULL DEFAULT '2',
   "importance" INT2 NOT NULL DEFAULT '2',
@@ -604,8 +540,8 @@ CREATE UNIQUE INDEX /*prefix*/risk_assignments_uidx1 ON /*prefix*/risk_assignmen
 -- Table structure for table "role_rights"
 --
 CREATE TABLE /*prefix*/role_rights(  
-  "role_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id),
-  "right_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/rights (id),
+  "role_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id) ON DELETE CASCADE,
+  "right_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/rights (id) ON DELETE CASCADE,
   PRIMARY KEY ("role_id","right_id")
 ); 
 
@@ -615,7 +551,7 @@ CREATE TABLE /*prefix*/role_rights(
 --
 CREATE TABLE /*prefix*/testcase_keywords(  
   "testcase_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-  "keyword_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/keywords (id),
+  "keyword_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/keywords (id) ON DELETE CASCADE,
   PRIMARY KEY ("testcase_id","keyword_id")
 ); 
 
@@ -638,7 +574,7 @@ CREATE TABLE /*prefix*/user_assignments(
   "type" BIGINT NOT NULL DEFAULT '0',
   "feature_id" BIGINT NOT NULL DEFAULT '0',
   "user_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
-  "build_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/builds (id),
+  "build_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/builds (id) ON DELETE CASCADE,
   "deadline_ts" TIMESTAMP NOT NULL DEFAULT (now() + '10 days'::interval),
   "assigner_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
@@ -653,8 +589,8 @@ CREATE INDEX /*prefix*/user_assignments_feature_id ON /*prefix*/user_assignments
 --
 CREATE TABLE /*prefix*/user_testplan_roles(  
   "user_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/users (id),
-  "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
-  "role_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id),
+  "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id) ON DELETE CASCADE,
+  "role_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id) ON DELETE CASCADE,
   PRIMARY KEY ("user_id","testplan_id")
 ); 
 
@@ -664,8 +600,8 @@ CREATE TABLE /*prefix*/user_testplan_roles(
 --
 CREATE TABLE /*prefix*/user_testproject_roles(  
   "user_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/users (id),
-  "testproject_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
-  "role_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id),
+  "testproject_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  "role_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id) ON DELETE CASCADE,
   PRIMARY KEY ("user_id","testproject_id")
 ); 
 
@@ -690,7 +626,7 @@ CREATE TABLE /*prefix*/user_group(
   title varchar(100) NOT NULL,
   description text,
   owner_id BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
-  testproject_id BIGINT NOT NULL REFERENCES  /*prefix*/testprojects (id),
+  testproject_id BIGINT NOT NULL REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/user_group_uidx1 ON /*prefix*/user_group (title);
@@ -705,7 +641,7 @@ CREATE TABLE /*prefix*/user_group_assign(
 CREATE TABLE /*prefix*/platforms (
   id BIGSERIAL NOT NULL,
   name VARCHAR(100) NOT NULL,
-  testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+  testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
   notes text NOT NULL,
   PRIMARY KEY (id)
 );
@@ -713,7 +649,7 @@ CREATE UNIQUE INDEX /*prefix*/platforms_uidx1 ON /*prefix*/platforms (testprojec
 
 CREATE TABLE /*prefix*/testplan_platforms (
   id BIGSERIAL NOT NULL,
-  testplan_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
+  testplan_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id) ON DELETE CASCADE,
   platform_id BIGINT NOT NULL DEFAULT '0',
   PRIMARY KEY (id)
 );
@@ -721,7 +657,7 @@ CREATE UNIQUE INDEX /*prefix*/testplan_platforms_uidx1 ON /*prefix*/testplan_pla
 
 CREATE TABLE /*prefix*/inventory (
 	id BIGSERIAL NOT NULL,
-	"testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+	"testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
 	"owner_id" BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
 	"name" VARCHAR(255) NOT NULL,
 	ipaddress VARCHAR(255) NOT NULL,
@@ -736,8 +672,8 @@ CREATE UNIQUE INDEX /*prefix*/inventory_uidx1 ON /*prefix*/inventory (name,testp
 
 CREATE TABLE /*prefix*/req_relations (
 	id BIGSERIAL NOT NULL,
-  source_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id),
-  destination_id  INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id),
+  source_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
+  destination_id  INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
   relation_type INT2 NOT NULL DEFAULT '1',
   author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
 	creation_ts TIMESTAMP NOT NULL DEFAULT now(),
@@ -748,7 +684,7 @@ CREATE TABLE /*prefix*/req_relations (
 
 --- BUGID 4056
 CREATE TABLE /*prefix*/req_revisions(  
-  "parent_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_versions (id),
+  "parent_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_versions (id) ON DELETE CASCADE,
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "revision" INTEGER NOT NULL DEFAULT '1',   
   "req_doc_id" VARCHAR(64) NULL,  --- fman - it's OK to allow a simple update query on code ?
@@ -767,3 +703,95 @@ CREATE TABLE /*prefix*/req_revisions(
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/req_revisions_uidx1 ON /*prefix*/req_revisions ("parent_id","revision");
+
+
+
+-- TICKET 4661
+CREATE TABLE /*prefix*/req_specs_revisions (
+  "parent_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id) ON DELETE CASCADE,
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "revision" INTEGER NOT NULL DEFAULT '1',
+  "doc_id" VARCHAR(64) NULL,   /* it's OK to allow a simple update query on code */
+  "name" VARCHAR(100) NULL,
+  "scope" TEXT NULL DEFAULT NULL,
+  "total_req" INTEGER NOT NULL DEFAULT '0',
+  "status" INTEGER NOT NULL DEFAULT '1',
+  "type" CHAR(1) NULL DEFAULT 'N',
+  "author_id" BIGINT NULL DEFAULT NULL,
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "modifier_id" BIGINT NULL DEFAULT NULL,
+  "modification_ts" TIMESTAMP NULL,
+  "log_message" TEXT NULL DEFAULT NULL,
+  PRIMARY KEY  ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/req_specs_revisions_uidx1 ON /*prefix*/req_revisions ("parent_id","revision");
+
+
+CREATE TABLE /*prefix*/issuetrackers
+(
+  "id" BIGSERIAL NOT NULL ,
+  "name" VARCHAR(100) NOT NULL,
+  "type" INTEGER NOT NULL DEFAULT '0',
+  "cfg" TEXT,
+  PRIMARY KEY  ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/issuetrackers_uidx1 ON /*prefix*/issuetrackers ("name");
+
+
+CREATE TABLE /*prefix*/testproject_issuetracker
+(
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  "issuetracker_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/issuetrackers (id) ON DELETE CASCADE,
+  PRIMARY KEY ("testproject_id")
+);
+
+
+
+CREATE TABLE /*prefix*/reqmgrsystems
+(
+  "id" BIGSERIAL NOT NULL ,
+  "name" VARCHAR(100) NOT NULL,
+  "type" INTEGER NOT NULL DEFAULT '0',
+  "cfg" TEXT,
+  PRIMARY KEY  ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/reqmgrsystems_uidx1 ON /*prefix*/reqmgrsystems ("name");
+
+CREATE TABLE /*prefix*/testproject_reqmgrsystem
+(
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  "reqmgrsystem_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/reqmgrsystems (id) ON DELETE CASCADE,
+  PRIMARY KEY ("testproject_id")
+);
+
+--
+-- TICKET 4914: Create View - tcversions_last_active
+--
+CREATE OR REPLACE VIEW /*prefix*/tcversions_last_active AS 
+(
+  SELECT tcv.id, tcv.tc_external_id, tcv.version, tcv.layout, tcv.status, 
+  		 tcv.summary, tcv.preconditions, tcv.importance, tcv.author_id, tcv.creation_ts, 
+  		 tcv.updater_id, tcv.modification_ts, tcv.active, tcv.is_open, tcv.execution_type, 
+  		 ac.tcase_id
+  FROM /*prefix*/tcversions tcv
+  JOIN( 
+	  SELECT nhtcv.parent_id AS tcase_id, max(tcv.id) AS tcversion_id
+	  FROM /*prefix*/nodes_hierarchy nhtcv
+	  JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
+	  WHERE tcv.active = 1
+	  GROUP BY nhtcv.parent_id, tcv.tc_external_id
+	  ) ac 
+  ON tcv.id = ac.tcversion_id
+);
+
+
+CREATE OR REPLACE VIEW /*prefix*/tcases_active AS 
+(
+	SELECT DISTINCT nhtcv.parent_id AS tcase_id, tcv.tc_external_id
+	FROM /*prefix*/nodes_hierarchy nhtcv
+	JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
+	WHERE tcv.active = 1
+);
+
+
+				

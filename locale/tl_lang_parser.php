@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: tl_lang_parser.php,v 1.5 2010/12/12 10:34:11 mx-julian Exp $
+ * @version    	CVS: $Id: tl_lang_parser.php,v 1.2.6.3 2010/12/12 10:34:14 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:

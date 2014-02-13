@@ -1,21 +1,21 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-
+@filesource tcTree.tpl
 Purpose: smarty template - show test specification tree menu 
 
-@filesource tcTree.tpl
-@internal revisions 
+@internal revisions
 *}
 {lang_get var="labels"
           s="caption_nav_filter_settings,testsuite,do_auto_update,keywords_filter_help,
              button_update_tree,no_tc_spec_av,keyword,execution_type"}
 
 
-    {include file="inc_head.tpl" openHead="yes"}
-    {include file="inc_ext_js.tpl" bResetEXTCss=1}
+{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_ext_js.tpl" bResetEXTCss=1}
 
-	{* Ext Collapsible Panel *}
+{* Ext Collapsible Panel *}
 	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
+	{literal}
 	<script type="text/javascript">
 		treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 		            loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
@@ -40,27 +40,37 @@ Purpose: smarty template - show test specification tree menu
 			});
 		});
 	</script>
-
+	{/literal}	
+	
     {if $gui->ajaxTree->loader == ''}
+        {literal}
         <script type="text/javascript">
-        treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
-                    loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
-
+        treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
+                   loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+        </script>
+        {/literal}
+        
+        <script type="text/javascript">
         treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
         treeCfg.root_id={$gui->ajaxTree->root_node->id};
         treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
         treeCfg.children={$gui->ajaxTree->children};
         treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
-        treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+	      // BUGID 0003664
+	      treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
         </script>
         <script type="text/javascript" src='gui/javascript/execTree.js'></script>
     
     {else}
+        {literal}
         <script type="text/javascript">
-          treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
-                      root_testlink_node_type:'',useBeforeMoveNode:false,
-                      loader:"", enableDD:false, dragDropBackEndUrl:'' };
-
+        treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
+                   root_testlink_node_type:'',useBeforeMoveNode:false,
+                   loader:"", enableDD:false, dragDropBackEndUrl:''};
+        </script>
+        {/literal}
+        
+        <script type="text/javascript">
 	        treeCfg.loader='{$gui->ajaxTree->loader}';
 	        treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
 	        treeCfg.root_id={$gui->ajaxTree->root_node->id};
@@ -78,21 +88,16 @@ Purpose: smarty template - show test specification tree menu
 
 {include file='inc_filter_panel_js.tpl'}
 
-{* *********************************************************************************** *}
-{* IMPORTANT - Above included file closes <head> tag and opens <body>,                 *}
-{* so this is not done here.                                                           *}
-{* *********************************************************************************** *}
+{* 
+ * !!!!! IMPORTANT !!!!!
+ * Above included file closes <head> tag and opens <body>, so this is not done here.
+ *}
 
 
 <h1 class="title">{$gui->treeHeader}</h1>
 
-{* BUGID 3301: include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
-
-{* BUGID 4042 *}
 {include file="inc_tree_control.tpl"}
-
-{* BUGID 4077 *}
 <div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 </body>

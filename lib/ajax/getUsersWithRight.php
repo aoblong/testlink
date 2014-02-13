@@ -5,12 +5,13 @@
  *
  * Get list of users with a project right
  * 
- * @filesource	getUsersWithRight.php
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
+ * @version    	CVS: $Id: getUsersWithRight.php,v 1.1 2010/02/12 00:20:12 havlat Exp $
  *
- * @internal revisions
+ * @internal Revisions:
+ * None
  *
  **/
 
@@ -19,18 +20,17 @@ require_once('common.php');
 testlinkInitPage($db);
 $data = array();
 
-// take care of proper escaping when magic_quotes_gpc is enabled
-$_REQUEST=strings_stripSlashes($_REQUEST);
-
-$iParams = array("right" => array(tlInputParameter::STRING_N,0,100,'/^[a-z0-9_]+$/'));
+$iParams = array(
+		"right" => array(tlInputParameter::STRING_N,0,100,'/^[a-z0-9_]+$/')
+		);
 $args = G_PARAMS($iParams);
 
 
 // user must have the same right as requested (security)
-if($_SESSION['currentUser']->hasRight($db,$args['right']))
+if (has_rights($db,$args['right']))
 {
 	$tlUser = new tlUser($_SESSION['userID']);
-	$data['rows'] = $tlUser->getNamesForProjectRight($db,$args['right'],intval($_REQUEST['tproject_id']));
+	$data['rows'] = $tlUser->getNamesForProjectRight($db,$args['right'],$_SESSION['testprojectID']);
 	$data['rows'][] = array('id'=>'0','login'=>' ','first'=>' ','last'=>' '); // option for no owner
 }
 else
@@ -39,4 +39,5 @@ else
 }
 
 echo json_encode($data);
+
 ?>

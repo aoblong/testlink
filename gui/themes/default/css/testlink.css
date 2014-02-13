@@ -1,14 +1,14 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	testlink.css
+@filesource testlink.css
 
-Default TestLink CSS
+Purpose: Default TestLink CSS
 
 IMPORTANT:
 NiftyCube rounding package has problems with I.E. 6 if background color is
 assigned using name (example: white) instead of code (example: #FFF)
 
--------------------------------------------------------------------------------------- */
+*/
 
 /* ***** GLOBAL HTML ***************************************************************** */
 body, body.testlink {
@@ -490,6 +490,7 @@ table.simple_tableruler tr:hover{
     background-color: #CDDEF3 !important;
 }
 
+
 /* Used for filters and options settings */
 table.smallGrey {
 	background:     #EEE;
@@ -710,13 +711,11 @@ img.arrow {
 	height: 		9px;
 }
 
-/* 20070826 - franciscom */
 div.exec_history {
 	background:		#FFF;
 	padding: 		0px 3px;
 }
 
-/* 20060328 - franciscom - I must to comment this better later :( */
 span.type1 {
 	background:		#059;
 	border: 		1px solid black;
@@ -727,8 +726,7 @@ span.type1 {
 	text-align: 	left;
 }
 
-/* 20060820 - franciscom - moved here from tl_login.css */
-/* used as title in login pages */
+
 div.fullpage_head {
 	text-align: 	center;
 	width: 			100%;
@@ -760,7 +758,7 @@ div.forms {
 	font-weight: bold;
 }
 
-/* 20070826 - added padding to allow good effect with Nifty */
+/* added padding to allow good effect with Nifty */
 div.exec_history_title {
 	font-weight:	bold;
 	padding: 		2px;
@@ -788,6 +786,33 @@ div.exec_test_spec {
 	color: 			black;
 	padding: 		12px;
 }
+
+
+div.login_title {
+	text-align: 	center;
+	width: 			50%;
+	background: 	#CDE;
+	margin: 		0px;
+	padding: 		5px 0px;
+	font-weight : 	bold;
+	font-variant : 	small-caps;
+	letter-spacing: 5px;
+}
+
+div.login_form {
+	text-align: 	left;
+	width: 			30%;
+	margin: 		35%;
+	margin-top: 	60px;
+	background: 	#CDE;
+	padding: 		30px;
+	border: 		1px;
+}
+
+
+
+
+
 
 .custom_field_container {
   border: thin solid white;
@@ -867,6 +892,76 @@ th.testlink, td.testlink, tr.testlink td {
 	cursor:pointer;
 }
 
+/* 
+@since 1.9.6
+@internal notice: 
+!important is CRITIC because without it, the alternate row color of ext-js grid will take precedence
+
+@internal revisions
+20121230 - franciscom - used on ext-js table implementation of users view 
+
+*/
+.roleCode9 
+{
+  background-color: acqua !important;
+  color: black;
+}
+
+.roleCode8 
+{
+  background-color: white !important;
+  color: black;
+}
+
+.roleCode7 
+{
+  background-color: wheat !important;
+  color: black;
+}
+
+.roleCode6 
+{
+  background-color: #FFA !important;
+  color: black;
+}
+
+.roleCode5 
+{
+  background-color: pink !important;
+  color: black;
+}
+
+.roleCode4 
+{
+  background-color: cyan !important;
+  color: black;
+}
+
+.roleCode3 
+{
+  background-color: grey !important;
+  color: black;
+}
+
+.roleCode2 
+{
+  background-color: yellow !important;
+  color: black;
+}
+
+.roleCode1 
+{
+  background-color: yellow !important;
+  color: black;
+}
+
+.roleCode0 
+{
+  background-color: seashell !important;
+  color: black;
+}
+
+
 
 /** Fix for buttons in date picker */
 .x-date-mp-btns button {
@@ -937,9 +1032,6 @@ th.testlink, td.testlink, tr.testlink td {
 }
 .tbar-reset-filters{
 	background-image: url("../images/reset_filter.png") !important;
-}
-.tbar-export{
-	background-image: url("../images/export_blue.png") !important;
 }
 .x-progress-wrap.left-align .x-progress-text {
     text-align:left;

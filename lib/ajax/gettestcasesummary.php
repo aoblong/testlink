@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettestcasesummary.php,v 1.4 2010/12/15 21:47:59 mx-julian Exp $
+* 	@version 	$Id: gettestcasesummary.php,v 1.1.6.2 2010/12/15 21:48:13 mx-julian Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   Used on Add/Remove test case to test plan feature, to display summary via ExtJS tooltip

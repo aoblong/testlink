@@ -1,12 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesEdit.tpl,v 1.14 2010/11/13 09:58:50 franciscom Exp $
+$Id: planMilestonesEdit.tpl,v 1.13 2010/11/06 11:42:47 amkhullar Exp $
 
 @internal revisions
-20110417 - Julian - BUGID 3971 - Help for Milestones 
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
-20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
 *}
 {lang_get var='labels' s='show_event_history,warning_empty_milestone_name,
                           warning_empty_low_priority_tcases,warning_empty_medium_priority_tcases,
@@ -17,13 +13,24 @@ $Id: planMilestonesEdit.tpl,v 1.14 2010/11/13 09:58:50 franciscom Exp $
                           th_perc_testcases,th_delete,alt_delete_milestone,show_calender,
                           clear_date,info_milestone_create_prio,info_milestone_create_no_prio'}
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
+
+{* Configure Actions *}
+{assign var="managerURL" value="lib/plan/planMilestonesEdit.php"}
+{assign var="editAction" value="$managerURL?doAction=edit&tplan_id="}
+{assign var="deleteAction" value="$managerURL?doAction=doDelete&tplan_id="}
+{assign var="createAction" value="$managerURL?doAction=create&tplan_id="}
+
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
+{include file="inc_del_onclick.tpl"}
 
+{literal}
 <script type="text/javascript">
+{/literal}
+// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_invalid_percentage_value = "{$labels.warning_invalid_percentage_value|escape:'javascript'}";
 var warning_must_be_number = "{$labels.warning_must_be_number|escape:'javascript'}";
@@ -37,6 +44,7 @@ warning_empty.high_priority_tcases = "{$labels.warning_empty_high_priority_tcase
 
 
 var warning_nonumeric_low_priority_tcases = 'no numeric';
+{literal}
 
 /*
   function: validateForm
@@ -97,6 +105,7 @@ function validateForm(f)
   }
 
 }
+{/literal}
 </script>
 
 </head>
@@ -119,15 +128,13 @@ function validateForm(f)
 	<form method="post" action="lib/plan/planMilestonesEdit.php"
 	      name="milestone_mgr" onSubmit="javascript:return validateForm(this);">
 	
-	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}"/>
-	    <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}"/>
-	    <input type="hidden" name="id" id="id" value="{$gui->milestone.id}"/>
+	    <input type="hidden" name="id" value="{$gui->milestone.id}"/>
 	    <table class="common" style="width:80%">
 		      <tr>
 			    <th style="background:none;">{$labels.th_name}</th>
 	        		<td>
 	        			<input type="text" id="milestone_name" name="milestone_name" size="{#MILESTONE_NAME_SIZE#}"
-                	  	 maxlength="{#MILESTONE_NAME_MAXLEN#}"  value="{$gui->milestone.name|escape}"/>
+                	  	 maxlength="{#MILESTONE_NAME_MAXLEN#}"  value="{$gui->milestone.name|escape}" required />
 	              {include file="error_icon.tpl" field="milestone_name"}
 	        		</td>
     	    </tr>
@@ -135,10 +142,9 @@ function validateForm(f)
  	    		<tr>
 			    <th style="background:none;">{$labels.th_date_format}</th>
 			        <td>
-		         	{* BUGID 3716 *}
 	                <input type="text" 
 	                       name="target_date" id="target_date" 
-					       value="{$gui->milestone.target_date}" />
+					       value="{$gui->milestone.target_date}" required />
 					<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 					     onclick="showCal('target_date-cal','target_date','{$gsmarty_datepicker_format}');" >
 					<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
@@ -164,13 +170,13 @@ function validateForm(f)
 		      	</td>
 		      </tr>
 
-          {if $gui->tproject_options->testPriorityEnabled}
+          {if $session['testprojectOptions']->testPriorityEnabled}
 		          <tr>
 		          	<th style="background:none;">{$labels.th_perc_a_prio}:</th>
 		          	<td>
 		          		<input type="text" id="low_priority_tcases" name="low_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.high_percentage|escape}"/>
+		          		       value="{$gui->milestone.high_percentage|escape}" required />
 	                {include file="error_icon.tpl" field="low_priority_tcases"}
 		          	</td>
 		          </tr>
@@ -179,7 +185,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" id="medium_priority_tcases" name="medium_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.medium_percentage|escape}"/>
+		          		       value="{$gui->milestone.medium_percentage|escape}" required />
 	                {include file="error_icon.tpl" field="medium_priority_tcases"}
 		          	</td>
 		          </tr>
@@ -188,7 +194,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" id="high_priority_tcases" name="high_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.low_percentage|escape}"/>
+		          		       value="{$gui->milestone.low_percentage|escape}" required />
 	                {include file="error_icon.tpl" field="high_priority_tcases"}
 		          	</td>
 		          </tr>
@@ -219,7 +225,7 @@ function validateForm(f)
 	
 	{* BUGID 3971 - Help for Milestones *}
 	<br />
-	{if $gui->tproject_options->testPriorityEnabled}
+	{if $session['testprojectOptions']->testPriorityEnabled}
 		<p class="italic">{$labels.info_milestone_create_prio}</p>
 	{else}
 		<p class="italic">{$labels.info_milestone_create_no_prio}</p>

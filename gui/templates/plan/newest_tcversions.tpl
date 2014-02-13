@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-
-@filesource	newest_tcversions.tpl
+$Id: newest_tcversions.tpl,v 1.12 2010/01/21 22:06:18 franciscom Exp $
 Purpose: smarty template - 
+rev:
+    20080126 - franciscom - external tcase id
 *}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -10,7 +11,7 @@ Purpose: smarty template -
 
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,th_test_case,title_newest_tcversions,
-             linked_version,newest_version,compare,design,execution_history'}
+             linked_version,newest_version,compare,design,execution_history' }
 
 </head>
 <body>
@@ -37,11 +38,12 @@ Purpose: smarty template -
   </table>
 </form>
 
-{if $gui->show_details}
+{if $gui->show_details }
   <div class="workBack">
 
     <table class="simple_tableruler">
       <tr>
+		    {* <td>{$labels.th_id}</td>  *}
 		    <th>{$labels.th_test_case}</th>
 		    <th>{$labels.linked_version}</th>
 		    <th>{$labels.newest_version}</th>
@@ -50,12 +52,13 @@ Purpose: smarty template -
     
       {foreach from=$gui->testcases item=tc}
       <tr>
+		{* <td style="align:right;"> {$gui->tcasePrefix|escape}{$tc.tc_external_id|escape} </td>  *} 
 		<td> 
 			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
 			     onclick="javascript:openExecHistoryWindow({$tc.tc_id});"
 			     title="{$labels.execution_history}" />
 			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-			     onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tc.tc_id});"
+			     onclick="javascript:openTCaseWindow({$tc.tc_id});"
 			     title="{$labels.design}" />
 			{$tc.path}{$gui->tcasePrefix|escape}{$tc.tc_external_id|escape}:{$tc.name|escape}
 		</td>

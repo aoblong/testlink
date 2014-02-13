@@ -1,10 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-
-@filesource	containerMove.tpl
+$Id: containerMove.tpl,v 1.9 2009/06/08 21:21:40 schlundus Exp $
 Purpose: smarty template - form for move/copy container in test specification
 
-@internal revisions
+rev :
+     20080517 - franciscom - more labels
+     20070904 - franciscom - BUGID 1019
+     removed checkbox copy nested data
 *}
 {include file="inc_head.tpl"}
 {lang_get s='container' var='parent'}
@@ -20,10 +22,10 @@ Purpose: smarty template - form for move/copy container in test specification
 <div class="workBack">
 <h1 class="title">{$labels.title_move_cp}</h1>
 
-{if $containers == ''}
+{if $containers eq ''}
 	{$labels.sorry_further} {$parent} {$labels.defined_exclam}
 {else}
-	<form method="post" action="lib/testcases/containerEdit.php?tproject_id={$gui->tproject_id}&objectID={$objectID|escape}">
+	<form method="post" action="lib/testcases/containerEdit.php?objectID={$objectID|escape}">
 		<p>
 		{$labels.cont_move_first} {$level_translated} {$labels.cont_move_second} {$parent|escape}.<br />
 		{$labels.cont_copy_first} {$level_translated} {$labels.cont_copy_second} {$parent|escape}.

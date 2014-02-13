@@ -4,23 +4,21 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	planMilestonesEdit.php
- * @author 		Francisco Mancardi
+ * @author Francisco Mancardi
  *
  * @internal revisions
- *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
- *  20101022 - asimon - BUGID 3716 - replaced old separated inputs for day/month/year by ext js calendar
+ * @since 1.9.4
+ * 20120204 - franciscom - TICKET 4906: Several security issues       
  *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
 $args = init_args($db,$date_format_cfg);
-checkRights($db,$_SESSION['currentUser'],$args);
-
-$gui = initialize_gui($db,$_SESSION['currentUser'],$args);
+$gui = initialize_gui($db,$args);
 $commandMgr = new planMilestonesCommands($db);
 
 $pFn = $args->doAction;
@@ -46,7 +44,6 @@ function init_args(&$dbHandler,$dateFormat)
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	$args = new stdClass();
 
-	// BUGID 3716
 	$args->target_date_original = isset($_REQUEST['target_date']) ? $_REQUEST['target_date'] : null;
 	$args->start_date_original = isset($_REQUEST['start_date']) ? $_REQUEST['start_date'] : null;
 	
@@ -74,35 +71,27 @@ function init_args(&$dbHandler,$dateFormat)
   	    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;     
   	}
 
-	$args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
+	$args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 	$args->name = isset($_REQUEST['milestone_name']) ? $_REQUEST['milestone_name'] : null;
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 
 	$args->basehref=$_SESSION['basehref'];
-
-
-	$treeMgr = new tree($dbHandler);
-	$tprojectMgr = new testproject($dbHandler);
-
-	$args->tproject_options = new stdClass();
-	$args->tproject_options->testPriorityEnabled = 0;
-	$args->tproject_name = '';
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-	if( $args->tproject_id > 0 )
-	{
-	    $info = $tprojectMgr->get_by_id($args->tproject_id);
-	    $args->tproject_name = $info['name'];
-	    $args->tproject_options = $info['opt'];
-  	}
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	
 	$args->tplan_name = '';
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+	if( $args->tplan_id == 0 )
+	{
+	    $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+	}
 	if( $args->tplan_id > 0 )
 	{
-	    $info = $treeMgr->get_node_hierarchy_info($args->tplan_id);
+	    $tplan_mgr = new testplan($dbHandler);
+	    $info = $tplan_mgr->get_by_id($args->tplan_id);
 	    $args->tplan_name = $info['name'];
   	}
-  	
+  	 	
 	return $args;
 }
 
@@ -188,42 +177,25 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
   returns:
 
 */
-function initialize_gui(&$dbHandler,&$userObj,&$argsObj)
+function initialize_gui(&$dbHandler,&$argsObj)
 {
+    $req_spec_mgr = new requirement_spec_mgr($dbHandler);
     $gui = new stdClass();
-
-	$gui->tproject_options = $argsObj->tproject_options;
-    $gui->tproject_id = $argsObj->tproject_id;
-    $gui->tplan_id = $argsObj->tplan_id;
+    
     $gui->user_feedback = null;
     $gui->main_descr = lang_get('req_spec');
     $gui->action_descr = null;
 
     $gui->grants = new stdClass();
-    $gui->grants->milestone_mgmt = $userObj->hasRight($dbHandler,"testplan_planning",
-    												  $gui->tproject_id,$gui->tplan_id);
-	$gui->grants->mgt_view_events = $userObj->hasRight($dbHandler,"mgt_view_events",
-													   $gui->tproject_id,$gui->tplan_id);
-     
-     
-	//$manager = "lib/plan/planMilestonesEdit.php?tproject_id={$gui->tproject_id}&doAction=";
-	//$gui->actions = new stdClass();
-	//$gui->actions->edit = $manager . "edit&tplan_id={$gui->tplan_id}";
-	//$gui->actions->delete = $manager . 'doDelete&id=';
-	//$gui->actions->create = $manager . "create&tplan_id={$gui->tplan_id}";
-
+    $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
+	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
+	
 	return $gui;
 }
 
 
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_planning'),'and');
+	return ($user->hasRight($db,"testplan_planning"));
 }
 ?>

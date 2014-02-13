@@ -5,6 +5,7 @@ Viewer for massive delete of test cases inside a test suite
 
 @filesource containerDeleteTC.tpl
 20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases
+20100910 - franciscom - BUGID 3047: Deleting multiple TCs
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
@@ -15,11 +16,15 @@ Viewer for massive delete of test cases inside a test suite
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
+{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_del_onclick.tpl"}
 
+{literal}
 <script type="text/javascript">
+{/literal}
+//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-
+{literal}
 /*
   function: check_action_precondition
 
@@ -42,6 +47,7 @@ function check_action_precondition(container_id,action,msg)
 	}
 }
 </script>
+{/literal}
 </head>
 
 <body>
@@ -93,7 +99,7 @@ function check_action_precondition(container_id,action,msg)
                          onclick="javascript:openExecHistoryWindow({$tcinfo.id});"
                          title="{$labels.execution_history}" />
                     <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-                         onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tcinfo.id});"
+                         onclick="javascript:openTCaseWindow({$tcinfo.id});"
                          title="{$labels.design}" />
                     {$tcinfo.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcinfo.name|escape}
                 </td>
@@ -143,6 +149,8 @@ function check_action_precondition(container_id,action,msg)
 {/if}
 
 </div>
-{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
+{if $gui->refreshTree}
+   	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
 </body>
 </html>

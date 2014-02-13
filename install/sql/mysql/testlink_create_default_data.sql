@@ -1,14 +1,12 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# @filesource testlink_create_default_data.sql
+# $Id: testlink_create_default_data.sql,v 1.37.6.2 2010/12/11 17:31:47 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
-# Database Type: MySQL 
-#
-# @internal revisions
+# Database Type: MySQL
 # ---------------------------------------------------------------------------------
 
 # Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 2.0', 'TestLink 2.0',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.8', 'TestLink 1.9.8',CURRENT_TIMESTAMP());
 
 # Node types -
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (1,'testproject');
@@ -68,11 +66,13 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (31,'issuetracker_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (32,'issuetracker_view');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (33,'exec_edit_notes');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (34,'exec_delete');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (35,'testplan_unlink_executed_testcases');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (36,'testproject_delete_executed_testcases');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (37,'testproject_edit_executed_testcases');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (33,'reqmgrsystem_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (34,'reqmgrsystem_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (35,'exec_edit_notes');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (36,'exec_delete');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (37,'testplan_unlink_executed_testcases');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (38,'testproject_delete_executed_testcases');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (39,'testproject_edit_executed_testcases');
 
 
 # Rights for Administrator role
@@ -103,8 +103,6 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
@@ -113,6 +111,9 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,34);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,35);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,36);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,37);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,38);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,39);
+
 # Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,6 );
@@ -126,8 +127,6 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,8 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,9 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,10);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,11);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,28);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,29);
 
 # Rights for tester role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (7,1 );
@@ -146,8 +145,6 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,9 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,11);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,27);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,28);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,29);
 
 # Rights for leader role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,1 );
@@ -167,8 +164,14 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,28);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,29);
+
+# admin account 
+# SECURITY: change password after first login
+#
+# TICKET 4342: Security problem with multiple Testlink installations on the same server 
+INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active,cookie_string)
+			VALUES ('admin',MD5('admin'), 8,'', 'Testlink','Administrator', 'en_GB',1,CONCAT(MD5(RAND()),MD5('admin')));
+
 
 # Assignment types
 INSERT INTO /*prefix*/assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');

@@ -1,26 +1,29 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	containerMoveTC.tpl
+$Id: containerMoveTC.tpl,v 1.8 2010/11/06 11:42:47 amkhullar Exp $
 Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
 
 @internal revisions
-20100314 - franciscom - added feedback when op ok (used when copy test cases)
-                        and logic to refresh left side tree 
+@since 1.9.7
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
              check_uncheck_all_checkboxes,warning,execution_history,design,
-             choose_target,copy_keywords,btn_move,btn_cp'}
+             choose_target,copy_keywords,btn_move,btn_cp,summary,btn_copy_ghost_zone'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"} {* include ext-js *}
+{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_del_onclick.tpl"}
 
+{literal}
 <script type="text/javascript">
+{/literal}
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
+{literal}
 
 /*
   function: check_action_precondition
@@ -44,6 +47,7 @@ function check_action_precondition(container_id,action,msg)
 	}
 }
 </script>
+{/literal}
 </head>
 
 <body>
@@ -51,7 +55,9 @@ function check_action_precondition(container_id,action,msg)
 <h1 class="title">{$level_translated}{$smarty.const.TITLE_SEP}{$object_name|escape} </h1>
 
 <div class="workBack">
-<h1 class="title">{$labels.title_move_cp_testcases}</h1>
+{if !$testCasesTableView}    
+  <h1 class="title">{$labels.title_move_cp_testcases}</h1>
+{/if}
 
 {if $op_ok == false}
 	{$user_feedback}
@@ -59,19 +65,21 @@ function check_action_precondition(container_id,action,msg)
 	<form id="move_copy_testcases" name="move_copy_testcases" method="post"
 	      action="lib/testcases/containerEdit.php?objectID={$objectID}">
 
-    {if $user_feedback != ''}
-      <div class="user_feedback">{$user_feedback}</div>
-      <br />
+    {if !$testCasesTableView}    
+      {if $user_feedback != ''}
+        <div class="user_feedback">{$user_feedback}</div>
+        <br />
+      {/if}
+  		<p>{$labels.choose_target}:
+  			<select name="containerID" id="containerID">
+  				  {html_options options=$containers}
+  			</select>
+  		</p>
+  		<p>
+  			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
+  			{$labels.copy_keywords}
+  		</p>
     {/if}
-		<p>{$labels.choose_target}:
-			<select name="containerID" id="containerID">
-				  {html_options options=$containers}
-			</select>
-		</p>
-		<p>
-			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
-			{$labels.copy_keywords}
-		</p>
 
 		{* need to do JS checks*}
     {* used as memory for the check/uncheck all checkbox javascript logic *}
@@ -79,33 +87,43 @@ function check_action_precondition(container_id,action,msg)
 		<div id="move_copy_checkboxes">
         <table class="simple">
           <tr>
+          {if !$testCasesTableView}  
           <th class="clickable_icon">
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			              onclick='cs_all_checkbox_in_div("move_copy_checkboxes","tcaseSet_","add_value_memory");'
                     title="{$labels.check_uncheck_all_checkboxes}" />
 			    </th>
+          {/if}
           <th>{$labels.th_test_case}</th>
+          <th>{$labels.summary}</th>
           </tr>
           
         {foreach from=$testcases key=rowid item=tcinfo}
             <tr>
+              {if !$testCasesTableView}  
                 <td>
                     <input type="checkbox" name="tcaseSet[]" id="tcaseSet_{$tcinfo.tcid}" value="{$tcinfo.tcid}" />
                 </td>
+              {/if}
                 <td>
                     <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
                          onclick="javascript:openExecHistoryWindow({$tcinfo.tcid});"
                          title="{$labels.execution_history}" />
                     <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-                         onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tcinfo.tcid});"
+                         onclick="javascript:openTCaseWindow({$tcinfo.tcid});"
                          title="{$labels.design}" />
                     {$tcprefix|escape}{$tcinfo.tcexternalid|escape}{$gsmarty_gui->title_separator_1}{$tcinfo.tcname|escape}
+                </td>
+                <td style="width:60%;">
+                  {$tcinfo.summary}
                 </td>
             </tr>
         {/foreach}
         </table>
         <br />
     </div>
+
+    {if !$testCasesTableView}    
 		<div>
 			<input type="submit" name="do_move_tcase_set" value="{$labels.btn_move}"
              onclick="return check_action_precondition('move_copy_checkboxes','move','{$check_msg}');"  />
@@ -113,13 +131,20 @@ function check_action_precondition(container_id,action,msg)
 			<input type="submit" name="do_copy_tcase_set" value="{$labels.btn_cp}"
 			       onclick="return check_action_precondition('move_copy_checkboxes','copy','{$check_msg}');"  />
 
+      <input type="submit" name="do_copy_tcase_set_ghost" value="{$labels.btn_copy_ghost_zone}"
+             onclick="return check_action_precondition('move_copy_checkboxes','copy','{$check_msg}');"  />
+
 			<input type="hidden" name="old_containerID" value="{$old_containerID}" />
 		</div>
-
+    {/if}
 	</form>
 {/if}
 
 </div>
-{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
+{* 20100314 - franciscom *}
+{if $refreshTree}
+   	{include file="inc_refreshTreeWithFilters.tpl"}
+	{*include file="inc_refreshTree.tpl"*}
+{/if}
 </body>
 </html>

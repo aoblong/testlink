@@ -3,10 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: custom_config.inc.php.example,v $
- *
- * @version $Revision: 1.9 $
- * @modified $Date: 2011/02/10 22:42:33 $ by $Author: franciscom $
+ * @filesource	custom_config.inc.php.example
+ * @author      franciscom
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -26,14 +24,37 @@
 //
 // *******************************************************************************
 //
-// Uncomment this if you want dBug() display info
+// This configuration has been created to solve:
+// http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/
+// Give a look to:
+// http://mantis.testlink.org/view.php?id=5147
+// http://mantis.testlink.org/view.php?id=5148
+// http://mantis.testlink.org/view.php?id=4977
+// http://mantis.testlink.org/view.php?id=4906
+// 
+// You need to be certain that these folders have correct permissions in order
+// to allow the user/daemon used to run the webserver service/daemon read/write access.
+//
+// $tlCfg->log_path = '/var/testlink-ga-testlink-code/logs/'; /* unix example */
+// $g_repositoryPath = '/var/testlink-ga-testlink-code/upload_area/';  /* unix example */
+//
+// 
+// ********************************************************************************************
+// Uncomment this if you want:
+// 1. dBug() display info
+// 2. debug_print_backtrace() on database.class.php
+//    instead of debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)
 // define('DBUG_ON',1);
 //
-// For info: http://log4javascript.org
-// if( !defined('TL_USE_LOG4JAVASCRIPT') )
-// {
-//    define('TL_USE_LOG4JAVASCRIPT',1);
-// }
+// ********************************************************************************************
+//
+// Example of Logger config
+// After this config:
+// 					 $tlCfg->loggerFilter = array('DEBUG','AUDIT','WARNING','ERROR');
+//
+// This will be written to TL event viewer
+// 					tLog("SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","DEBUG");
+//
 //
 // To use a different version of ADODB that provided with TL, use a similar bunch of lines
 // on custom_config.inc.php
@@ -102,33 +123,25 @@
 // $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
 //
 //
-// E-Mail Configuration
-$g_smtp_host        = 'smtp.gmail.com';  # SMTP server MUST BE configured  
+// SMTP server Configuration ("localhost" is enough in the most cases)
+//$g_smtp_host        = 'localhost';  # SMTP server MUST BE configured  
 
-$g_tl_admin_email     = 'francisco.mancardi@gmail.com'; # for problem/error notification 
-$g_from_email         = 'francisco.mancardi@gmail.com';  # email sender
-$g_return_path_email  = 'francisco.mancardi@gmail.com';
+# Configure using custom_config.inc.php
+//$g_tl_admin_email     = 'tl_admin@127.0.0.1'; # for problem/error notification 
+//$g_from_email         = 'testlink@127.0.0.1';  # email sender
+//$g_return_path_email  = 'francisco@127.0.0.1';
 
 # Urgent = 1, Not Urgent = 5, Disable = 0
 // $g_mail_priority = 5;   
 
-/** Configure only if SMTP server requires authentication */
-$g_smtp_username    = '********@gmail.com';  # user
-$g_smtp_password    = '*********';  # password
+# Taken from mantis for phpmailer config
+#define ("SMTP_SEND",2);
+#$g_phpMailer_method = SMTP_SEND;
 
-/**
- * This control the connection mode to SMTP server. 
- * Can be '', 'ssl','tls'
- * @global string $g_smtp_connection_mode
- */
-$g_smtp_connection_mode = 'ssl';
-
-/**
- * The smtp port to use.  The typical SMTP ports are 25 and 587.  The port to use
- * will depend on the SMTP server configuration and hence others may be used.
- * @global int $g_smtp_port
- */
-$g_smtp_port = 465;
+// Configure only if SMTP server requires authentication
+//$g_smtp_username    = '';  # user  
+//$g_smtp_password    = '';  # password 
+//
 
 // TRUE  -> the whole execution history for the choosen build will be showed
 // FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
@@ -194,7 +207,7 @@ $g_smtp_port = 465;
 //$tlCfg->results['default_status'] = 'not_run';
 //
 //$tlCfg->results['charts']['status_colour'] = array(
-// 	'not_run'   => '000000',
+//	'not_run'   => '000000',
 //	'passed'    => '006400',
 //	'failed'    => 'B22222',
 //	'blocked'   => '00008B',

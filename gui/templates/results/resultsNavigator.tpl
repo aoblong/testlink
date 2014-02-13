@@ -1,18 +1,22 @@
-{* 
-TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	resultsNavigator.tpl
-
-@internal revisions
-20101116 - asimon - BUGID 4009: "Test Case Assignment Overview" did not show assignments in some situations
-20100410 - franciscom - BUGID 3370
+{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
+{* $Id: resultsNavigator.tpl,v 1.11.2.1 2010/11/16 09:49:07 asimon83 Exp $ *}
+{* Purpose: smarty template - show Test Results and Metrics *}
+{* Rev :
+        20101116 - asimon - BUGID 4009: "Test Case Assignment Overview" did not show assignments in some situations
+        20100410 - franciscom - BUGID 3370
+        20081109 - franciscom - refactoring 
+        20070113 - franciscom - use of smarty config file
 *}
 {lang_get var="labels"
           s="title_nav_results,title_report_type,btn_print,test_plan,show_inactive_tplans"}
 
-{$cfg_section=$smarty.template|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes"}
 
+
+
+{literal}
 <script type="text/javascript">
 function reportPrint(){
 	parent["workframe"].focus();
@@ -25,6 +29,7 @@ function pre_submit()
  return true;
 }
 </script>
+{/literal}
 </head>
 
 <body>
@@ -35,7 +40,6 @@ function pre_submit()
 <form method="get" id="resultsNavigator" onSubmit="javascript:return pre_submit();">
 	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
 	<input type="hidden" id="called_url" name="called_url" value="" />
-	<input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id}" />
 
 	<div class="menu_bar">
 		<span>{$labels.title_report_type}
@@ -69,12 +73,17 @@ function pre_submit()
 {* Build href menu *}
 {if $gui->do_report.status_ok}
   {foreach from=$gui->menuItems item=menu}
-    <span><img src="{$tlImages.bullet}" />
-        {* BUGID 4009 *}
-	    <a href="{$menu.href}format={$selectedReportType}&tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}
-	             {if $gui->checked_show_inactive_tplans}&show_inactive_tplans=1{/if}" 
-	       target="workframe">{$menu.name}</a></span><br />
-  
+    <span>
+ 	       {if $menu.directLink != ''}
+  	       {$menu.toggle} 
+	       {else}
+	        <img src="{$tlImages.bullet}" />
+	       {/if}
+    	    <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}
+	             {if $gui->checked_show_inactive_tplans}&amp;show_inactive_tplans=1{/if}" 
+	       target="workframe">{$menu.name}</a>
+	       </span><br />
+ 	       {$menu.directLinkDiv}
   {/foreach}
 {else}
   {$gui->do_report.msg}

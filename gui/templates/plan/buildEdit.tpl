@@ -1,16 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: buildEdit.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
 
-Add new build and show existing
+Purpose: smarty template - Add new build and show existing
 
-@filesource	buildEdit.tpl
 @internal revisions
 
 *}
-{$tproject_id=$gui->tproject_id}
-{$tplan_id=$gui->tplan_id}
-{$managerURL = "lib/plan/buildEdit.php"}
-{$cancelAction = "lib/plan/buildView.php?tproject_id=$tproject_id&tplan_id=$tplan_id"}
+{assign var="managerURL" value="lib/plan/buildEdit.php"}
+{assign var="cancelAction" value="lib/plan/buildView.php"}
 
 {lang_get var="labels"
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
@@ -20,11 +18,14 @@ Add new build and show existing
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
+{include file="inc_del_onclick.tpl"}
 
+{literal}
 <script type="text/javascript">
+{/literal}
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_build_name = "{$labels.warning_empty_build_name|escape:'javascript'}";
-
+{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.build_name.value)) 
@@ -36,11 +37,12 @@ function validateForm(f)
   return true;
 }
 </script>
+{/literal}
 </head>
 
 
 <body onload="showOrHideElement('closure_date',{$gui->is_open})">
-{$cfg_section = $smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->main_descr|escape}</h1>
@@ -53,7 +55,7 @@ function validateForm(f)
 	<h2>{$gui->operation_descr|escape}
 		{if $gui->mgt_view_events eq "yes" && $gui->build_id > 0}
 				<img style="margin-left:5px;" class="clickable" 
-				     src="{$tlImages.event_info}" onclick="showEventHistoryFor('{$gui->build_id}','builds')" 
+				     src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$gui->build_id}','builds')" 
 				     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 		{/if}
 	</h2>
@@ -64,7 +66,7 @@ function validateForm(f)
 			<th style="background:none;">{$labels.enter_build}</th>
 			<td><input type="text" name="build_name" id="build_name" 
 			           maxlength="{#BUILD_NAME_MAXLEN#}" 
-			           value="{$gui->build_name|escape}" size="{#BUILD_NAME_SIZE#}"/>
+			           value="{$gui->build_name|escape}" size="{#BUILD_NAME_SIZE#}" required />
 			  				{include file="error_icon.tpl" field="build_name"}
 			</td>
 		</tr>
@@ -89,6 +91,7 @@ function validateForm(f)
     <tr>
 		    <th style="background:none;">{$labels.release_date}</th>
 		    <td>
+		    {* BUGID 3716, BUGID 3930 *}
                 <input type="text" 
                        name="release_date" id="release_date" 
 				       value="{$gui->release_date}" />
@@ -100,6 +103,7 @@ function validateForm(f)
         </td>
 		</tr>
 
+	{* BUGID 3406 *}
 	{* show this only if we create a new build and there are other builds to copy from *}
 	{if !$gui->build_id && $gui->source_build.build_count}
 		<tr>
@@ -127,8 +131,6 @@ function validateForm(f)
     {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
 		<input type="hidden" name="do_action" value="{$gui->buttonCfg->name}" />
 		<input type="hidden" name="build_id" value="{$gui->build_id}" />
-      	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
-      	<input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
 		
 		<input type="submit" name="{$gui->buttonCfg->name}" value="{$gui->buttonCfg->value|escape}"
 				   onclick="do_action.value='{$gui->buttonCfg->name}'"/>

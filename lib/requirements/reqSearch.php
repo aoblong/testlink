@@ -3,37 +3,49 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	reqSearch.php
- * @package 	  TestLink
- * @author		  Andreas Simon
- * @copyright 	2005-2012, TestLink community 
- * @link 		  http://www.teamst.org/index.php
+ * @filesource  reqSearch.php
+ * @package 	TestLink
+ * @author		Andreas Simon
+ * @copyright 	2005-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
- * @internal revisions
- * @since 2.0
+ * @internal Revisions:
+ *
+ * @since 1.9.4
  * 20110815 - franciscom - 	TICKET 4700: Req Search Improvements - search on log message and 
  *							provide link/url to multiple results
+ *
+ * @since 1.9.3
+ * 20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
+ * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
+ * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                     table state independent from localization
+ * 20101005 - asimon - replaced linked requirement title by linked icon
+ * 20100929 - asimon - added req doc id to result table
+ * 20100920 - Julian - BUGID 3793 - use exttable to display search results
+ *                   - created function to build table
+ * 20100920 - franciscom - minor refactoring
+ * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions
+ * 20100324 - asimon - added searching for requirement relation type (BUGID 1748)
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("requirements.inc.php");
+require_once('exttable.class.php');
 testlinkInitPage($db);
-$date_format_cfg = config_get('date_format');
 
+$templateCfg = templateConfiguration();
 $tpl = 'reqSearchResults.tpl';
-$args = init_args($date_format_cfg);
-
-checkRights($db,$_SESSION['currentUser'],$args);
 
 $tproject_mgr = new testproject($db);
     	
+$date_format_cfg = config_get('date_format');
 $req_cfg = config_get('req_cfg');
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
-$templateCfg = templateConfiguration();
 
 $commandMgr = new reqCommands($db);
 $gui = $commandMgr->initGuiBean();
@@ -43,18 +55,14 @@ $gui->warning_msg = '';
 $gui->path_info = null;
 $gui->resultSet = null;
 $gui->tableSet = null;
-$gui->tproject_id = $args->tproject_id;
-
-
-$edit_label = lang_get('requirement');
-$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $map = null;
+$args = init_args($date_format_cfg);
 
-$gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
+$gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
 $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
-if ($args->tproject_id)
+if ($args->tprojectID)
 {
 	$sql = build_search_sql($db,$args,$gui);
 
@@ -63,14 +71,14 @@ if ($args->tproject_id)
 	//
 	$map = $db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
 
-	//dont show requirements from different testprojects than the selected one
+	// dont show requirements from different testprojects than the selected one
 	if (count($map)) 
 	{
 		$reqIDSet = array_keys($map);
 		foreach ($reqIDSet as $item) 
 		{
 			$pid = $tproject_mgr->tree_manager->getTreeRoot($item);
-			if ($pid != $args->tproject_id) 
+			if ($pid != $args->tprojectID) 
 			{
 				unset($map[$item]);
 			}
@@ -79,32 +87,31 @@ if ($args->tproject_id)
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty=count($map);
+$gui->row_qty = count($map);
 if($gui->row_qty > 0)
 {
-	$gui->resultSet=$map;
+	$gui->resultSet = $map;
 	if($gui->row_qty <= $req_cfg->search->max_qty_for_display)
 	{
-		$req_set=array_keys($map);
+		$req_set = array_keys($map);
 		$options = array('output_format' => 'path_as_string');
-		$gui->path_info=$tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
+		$gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
 	}
 	else
 	{
-		$gui->warning_msg=lang_get('too_wide_search_criteria');
+		$gui->warning_msg = lang_get('too_wide_search_criteria');
 	}
 }
 else
 {
-	$gui->warning_msg=lang_get('no_records_found');
+	$gui->warning_msg = lang_get('no_records_found');
 }
 
 $table = buildExtTable($gui, $charset);
-if (!is_null($table)) 
-{
+
+if (!is_null($table)) {
 	$gui->tableSet[] = $table;
 }
-
 
 $gui->pageTitle = $gui->main_descr . " - " . lang_get('match_count') . ": " . $gui->row_qty;
 $smarty->assign('gui',$gui);
@@ -154,10 +161,9 @@ function buildExtTable($gui, $charset)
 		$key2loop = array_keys($gui->resultSet);
 		$img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
 		// req_id, req_version_id
-		$reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
-
+		$reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
 		// req_revision_id
-		$reqRevHref = '<a href="javascript:openReqRevisionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
+		$reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>'; 
 		
 		foreach($key2loop as $req_id)
 		{
@@ -177,11 +183,11 @@ function buildExtTable($gui, $charset)
 			{
 				if($rx['revision_id'] > 0)
 				{
-					$dummy = sprintf($reqRevHref,$gui->tproject_id,$rx['revision_id'],$rx['version'],$rx['revision']);
+					$dummy = sprintf($reqRevHref,$rx['revision_id'],$rx['version'],$rx['revision']);
 				}
 				else
 				{
-					$dummy = sprintf($reqVerHref,$gui->tproject_id,$req_id,$rx['version_id'],$rx['version'],$rx['revision']);
+					$dummy = sprintf($reqVerHref,$req_id,$rx['version_id'],$rx['version'],$rx['revision']);
 				} 
 				$matches .= $dummy;
 			}
@@ -194,11 +200,12 @@ function buildExtTable($gui, $charset)
 		$table->setGroupByColumnName($labels['req_spec']);
 		$table->setSortByColumnName($labels['requirement']);
 		$table->sortDirection = 'DESC';
-		$table->multiSortEnabled = false;
+		
+		$table->showToolbar = true;
+		$table->allowMultiSort = false;
+		$table->toolbarRefreshButton = false;
+		$table->toolbarShowAllColumnsButton = false;
 		$table->storeTableState = false;
-
-		$table->toolbar->showButton->refresh = false;
-		$table->toolbar->showButton->ShowAllColumns = false;
 		
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 	}
@@ -219,9 +226,9 @@ function init_args($dateFormat)
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
 	$strnull = array('requirement_document_id', 'name','scope', 'reqStatus',
-	                 'custom_field_value', 'targetRequirement','log_message',
+	                 'custom_field_value', 'targetRequirement',
 	                 'version', 'tcid', 'reqType', 'relation_type',
-	                 'creation_date_from','creation_date_to',
+	                 'creation_date_from','creation_date_to','log_message',
 	                 'modification_date_from','modification_date_to');
 	
 	foreach($strnull as $keyvar) {
@@ -276,9 +283,9 @@ function init_args($dateFormat)
 		}
 	}
 	
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+	$args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
 	return $args;
 }
 
@@ -485,16 +492,5 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj)
 	// add additional joins that depends on user search criteria
 	$sql = $stm['ver'] . " UNION ({$sql}) ORDER BY id ASC, version DESC, revision DESC ";
 	return $sql;
-}
-
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
 ?>

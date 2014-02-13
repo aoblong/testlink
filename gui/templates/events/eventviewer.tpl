@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource eventviewer.tpl
+$Id: eventviewer.tpl,v 1.35 2010/10/26 13:11:34 mx-julian Exp $
 
 Event Viewer
 *}
@@ -19,9 +19,9 @@ Event Viewer
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {$tableID="$matrix->tableID"}
+  {assign var="tableID" value=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
-    {$matrix->renderCommonGlobals(0)}
+    {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
         {include file="inc_ext_table.tpl"}
     {/if}
@@ -32,6 +32,7 @@ Event Viewer
 <script type="text/javascript">
 var strPleaseWait = "{$labels.message_please_wait|escape:javascript}";
 var strCloseButton = "{$labels.btn_close|escape:javascript}";
+{literal}
 var progressBar = null;
 
 function showEventDetails(id)
@@ -101,6 +102,7 @@ fieldset
 
 }
 </style>
+{/literal}
 
 </head>
 <body {$body_onload}>
@@ -175,7 +177,7 @@ fieldset
 				
 		{if $gui->warning_msg == ''}
 		    {foreach from=$gui->tableSet key=idx item=matrix}
-		       {$tableID="table_$idx"}
+		       {assign var="tableID" value="table_$idx"}
 		       {$matrix->renderBodySection($tableID)}
 		    {/foreach}
 		    <br />

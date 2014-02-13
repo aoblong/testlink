@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @internal filename: keywordBarChart.php
+ * $Id: keywordBarChart.php,v 1.16.2.1 2010/12/10 15:52:23 franciscom Exp $ 
  *
  * @author	Kevin Levy
  *
@@ -9,17 +9,11 @@
  *
  * @internal revisions
  *
- * 20101210 - franciscom - BUGID 4090
- * 20100912 - franciscom - BUGID 2215
  */
 require_once('../../config.inc.php');
+require_once('common.php');
 require_once('charts.inc.php');
-
-testlinkInitPage($db);
-$args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
-
-
+testlinkInitPage($db,true,false,"checkRights");
 
 $cfg = new stdClass();
 $cfg->scale = new stdClass();
@@ -35,7 +29,9 @@ $cfg->beginY = $chart_cfg['beginY'];
 $cfg->scale->legendXAngle = $chart_cfg['legendXAngle'];
 
 
-$info = getDataAndScale($db);
+$args = init_args();
+$info = getDataAndScale($db,$args);
+
 createChart($info,$cfg);
 
 
@@ -47,21 +43,29 @@ createChart($info,$cfg);
   returns: object
 
 */
-function getDataAndScale(&$dbHandler)
+function getDataAndScale(&$dbHandler,$argsObj)
 {
 	$resultsCfg = config_get('results');
 	$obj = new stdClass(); 
 	$items = array();
-	$dataSet = $_SESSION['statistics']['getAggregateKeywordResults'];
-	$obj->canDraw = !is_null($dataSet);
 	$totals = null; 
+
+	$metricsMgr = new tlTestPlanMetrics($dbHandler);
+    $dummy = $metricsMgr->getStatusTotalsByKeywordForRender($argsObj->tplan_id);
+    
+    $obj->canDraw = false;
+	if( !is_null($dummy) )    
+	{
+    	$dataSet = $dummy->info;
+		$obj->canDraw = !is_null($dataSet) && (count($dataSet) > 0);
+	}
 	
 	if($obj->canDraw)
 	{
 	   	// Process to enable alphabetical order
 	    foreach($dataSet as $keyword_id => $elem)
 	    {
-	        $item_descr[$elem['keyword_name']] = $keyword_id;
+	        $item_descr[$elem['name']] = $keyword_id;
 	    }  
 	    ksort($item_descr);
 	    
@@ -97,8 +101,6 @@ function getDataAndScale(&$dbHandler)
 	    {
 	        $obj->chart_data[] = $values;
 	        $obj->series_label[] = lang_get($resultsCfg['status_label'][$status]);
-	        
-	        // BUGID 4090
 	        if( isset($resultsCfg['charts']['status_colour'][$status]) )
             {	
 	        	$obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
@@ -109,30 +111,22 @@ function getDataAndScale(&$dbHandler)
 	return $obj;
 }
 
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
-}
 
-/**
- * 
- *
- */
 function init_args()
 {
-	$iParams = array("tproject_id" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N));
-	
-	$args = new stdClass();
-	R_PARAMS($iParams,$args);
-    
-    return $args;
+	$argsObj = new stdClass();
+	// $argsObj->tproject_id = intval($_REQUEST['tproject_id']);
+	$argsObj->tplan_id = intval($_REQUEST['tplan_id']);
+	if( isset($_REQUEST['debug']) )
+	{
+		$argsObj->debug = 'yes';
+	}
+	return $argsObj;
 }
 
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_metrics');
+}
 ?>

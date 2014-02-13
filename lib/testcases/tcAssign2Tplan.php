@@ -6,10 +6,10 @@
  * While in test specification feature, assign TEST CASE version to multiple
  * ACTIVE test plans
  *
- * @filesource	tcAssign2Tplan.php
  * @package 	TestLink
  * @author 		Amit Khullar - amkhullar@gmail.com
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: tcAssign2Tplan.php,v 1.8 2010/05/20 18:20:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -52,11 +52,7 @@ if( !is_null($tcase_all_info) )
     } 
 }
 
-// 20100514 - franciscom
-// Why I'm filter on NOT_EXECUTED ??? -> this causes BUGID 3189
-// $link_info = $tcase_mgr->get_linked_versions($args->tcase_id,'NOT_EXECUTED');
 $link_info = $tcase_mgr->get_linked_versions($args->tcase_id);
-// 20100124 - work only on ACTIVE TEST PLANS => array('plan_status' => 1)
 if( !is_null($tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id,array('plan_status' => 1))) )
 {
 	$has_links = array_fill_keys(array_keys($tplanSet),false);
@@ -149,7 +145,36 @@ if( !is_null($tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id,arr
         		$gui->tplans[$tplan_id][$platform_id]['draw_checkbox'] = $draw_checkbox;
             	$gui->tplans[$tplan_id][$platform_id]['platform'] = $platform_info;                            
 			}
+        	
         	// -------------------------------------------------------------------------------
+        	// if( !$has_links[$tplan_id] )
+    		// {
+        	// 	$gui->tplans[$tplan_id][$platform_id] = $value;
+        	// 	$gui->tplans[$tplan_id][$platform_id]['tcversion_id'] = $args->tcversion_id;
+        	// 	$gui->tplans[$tplan_id][$platform_id]['version'] = $version;
+        	// 	$gui->tplans[$tplan_id][$platform_id]['draw_checkbox'] = true;
+            // 	$gui->tplans[$tplan_id][$platform_id]['platform'] = $platform_info;                            
+    		// }	
+    		// else
+    		// {
+    		// 	
+    		//     if( isset($linked_platforms[$platform_id]) )
+    		//     {
+        	// 		$gui->tplans[$tplan_id][$platform_id] = $value;
+        	// 		$gui->tplans[$tplan_id][$platform_id]['tcversion_id'] = $target_version_id;
+        	// 		$gui->tplans[$tplan_id][$platform_id]['version'] = $target_version_number;
+        	// 		$gui->tplans[$tplan_id][$platform_id]['draw_checkbox'] = false;
+            // 		$gui->tplans[$tplan_id][$platform_id]['platform'] = $platform_info;                            
+    		//     }
+    		//     else if($target_version_number == $version)
+    		//     {
+        	// 		$gui->tplans[$tplan_id][$platform_id] = $value;
+        	// 		$gui->tplans[$tplan_id][$platform_id]['tcversion_id'] = $target_version_id;
+        	// 		$gui->tplans[$tplan_id][$platform_id]['version'] = $target_version_number;
+        	// 		$gui->tplans[$tplan_id][$platform_id]['draw_checkbox'] = true;
+            // 		$gui->tplans[$tplan_id][$platform_id]['platform'] = $platform_info;                            
+    		//     }
+    		// }
         }
     }
 
@@ -182,12 +207,13 @@ function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
+    // if any piece of context is missing => we will display nothing instead of crashing WORK TO BE DONE
 	$args = new stdClass();
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
 	$args->tcase_id = isset($_REQUEST['tcase_id']) ? $_REQUEST['tcase_id'] : 0;
 	$args->tcversion_id = isset($_REQUEST['tcversion_id']) ? $_REQUEST['tcversion_id'] : 0;
+	// $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
   return $args;	
 }
@@ -207,7 +233,6 @@ function initializeGui($argsObj)
 	$guiObj->tcversion_id=$argsObj->tcversion_id;
 	$guiObj->can_do=false;
 	$guiObj->item_sep=config_get('gui')->title_separator_2;
-	$guiObj->tproject_id = $argsObj->tproject_id;
     return $guiObj;
 }
 

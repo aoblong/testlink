@@ -4,15 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Verify environment
- * Note: informations are passed via $_SESSION
+ * Note: information is passed via $_SESSION
  * 
- * @package 	  TestLink
- * @author 		  Martin Havlat
+ * @filesource	installCheck.php
+ * @package 	TestLink
+ * @author 		Martin Havlat
  * @copyright 	2009,2012 TestLink community 
- * @filesource  installCheck.php
  *
  * @internal revisions
- * 
+ * @since 1.9.6
  **/
 require_once('..' . DIRECTORY_SEPARATOR . 'config.inc.php');
 require_once('..' . DIRECTORY_SEPARATOR . 'lib'. DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'common.php');
@@ -35,7 +35,7 @@ include 'installHead.inc';
 
 <?php
 // Check before DB installation
-$inst_type = $_GET['installationType'];
+$inst_type = isset($_GET['type']) ? $_GET['type'] : '';
 $errors = 0;
 reportCheckingSystem($errors);
 reportCheckingWeb($errors);

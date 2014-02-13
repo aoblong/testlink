@@ -5,12 +5,13 @@
  *
  * Delete a device in inventory list
  * 
- * @filesource	deleteInventory.php
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
+ * @version    	CVS: $Id: deleteInventory.php,v 1.3 2010/02/20 09:27:29 franciscom Exp $
  *
- * @internal revisions
+ * @internal Revisions:
+ * None
  *
  **/
 
@@ -21,12 +22,10 @@ testlinkInitPage($db);
 $data['userfeedback'] = lang_get('inventory_msg_no_action');
 $data['success'] = FALSE;
 $args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
 
-
-if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management",$args->tproject_id))
+if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management"))
 {
-	$tlIs = new tlInventory($args->tproject_id, $db);
+	$tlIs = new tlInventory($args->testprojectId, $db);
 	$data['success'] = $tlIs->deleteInventory($args->machineID);
 	$data['success'] = ($data['success'] == 1 /*$tlIs->OK*/) ? true : false;
 	$data['userfeedback'] = $tlIs->getUserFeedback();
@@ -39,28 +38,29 @@ else
 
 echo json_encode($data);
 
-
 function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
-	$iParams = array("machineID" => array(tlInputParameter::INT_N),
-					 "tproject_id" => array(tlInputParameter::INT_N) );
+	$iParams = array("machineID" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
     
+    // from session
+    $args->testprojectId = $_SESSION['testprojectID'];
     $args->userId = $_SESSION['userID'];
+
     return $args;
 }
 
 /**
- * checkRights
- *
+ * @param $db resource the database connection handle
+ * @param $user the current active user
+ * 
+ * @return boolean returns true if the page can be accessed
  */
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('project_inventory_management'),'and');
+	return $user->hasRight($db,"project_inventory_management");
 }
 ?>

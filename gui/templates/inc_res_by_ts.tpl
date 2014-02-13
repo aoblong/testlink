@@ -5,12 +5,12 @@
 <table class="simple" style="text-align: center; margin-left: 0px;">
 	<tr>
 	  <th>{lang_get s='trep_ts'}</th>
-	  <th>{lang_get s='trep_total'}</th>
+		<th>{lang_get s='trep_total'}</th>
 	  <th>{lang_get s='trep_passed'}</th>
 	  <th>{lang_get s='trep_failed'}</th>
 	  <th>{lang_get s='trep_blocked'}</th>
 	  <th>{lang_get s='trep_not_run'}</th>
-	  <th>{lang_get s='trep_comp_perc'}</th>
+		<th>{lang_get s='trep_comp_perc'}</th>
 
 	</tr>
 {section name=Row loop=$arrDataAllSuites}

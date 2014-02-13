@@ -4,101 +4,129 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource	freeTestCases.php
- * @author 		  Francisco Mancardi - francisco.mancardi@gmail.com
+ * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
- * @internal revisions
+ * @internak revisions
+ * @since 1.9.4
+ *
+ * @since 1.9.4
+ * 20101019 - Julian - show importance column only if priority is enabled for project
+ * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                     table state independent from localization
+ * 20101012 - Julian - added html comment to properly sort by test case column
+ * 20101005 - asimon - added linked icon for testcase editing
+ * 20100920 - Julian - use exttable
+ *                   - added importance column
  *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db);
+require_once('exttable.class.php');
+testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $tcase_cfg = config_get('testcase_cfg');
 
-$importance_levels = config_get('importance_levels');
 
+$args = init_args();
 $tproject_mgr = new testproject($db);
-$args = init_args($tproject_mgr);
-checkRights($db,$_SESSION['currentUser'],$args);
 
-$priorityMgmtEnabled = $args->tprojectOptions->testPriorityEnabled;
+$priorityMgmtEnabled = $_SESSION['testprojectOptions']->testPriorityEnabled;
 
 $msg_key = 'all_testcases_has_testplan';
-$edit_label = lang_get('design');
+
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
+// Time tracking
+//$tstart = microtime(true);
+//$chronos[] = $tstart; $tnow = end($chronos);reset($chronos);
+// Memory metrics	
+//$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
+
 $gui = new stdClass();
-$gui->freeTestCases = $tproject_mgr->getFreeTestCases($args->tproject_id);
 $gui->path_info = null;
 $gui->tableSet = null;
+$gui->freeTestCases = $tproject_mgr->getFreeTestCases($args->tproject_id);
+
+// Time tracking
+//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
+//$t_elapsed_abs = number_format( $tnow - $tstart, 4);
+//$t_elapsed = number_format( $tnow - $tprev, 4);
+//echo '<br>' . __FUNCTION__ . ' Elapsed relative (sec):' . $t_elapsed . ' Elapsed ABSOLUTE (sec):' . $t_elapsed_abs .'<br>';
+//reset($chronos);	
+
+
 if(!is_null($gui->freeTestCases['items']))
 {
-  if($gui->freeTestCases['allfree'])
-  { 
-    // has no sense display all test cases => display just message.
-    $msg_key = 'all_testcases_are_free';
-  }   
-  else
-  {
+	
+	$l18n = init_labels(array('low_importance' => null,'medium_importance' => null,
+							  'high_importance' => null, 'test_suite' => null, 'design' => null));
+	$il = config_get('importance_levels');
+	$impCols = array();
+	$impCols[$il[LOW]] = "<!-- 1 -->" . $l18n['low_importance'];
+	$impCols[$il[MEDIUM]] = "<!-- 2 -->" . $l18n['medium_importance'];
+	$impCols[$il[HIGH]] = "<!-- 3 -->" . $l18n['high_importance'];
+	
+    if($gui->freeTestCases['allfree'])
+    { 
+        // has no sense display all test cases => display just message.
+        $msg_key = 'all_testcases_are_free';
+  	}   
+  	else
+  	{
         $msg_key = '';    
         $tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . $tcase_cfg->glue_character;
         $tcaseSet = array_keys($gui->freeTestCases['items']);
-        $options = array('output_format' => 'path_as_string');
-        $tsuites = $tproject_mgr->tree_manager->get_full_path_verbose($tcaseSet,$options);
-        $titleSeperator = config_get('gui_title_separator_1');
+        $tsuites = $tproject_mgr->tree_manager->get_full_path_verbose($tcaseSet,
+        															  array('output_format' => 'path_as_string'));
+  	    unset($tcaseSet);
+
+		// Time tracking
+		//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
+		//$t_elapsed_abs = number_format( $tnow - $tstart, 4);
+		//$t_elapsed = number_format( $tnow - $tprev, 4);
+		//echo '<br>' . __FUNCTION__ . ' Elapsed relative (sec):' . $t_elapsed . ' Elapsed ABSOLUTE AFTER get_full_path_verbose(sec):' . $t_elapsed_abs .'<br>';
+		//reset($chronos);	
   	    
-		  $columns = getColumnsDefinition($priorityMgmtEnabled);
+		$columns = getColumnsDefinition($priorityMgmtEnabled);
 	
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
-		  
-		$impCfg = config_get('importance');
-		$impCodeVerbose = array_flip($impCfg['verbose_code']);
-    foreach($impCfg['verbose_label'] as $verbose => $lblkey)
-    {
-      $impCodeLabel[$impCfg['verbose_code'][$verbose]] = lang_get($lblkey);
-    }		 
-
-		foreach($gui->freeTestCases['items'] as $tcases) 
+		foreach($gui->freeTestCases['items'] as &$tcases) 
 		{
 			$rowData = array();
-			
 			$rowData[] = strip_tags($tsuites[$tcases['id']]);
-			//build test case link
-
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$tcases['id']});\">" .
-						 "<img title=\"{$edit_label}\" src=\"{$edit_img}\" /></a> ";
-			$tcaseName = $tcasePrefix . $tcases['tc_external_id'] . $titleSeperator .
-			             strip_tags($tcases['name']);
-		    $tcLink = "<!-- " . sprintf("%010d", $tcases['tc_external_id']) . " -->" . $edit_link . $tcaseName;
-			$rowData[] = $tcLink;
+			$rowData[] = "<!-- " . sprintf("%010d", $tcases['tc_external_id']) . " -->" . 
+		    		  	 "<a href=\"javascript:openTCEditWindow({$tcases['id']});\">" .
+					  	 "<img title=\"{$l18n['design']}\" src=\"{$edit_img}\" /></a> " .
+					  	 $tcasePrefix . $tcases['tc_external_id'] . ':' . strip_tags($tcases['name']);
 			
 			// only add importance column if 
 			if($priorityMgmtEnabled)
-			{                              
-			  if( isset($impCodeVerbose[$tcases['importance']]) )
-			  {
-						$rowData[] = "<!-- " . $tcases['importance'] . " -->" . $impCodeLabel[$tcases['importance']];
-			  }
+			{
+				$rowData[] = $impCols[$tcases['importance']];
 			}
 			
 			$matrixData[] = $rowData;
 		}
+		// Time tracking
+		//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
+		//$t_elapsed_abs = number_format( $tnow - $tstart, 4);
+		//$t_elapsed = number_format( $tnow - $tprev, 4);
+		//echo '<br>' . __FUNCTION__ . ' Elapsed relative (sec):' . $t_elapsed . ' Elapsed ABSOLUTE (sec):' . $t_elapsed_abs .'<br>';
+		//reset($chronos);	
 		
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_test_cases_not_assigned_to_any_test_plan');
-		
-		$table->setGroupByColumnName(lang_get('test_suite'));
-		
-		$sort_by_column = ($priorityMgmtEnabled) ? 'importance' : 'test_case';
-		
-		$table->setSortByColumnName(lang_get($sort_by_column));
+		$table->setGroupByColumnName($l18n['test_suite']);
+		$table->setSortByColumnName(lang_get(($priorityMgmtEnabled) ? 'importance' : 'test_case'));
 		$table->sortDirection = 'DESC';
-	
+		$table->showToolbar = true;
+		$table->toolbarExpandCollapseGroupsButton = true;
+		$table->toolbarShowAllColumnsButton = true;
+		
 		$gui->tableSet = array($table);
-  	    
   	}
 }
 
@@ -106,6 +134,7 @@ if(!is_null($gui->freeTestCases['items']))
 $gui->tproject_name = $args->tproject_name;
 $gui->pageTitle = lang_get('report_free_testcases_on_testproject');
 $gui->warning_msg = lang_get($msg_key);
+
 
 
 $smarty = new TLSmarty();
@@ -140,35 +169,26 @@ function getColumnsDefinition($priorityMgmtEnabled)
  * has been created for local use, and which have arrived on call.
  *
  */
-function init_args(&$tprojectMgr)
+function init_args()
 {
-    $iParams = array("tproject_id" => array(tlInputParameter::INT_N),
-    				 "tplan_id" => array(tlInputParameter::INT_N),
-					 "format" => array(tlInputParameter::INT_N));
+    $iParams = array(
+		"tplan_id" => array(tlInputParameter::INT_N),
+		"format" => array(tlInputParameter::INT_N),
+	);
 
 	$args = new stdClass();
-	R_PARAMS($iParams,$args);
+	$pParams = G_PARAMS($iParams,$args);
 
-	$args->tproject_name = '';
-	if($args->tproject_id > 0)
-	{
-		$dummy = $tprojectMgr->get_by_id($args->tproject_id);
-		$args->tproject_name = $dummy['name'];
-		$args->tprojectOptions = $dummy['opt'];
-	}
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
     return $args;
 }
 
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
+	return $user->hasRight($db,'testplan_metrics');
 }
-
 ?>
+
+

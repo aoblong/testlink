@@ -5,20 +5,17 @@ $Id: tabsmenu.tpl,v 1.6 2010/05/01 20:16:32 franciscom Exp $
 include to generate menu when managing users and roles
 
 @internal revisions
-  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-
 *}
 
-{$tprojectID = $gui->tproject_id}
+{assign var="action_create_role" value="lib/usermanagement/rolesEdit.php?doAction=create"}
+{assign var="action_view_roles" value="lib/usermanagement/rolesView.php"}
 
-{$action_create_role ="lib/usermanagement/rolesEdit.php?tproject_id=$tprojectID&doAction=create"}
-{$action_view_roles ="lib/usermanagement/rolesView.php?tproject_id=$tprojectID"}
 
-{$action_create_user ="lib/usermanagement/usersEdit.php?tproject_id=$tprojectID&doAction=create"}
-{$action_edit_user ="lib/usermanagement/usersEdit.php?tproject_id=$tprojectID&doAction=edit&user_id="}
-{$action_view_users ="lib/usermanagement/usersView.php?tproject_id=$tprojectID"}
-{$action_assign_users_tproject ="lib/usermanagement/usersAssign.php?tproject_id=$tprojectID&featureType=testproject"}
-{$action_assign_users_tplan ="lib/usermanagement/usersAssign.php?tproject_id=$tprojectID&featureType=testplan"}
+{assign var="action_create_user" value="lib/usermanagement/usersEdit.php?doAction=create"}
+{assign var="action_edit_user" value="lib/usermanagement/usersEdit.php?doAction=edit&amp;user_id="}
+{assign var="action_view_users" value="lib/usermanagement/usersView.php"}
+{assign var="action_assign_users_tproject" value="lib/usermanagement/usersAssign.php?featureType=testproject"}
+{assign var="action_assign_users_tplan" value="lib/usermanagement/usersAssign.php?featureType=testplan"}
 
 
 {lang_get var="tabsMenuLabels"
@@ -26,31 +23,31 @@ include to generate menu when managing users and roles
              menu_edit_role,menu_view_roles,menu_assign_testproject_roles,menu_assign_testplan_roles"}
 
 <div class="tabMenu">
-{if $gui->grants->user_mgmt == "yes"}
- 	{if $gui->highlight->edit_user}
+{if $grants->user_mgmt == "yes"}
+ 	{if $highlight->edit_user}
 	   <span class="selected">{$tabsMenuLabels.menu_edit_user}</span>
 	{else}
-	   {if $gui->highlight->create_user}
+	   {if $highlight->create_user}
 	       <span class="selected">{$tabsMenuLabels.menu_new_user}</span>
 	   {/if}
 	{/if}
 
-	{$closure =""}
-	{if $gui->highlight->view_users}
+  {assign var="closure" value=""}
+	{if $highlight->view_users}
 	   <span class="selected">
 	{else}
 	   <span class="unselected"><a href="{$action_view_users}">
-	   {$closure ="</a>"}
+	   {assign var="closure" value="</a>"}
 	{/if}
 	{$tabsMenuLabels.menu_view_users}{$closure}</span>
 {/if}
 
-{if $gui->grants->role_mgmt == "yes"}
-	{$closure =""}
-	{if $gui->highlight->view_roles}
+{if $grants->role_mgmt == "yes"}
+	{assign var="closure" value=""}
+	{if $highlight->view_roles}
 	   <span class="selected">{$tabsMenuLabels.menu_view_roles}</span>
 	{else}
-		{if $gui->highlight->edit_role}
+		{if $highlight->edit_role}
 	   		<span class="selected">{$tabsMenuLabels.menu_edit_role}</span>
 		{else}
 	 		<span class="unselected"><a href="{$action_view_roles}">{$tabsMenuLabels.menu_view_roles}</a></span>
@@ -58,25 +55,25 @@ include to generate menu when managing users and roles
 	{/if}
 {/if}
 
-{if $gui->grants->tproject_user_role_assignment == "yes"}
-  {$closure =""}
-  {if $gui->highlight->assign_users_tproject}
+{if $grants->tproject_user_role_assignment == "yes"}
+  {assign var="closure" value=""}
+  {if $highlight->assign_users_tproject}
 	   <span class="selected">
 	{else}
 	   <span class="unselected"><a href="{$action_assign_users_tproject}">
-	   {$closure ="</a>"}
+	   {assign var="closure" value="</a>"}
 	{/if}
 	{$tabsMenuLabels.menu_assign_testproject_roles}{$closure}</span>
 {/if}
 
 
-{if $gui->grants->tplan_user_role_assignment == "yes"}
-  {$closure =""}
-  {if $gui->highlight->assign_users_tplan}
+{if $grants->tplan_user_role_assignment == "yes"}
+  {assign var="closure" value=""}
+  {if $highlight->assign_users_tplan}
 	   <span class="selected">
 	{else}
 	   <span class="unselected"><a href="{$action_assign_users_tplan}">
-	   {$closure ="</a>"}
+	   {assign var="closure" value="</a>"}
 	{/if}
 	{$tabsMenuLabels.menu_assign_testplan_roles}{$closure}</span>
 {/if}

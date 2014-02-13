@@ -3,14 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource testproject.class.test.php
+ * Filename $RCSfile: testproject.class.test.php,v $
+ *
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2010/02/04 10:51:36 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 
  *
- * @internal revisions
- *
- */
+ * rev :
+*/
 
 require_once('../../../config.inc.php');
 require_once('common.php');
@@ -20,8 +22,35 @@ echo "<pre> testproject - constructor - testproject(&\$db)";echo "</pre>";
 $tproject_mgr=new testproject($db);
 new dBug($tproject_mgr);
 
-echo '<br>is public?' . $tproject_mgr->isPublic(3);
-echo '<br>is public?' . $tproject_mgr->isPublic(1);
+$item = new stdClass();
+$item->name = 'CRASH';
+$item->notes = " Created doing test ";
+$item->color = '';
+$item->options = new stdClass();
+//$item->options->requirement_mgmt = 1;
+//$item->options->priority_mgmt = 1;
+//$item->options->automated_execution = 1;
+$item->active=1;
+$item->is_public=1;
+$item->prefix = 'TPX :: ';
+
+try
+{
+  $id = $tproject_mgr->create($item, array('doChecks' => true));
+}
+catch (Exception $e) 
+{
+  echo 'Caught exception: ',  $e->getMessage(), "\n";
+}
+die();
+
+
+// new dBug($_SESSION);
+
+$xx=$tproject_mgr->get_accessible_for_user(1,
+                       array('output' => 'map','field_set' => 'id', 'format' => 'simple'));
+new dBug($xx);
+die();
 
 // create()
 // function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)

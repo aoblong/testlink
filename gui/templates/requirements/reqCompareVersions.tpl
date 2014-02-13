@@ -1,29 +1,33 @@
 {*
-TestLink Open Source Project - http://testlink.sourceforge.net/
 
-Compare requirement versions
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ 
+Purpose: smarty template - compare requirement versions
 
-@filesource	reqCompareVersions.tpl
-@internal revisions
-20110305 - franciscom - fixed 'error viewer' warnings due to missing labels
+@internal revision
 20110107 - asimon - added daisydiff (html diff engine which handles tags well)
 20110106 - Julian - Only 1 column for last change including localized timestamp and editor
+20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
+                    visualization errors
+20101212 - franciscom - BUGID 4056: Requirement Revisioning
 *}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 {lang_get var="labels"
           s="select_versions,title_compare_versions_req,version,compare,modified,modified_by,
           btn_compare_selected_versions, context, show_all,author,timestamp,timestamp_lastchange,
           warning_context, warning_context_range, warning_empty_context,warning,custom_field, 
-          warning_selected_versions, warning_same_selected_versions,revision,attribute,use_html_code_comp,
-          custom_fields,attributes,log_message,btn_cancel,use_html_comp,diff_method"}
+          warning_selected_versions, warning_same_selected_versions,revision,attribute,
+          custom_fields,attributes,log_message,use_html_code_comp,use_html_comp,diff_method,
+          btn_cancel"}
 
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/daisydiff/css/diff.css">
 
 <script type="text/javascript">
+//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_context = "{$labels.warning_empty_context|escape:'javascript'}";
 var warning_context_range = "{$labels.warning_context_range|escape:'javascript'}";
@@ -31,29 +35,28 @@ var warning_selected_versions = "{$labels.warning_selected_versions|escape:'java
 var warning_same_selected_versions = "{$labels.warning_same_selected_versions|escape:'javascript'}";
 var warning_context = "{$labels.warning_context|escape:'javascript'}";
 
-/**
- * 
- *
- */
+{literal}
 function tip4log(itemID)
 {
 	var fUrl = fRoot+'lib/ajax/getreqlog.php?item_id=';
 	new Ext.ToolTip({
         target: 'tooltip-'+itemID,
         width: 500,
-        autoLoad:{ url: fUrl+itemID },
+        autoLoad:{url: fUrl+itemID},
         dismissDelay: 0,
         trackMouse: true
     });
 }
 
 Ext.onReady(function(){ 
+{/literal}
 {foreach from=$gui->items key=idx item=info}
   tip4log({$info.item_id});
 {/foreach}
+{literal}
 });
 
-//20110107 - new diff engine
+// 20110107 - new diff engine
 function triggerContextInput(selected) {
 	var context = document.getElementById("context_input");
 	if (selected == 0) {
@@ -126,6 +129,7 @@ function validateForm() {
 }
 
 </script>
+{/literal}
 
 </head>
 <body>
@@ -196,14 +200,11 @@ function validateForm() {
 	
 	<div class="workBack" style="width:97%;">
 	
-	<form target="diffwindow" method="post" 
-		  action="lib/requirements/reqCompareVersions.php" 
-		  name="req_compare_versions" id="req_compare_versions"  
-		  onsubmit="return validateForm();" />			
+	<form target="diffwindow" method="post" action="lib/requirements/reqCompareVersions.php" name="req_compare_versions" id="req_compare_versions"  
+			onsubmit="return validateForm();" />			
 	
 	<p>
-		<input type="submit" name="compare_selected_versions" 
-			   value="{$labels.btn_compare_selected_versions}" />
+		<input type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />
 	</p>
 	<br/>
@@ -231,8 +232,7 @@ function validateForm() {
 	        <td id="tooltip-{$req.item_id}">
         	{$req.log_message}
         	</td>
-        	<td style="text-align: left; cursor: pointer; color: rgb(0, 85, 153);" 
-        		onclick="javascript:openReqRevisionWindow({$gui->tproject_id},{$req.item_id});">
+        	<td style="text-align: left; cursor: pointer; color: rgb(0, 85, 153);" onclick="javascript:openReqRevisionWindow({$req.item_id});">
 	            <nobr>{localize_timestamp ts = $req.timestamp}, {$req.last_editor}</nobr>
 	        </td>
 	    </tr>
@@ -256,7 +256,6 @@ function validateForm() {
 		       onclick="triggerField(this.form.context);"/> {$labels.show_all} 	</td></tr></table>
 	
 	<p>
-		<input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 		<input type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />

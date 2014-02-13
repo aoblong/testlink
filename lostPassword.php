@@ -3,26 +3,23 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	lostPassword.php
- * @internal    revisions
+ * @internal revisions
+ * @since 1.9.4
+ *  20111120 - franciscom - TICKET 4813: doDBConnect() - user feedback improvements
 **/
 require_once('config.inc.php');
 require_once('common.php');
-// require_once('users.inc.php');
+require_once('users.inc.php');
 require_once('email_api.php');
 $templateCfg = templateConfiguration();
 
 $args = init_args();
-$gui = initializeGui();
-$op = doDBConnect($db);
-if ($op['status'] == 0)
-{
-	$smarty = new TLSmarty();
-	$gui->title = lang_get('fatal_page_title');
-	$gui->msg = $op['dbms_msg'];
-	$smarty->display('fatal_error.tpl');
-	exit();
-}
+$gui = new stdClass();
+$gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
+$gui->page_title = lang_get('page_title_lost_passwd');
+$gui->note = lang_get('your_info_for_passwd');
+
+$op = doDBConnect($db,database::ONERROREXIT);
 
 if ($args->login != "" && !$gui->external_password_mgmt)
 {
@@ -33,13 +30,13 @@ if ($args->login != "" && !$gui->external_password_mgmt)
 	}
 	else
 	{
-	  $user = new tlUser($userID);
-		$result = $user->resetPassword($db);
+		$result = resetPassword($db,$userID);
 		$gui->note = $result['msg'];
 		if ($result['status'] >= tl::OK)
 		{
-		  if ($user->readFromDB($db) >= tl::OK)
-		  {
+		  	$user = new tlUser($userID);
+		  	if ($user->readFromDB($db) >= tl::OK)
+		  	{
 		  		logAuditEvent(TLS("audit_pwd_reset_requested",$user->login),"PWD_RESET",$userID,"users");
 			}
 			redirect(TL_BASE_HREF ."login.php?note=lost");
@@ -51,7 +48,7 @@ if ($args->login != "" && !$gui->external_password_mgmt)
 		}	
 		else if ($note != "")
 		{
-			$gui->note = tlUser::getUserErrorMessage($result['status']);
+			$gui->note = getUserErrorMessage($result['status']);
 		}	
 	}
 }
@@ -66,16 +63,7 @@ function init_args()
 	$iParams = array("login" => array(tlInputParameter::STRING_N,0,30));
 	
 	$args = new stdClass();
-  P_PARAMS($iParams,$args);
+    P_PARAMS($iParams,$args);
 	return $args;
-}
-
-function initializeGui()
-{
-  $gui = new stdClass();
-  $gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
-  $gui->page_title = lang_get('page_title_lost_passwd');
-  $gui->note = lang_get('your_info_for_passwd');
-  return $gui;
 }
 ?>

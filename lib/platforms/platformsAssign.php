@@ -5,11 +5,11 @@
  *
  * Platform link/unlink from a test plan
  * 
- * @filesource	platformsAssign.php
- * @package 	TestLink
- * @author 		eloff
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      eloff
+ * @copyright   2005-2013, TestLink community 
+ * @filesource  platformsAssign.php
+ * @link 		    http://www.teamst.org/index.php
  * 
  * @internal revisions
  *
@@ -17,15 +17,13 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
 $opt_cfg = opt_transf_empty_cfg();
 $opt_cfg->js_ot_name = 'ot';
 $args = init_args($opt_cfg);
-checkRights($db,$_SESSION['currentUser'],$args);
-
 
 if ($args->edit == 'testproject')
 {
@@ -36,13 +34,11 @@ if ($args->edit == 'testproject')
 
 $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
-$platform_mgr = new tlPlatform($db, $args->tproject_id);
+$platform_mgr = new tlPlatform($db, $args->testproject_id);
 
 $gui = new stdClass();
 $gui->platform_assignment_subtitle = null;
 $gui->tplan_id = $args->tplan_id;
-$gui->tproject_id = $args->tproject_id;
-
 $gui->can_do = isset($args->tplan_id);
 $gui->mainTitle = lang_get('add_remove_platforms');
 $gui->warning = '';
@@ -135,24 +131,19 @@ function init_option_panels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
  */
 function init_args(&$opt_cfg)
 {
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
-	$added = $opt_cfg->js_ot_name . "_addedRight";
+    $added = $opt_cfg->js_ot_name . "_addedRight";
     $removed = $opt_cfg->js_ot_name . "_removedRight";
 
 	$iParams = array( "tplan_id" => array(tlInputParameter::INT_N),
 		              "edit" => array(tlInputParameter::STRING_N,0,100),
 		              "doAction" => array(tlInputParameter::STRING_N,0,20),
 		              $added => array(tlInputParameter::STRING_N),
-		              $removed => array(tlInputParameter::STRING_N),
-		              "tproject_id" => array(tlInputParameter::INT_N));
+		              $removed => array(tlInputParameter::STRING_N));
 
 	$pParams = R_PARAMS($iParams);
 
-    $args = new stdClass();
+	$args = new stdClass();
 	$args->tplan_id = $pParams["tplan_id"];
-	$args->tproject_id = $pParams["tproject_id"];
-
     $args->platformsToAdd = null;
     $args->platformsToRemove = null;
     if ($pParams[$added] != "") {
@@ -163,14 +154,14 @@ function init_args(&$opt_cfg)
     }
 	$args->edit = $pParams["edit"];
 	$args->doAction = $pParams["doAction"];
+	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 	return $args;
 }
 
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('platform_management','platform_view'),'and');
+	return ($user->hasRight($db,'platform_management') && 
+	        $user->hasRight($db,'platform_view'));
 }
 ?>

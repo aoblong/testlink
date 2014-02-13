@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @filesource	inc_filter_panel.tpl
+ * $Id: inc_filter_panel.tpl,v 1.12.2.2 2010/11/22 09:16:00 asimon83 Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -12,30 +12,39 @@
  *
  * @author Andreas Simon
  * @internal revisions
+ *
+ * @since 1.9.6
  *}
+
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
                         build,filter_tcID,filter_on,filter_result,
                         btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
                         filter_owner,TestPlan,test_plan,caption_nav_filters,
-                        platform, include_unassigned_testcases,
+                        platform, include_unassigned_testcases, filter_active_inactive,
                         btn_remove_all_tester_assignments, execution_type, 
                         do_auto_update, testsuite, btn_reset_filters,
                         btn_bulk_update_to_latest_version, priority, tc_title,
-                        custom_field, search_type_like,importance,
-                        document_id, req_expected_coverage, title,filter_active_inactive,
-                        status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree'}
+                        custom_field, search_type_like, importance,
+                        document_id, req_expected_coverage, title,
+                        status, req_type, req_spec_type, th_tcid, has_relation_type,
+                        btn_export_testplan_tree,btn_export_testplan_tree_for_results'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
-<form method="post" id="filter_panel_form" name="filter_panel_form" 
-      onsubmit="document.getElementById('filter_result_method').disabled=false;">
+<form method="post" id="filter_panel_form" name="filter_panel_form"
+      {* TICKET 5251: only use validateForm() to validate result filter when result filter is actually enabled *}
+      {if $control->filters.filter_result}
+        onsubmit="return validateForm(this);document.getElementById('filter_result_method').disabled=false;"
+      {/if}
+        >
 
 {* hidden input with token to manage transfer of data between left and right frame *}
 {if isset($control->form_token)}
   <input type="hidden" name="form_token" value="{$control->form_token}">
 {/if}
 
-{$platformID=0}
+{assign var="platformID" value=0}
+
 {if $control->draw_tc_unassign_button}
 	<input type="button" 
 	       name="removen_all_tester_assignments"
@@ -47,12 +56,12 @@
 {if $control->draw_bulk_update_button}
     <input type="button" value="{$labels.btn_bulk_update_to_latest_version}"
            name="doBulkUpdateToLatest"
-           onclick="update2latest({$gui->tprojectID},{$gui->tplanID})" />
+           onclick="update2latest({$gui->tPlanID})" />
 {/if}
 
 {* hidden feature input (mainly for testcase edit when refreshing frame) *}
 {if isset($gui->feature)}
-	<input type="hidden" id="feature" name="feature" value="{$gui->feature}" />
+<input type="hidden" id="feature" name="feature" value="{$gui->feature}" />
 {/if}
 
 {include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=false}
@@ -75,9 +84,9 @@
 
 			{if $control->settings.setting_testplan}
 				<tr>
-					<th>{$labels.test_plan}</th>
+					<td>{$labels.test_plan}</td>
 					<td>
-						<select name="setting_testplan" id="setting_testplan" onchange="this.form.submit()">
+						<select name="setting_testplan" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_testplan.items
 						              selected=$control->settings.setting_testplan.selected}
 						</select>
@@ -88,9 +97,9 @@
 			{if $control->settings.setting_platform}
 			  {assign var="platformID" value=$control->settings.setting_platform.selected}
 				<tr>
-					<th>{$labels.platform}</th>
+					<td>{$labels.platform}</td>
 					<td>
-						<select name="setting_platform" id="setting_platform" onchange="this.form.submit()">
+						<select name="setting_platform" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_platform.items
 						              selected=$control->settings.setting_platform.selected}
 						</select>
@@ -100,9 +109,9 @@
 
 			{if $control->settings.setting_build}
 				<tr>
-					<th>{$control->settings.setting_build.label}</th>
+					<td>{$control->settings.setting_build.label}</td>
 					<td>
-						<select name="setting_build" id="setting_build" onchange="this.form.submit()">
+						<select name="setting_build" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_build.items
 						              selected=$control->settings.setting_build.selected}
 						</select>
@@ -132,9 +141,16 @@
 				<tr>
 		   			<td colspan="2">
 	          <input type="button" id="doTestPlanExport" name="doTestPlanExport" value="{$labels.btn_export_testplan_tree}"
-         	         onclick="javascript: openExportTestPlan('export_testplan','{$gui->tproject_id}',
+         	         onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
          	                                                 '{$control->settings.setting_testplan.selected}','{$platformID}',
-         	                                                 '{$control->settings.setting_build.selected}');" />
+         	                                                 '{$control->settings.setting_build.selected}','tree');" />
+
+	          <input type="button" id="doTestPlanExport4Results" name="doTestPlanExport4Results" 
+	                 value="{$labels.btn_export_testplan_tree_for_results}"
+         	         onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
+         	                                                 '{$control->settings.setting_testplan.selected}',
+         	                                                 '{$platformID}',
+         	                                                 '{$control->settings.setting_build.selected}','4results');" />
             </td>
 		  		</tr>
 			{/if}
@@ -205,35 +221,38 @@
 				</td>
 			</tr>
 		{/if}
-                                 
-    {if $control->filters.filter_active_inactive}
-        <tr>
-            <td>{$labels.filter_active_inactive}</td>
-            <td>
-                <select name="filter_active_inactive">
-                    {html_options options=$control->filters.filter_active_inactive.items
-                    selected=$control->filters.filter_active_inactive.selected}
-                </select>
-            </td>
-        </tr>
-    {/if}
 
-		{if $control->filters.filter_importance}
-			<tr>
-				<th width="75">{$labels.importance}</th>
-				<td>
-					<select name="filter_importance">
-					<option value="">{$control->option_strings.any}</option>
-					{html_options options=$gsmarty_option_importance
-                                  selected=$control->filters.filter_importance.selected}
-					</select>
-				</td>
-			</tr>
-		{/if}
-
+        {* TICKET 4353: added filter for active/inactive test cases *}
+        {if isset($control->filters.filter_active_inactive) && $control->filters.filter_active_inactive}
+            <tr>
+                <td>{$labels.filter_active_inactive}</td>
+                <td>
+                    <select name="filter_active_inactive">
+                        {html_options options=$control->filters.filter_active_inactive.items
+                        selected=$control->filters.filter_active_inactive.selected}
+                    </select>
+                </td>
+            </tr>
+        {/if}
+            
+        {* TICKET 4217: added importance filter on test specification *}
+        {if $control->filters.filter_importance}
+            <tr>
+                <td>{$labels.importance}</td>
+                <td>
+                    <select name="filter_importance">
+                        {* add "any" option to smarty global variable *}
+                        <option value="">{$control->option_strings.any}</option>
+                        {html_options options=$gsmarty_option_importance
+                        selected=$control->filters.filter_importance.selected}
+                    </select>
+                </td>
+            </tr>
+        {/if}
+            
 		{if $control->filters.filter_priority}
 			<tr>
-				<th width="75">{$labels.priority}</th>
+				<td>{$labels.priority}</td>
 				<td>
 					<select name="filter_priority">
 					{* add "any" option to smarty global variable for priority *}
@@ -271,7 +290,8 @@
 				              selected=$control->filters.filter_assigned_user.selected}
 				</select>
 		    {else}
-				<select name="filter_assigned_user" id="filter_assigned_user"
+				<select name="filter_assigned_user" 
+				        id="filter_assigned_user"
 				        onchange="javascript: triggerAssignedBox('filter_assigned_user',
 	                                                             'filter_assigned_user_include_unassigned',
 	                                                             '{$control->option_strings.any}',
@@ -313,14 +333,14 @@
 		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
 
 	   		<tr>
-				<th>{$labels.filter_result}</th>
+				<td>{$labels.filter_result}</td>
 				<td>
 				<select id="filter_result_result" 
 				{if $control->advanced_filter_mode}
-				  	name="filter_result_result[]" multiple="multiple"
-				  	size="{$control->filter_item_quantity}">
+				  		name="filter_result_result[]" multiple="multiple"
+				  	    size="{$control->filter_item_quantity}">
 				{else}
-				  	name="filter_result_result">
+				  		name="filter_result_result">
 				{/if}
 				{html_options options=$control->filters.filter_result.filter_result_result.items
 				              selected=$control->filters.filter_result.filter_result_result.selected}
@@ -329,12 +349,12 @@
 			</tr>
 
 			<tr>
-				<th>{$labels.filter_on}</th>
+				<td>{$labels.filter_on}</td>
 				<td>
 				  	<select name="filter_result_method" id="filter_result_method"
 				  		      onchange="javascript: triggerBuildChooser('filter_result_build_row',
-						                                                  'filter_result_method',
-						      {$control->cfg->filter_methods.status_code.specific_build});">
+						                                                'filter_result_method',
+						      {$control->configuration->filter_methods.status_code.specific_build});">
 					{html_options options=$control->filters.filter_result.filter_result_method.items
 					              selected=$control->filters.filter_result.filter_result_method.selected}
 				  	</select>
@@ -342,7 +362,7 @@
 			</tr>
 
 			<tr id="filter_result_build_row">
-				<th>{$labels.build}</th>
+				<td>{$labels.build}</td>
 				<td><select id="filter_result_build" name="filter_result_build">
 					{html_options options=$control->filters.filter_result.filter_result_build.items
 					              selected=$control->filters.filter_result.filter_result_build.selected}
@@ -600,7 +620,7 @@
 			     value="{$control->filter_mode_button_label}"
 			     style="font-size: 90%;"  />
       	{/if}
-      	
+
 	</div>
 	
 	</div> {* filters *}

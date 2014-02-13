@@ -4,19 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	buildEdit.php
- * @package 	TestLink
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
  *
- * @internal revision
- *  20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
- *  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
- *	20100820 - franciscom - init_source_build_selector() - refactoring
- *							refactoring to use only one variable ($gui) in interface to smarty
- *  20100726 - asimon - added number of existing assignments to source build selection
- *  20100707 - asimon - BUGID 3406: copy user assignments from other builds
- *                                  on creation of new builds
- *	20100706 - franciscom - BUGID 3581 added better check on release date
+ * @internal revisions
+ * @since 1.9.6
+ * 20130416 - franciscom - TICKET 5524: Creating build using test case user assignment from existing build. 
+ *                                      Newest build is not selected by default.
+ *
  */
 require('../../config.inc.php');
 require_once("common.php");
@@ -24,14 +17,10 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
-$date_format_cfg = config_get('date_format');
-$tplan_mgr = new testplan($db);
-$build_mgr = new build_mgr($db);
-$args = init_args($_REQUEST,$tplan_mgr->tree_manager,$date_format_cfg);
-checkRights($db,$_SESSION['currentUser'],$args);
 
+$date_format_cfg = config_get('date_format');
 
 $op = new stdClass();
 $op->user_feedback = '';
@@ -39,16 +28,14 @@ $op->buttonCfg = new stdClass();
 $op->buttonCfg->name = "";
 $op->buttonCfg->value = "";
 
+$smarty = new TLSmarty();
+$tplan_mgr = new testplan($db);
+$build_mgr = new build_mgr($db);
 
+$args = init_args($_REQUEST,$_SESSION,$date_format_cfg);
 $gui = new stdClass();
-$gui->tproject_id = $args->tproject_id;
-$gui->tplan_id = $args->tplan_id;
-
 $gui->main_descr = lang_get('title_build_2') . config_get('gui_title_separator_2') . 
                    lang_get('test_plan') . config_get('gui_title_separator_1') . $args->tplan_name;
-
-$gui->cancelAction = "lib/plan/buildView.php?tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}";
-
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('build_template', $of->InstanceName, $args->notes);
@@ -56,10 +43,10 @@ $of->Value = getItemTemplateContents('build_template', $of->InstanceName, $args-
 switch($args->do_action)
 {
 	case 'edit':
-	  	$op = edit($args,$build_mgr,$date_format_cfg);
-        $gui->closed_on_date = $args->closed_on_date;
-		$of->Value = $op->notes;
-		break;
+	 $op = edit($args,$build_mgr,$date_format_cfg);
+   $gui->closed_on_date = $args->closed_on_date;
+	 $of->Value = $op->notes;
+	break;
 
 	case 'create':
 	  	$op = create($args);
@@ -77,9 +64,9 @@ switch($args->do_action)
 		break;
 
 	case 'do_create':
-	  	$op = doCreate($args,$build_mgr,$tplan_mgr,$date_format_cfg);
-		$of->Value = $op->notes;
-		$templateCfg->template = $op->template;
+        $op = doCreate($args,$build_mgr,$tplan_mgr,$date_format_cfg);
+        $of->Value = $op->notes;
+        $templateCfg->template = $op->template;
 		break;
 
 }
@@ -93,10 +80,9 @@ $gui->closed_on_date = $args->closed_on_date;
 $gui->operation_descr = $op->operation_descr;
 $gui->user_feedback = $op->user_feedback;
 $gui->buttonCfg = $op->buttonCfg;
-$gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events",$args->tproject_id,$args->tplan_id);
+$gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 $gui->editorType = $editorCfg['type'];
 
-$smarty = new TLSmarty();
 renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
 
 /*
@@ -113,7 +99,7 @@ renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
  * @internal revisions:
  *   20100707 - asimon - BUGID 3406 - added source_build_id and copy_tester_assignments
 */
-function init_args($request_hash,&$treeMgr,$date_format)
+function init_args($request_hash, $session_hash,$date_format)
 {
 	$args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
@@ -124,14 +110,12 @@ function init_args($request_hash,&$treeMgr,$date_format)
 		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;
 	}
 
-	// BUGID 3406 - added source_build_id
 	$intval_keys = array('build_id' => 0, 'source_build_id' => 0);
 	foreach($intval_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
 
-	// BUGID 3406 - added copy_tester_assignments
 	$bool_keys = array('is_active' => 0, 'is_open' => 0, 'copy_to_all_tplans' => 0,
 	                   'copy_tester_assignments' => 0);
 	foreach($bool_keys as $key => $value)
@@ -141,39 +125,26 @@ function init_args($request_hash,&$treeMgr,$date_format)
 
 	// convert start date to iso format to write to db
 	$args->release_date = null;
-	if (isset($request_hash['release_date']) && $request_hash['release_date'] != '') {
+	if (isset($request_hash['release_date']) && $request_hash['release_date'] != '') 
+  {
 		$date_array = split_localized_date($request_hash['release_date'], $date_format);
-		if ($date_array != null) {
+		if ($date_array != null) 
+    {
 			// set date in iso format
 			$args->release_date = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
 		}
 	}
 	
-    $args->release_date_original = isset($request_hash['release_date']) && $request_hash['release_date'] != '' ?
+  $args->release_date_original = isset($request_hash['release_date']) && $request_hash['release_date'] != '' ?
                                    $request_hash['release_date'] : null;
     
-    $args->closed_on_date = isset($request_hash['closed_on_date']) ? $request_hash['closed_on_date'] : null;
+  $args->closed_on_date = isset($request_hash['closed_on_date']) ? $request_hash['closed_on_date'] : null;
     
-	$args->userID = $_SESSION['userID'];
-
-	$args->tproject_name = '';
-	$args->tplan_name = '';
-
-    $args->tplan_id	= isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-
-	if( $args->tplan_id > 0 )
-	{
-		$dummy = $treeMgr->get_node_hierarchy_info($args->tplan_id);
-		$args->tplan_name = $dummy['name'];
-	}
-
-	if( $args->tproject_id > 0 )
-	{
-		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
-		$args->tproject_name = $dummy['name'];
-	}
-
+  $args->tplan_id	= isset($session_hash['testplanID']) ? $session_hash['testplanID']: 0;
+	$args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
+	$args->testprojectID = $session_hash['testprojectID'];
+	$args->testprojectName = $session_hash['testprojectName'];
+	$args->userID = $session_hash['userID'];
 
 	return $args;
 }
@@ -265,7 +236,7 @@ function doDelete(&$argsObj,&$buildMgr)
 	}
 	else
 	{
-		logAuditEvent(TLS("audit_build_deleted",$argsObj->tproject_name,$argsObj->tplan_name,$build['name']),
+		logAuditEvent(TLS("audit_build_deleted",$argsObj->testprojectName,$argsObj->tplan_name,$build['name']),
 		              "DELETE",$argsObj->build_id,"builds");
     }
     return $op;
@@ -331,11 +302,9 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
 
   returns:
 
-  @internal revisions:
-    20100722 - asimon - BUGID 3406 - using assignment_mgr of tplan_mgr instead of new one
-    20100707 - asimon - BUGID 3406 - added assignment_mgr to copy assignments
+  @internal revisions
 */
-function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
+function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat) //,&$smartyObj)
 {
 	$op = new stdClass();
 	$op->operation_descr = '';
@@ -345,7 +314,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
 	$op->status_ok = 0;
 	$op->buttonCfg = null;
 	$check = crossChecks($argsObj,$tplanMgr,$dateFormat);
-    $targetDate=null;
+  $targetDate=null;
 	if($check->status_ok)
 	{
 		$user_feedback = lang_get("cannot_add_build");
@@ -353,26 +322,26 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
 		                             $argsObj->is_active,$argsObj->is_open,$argsObj->release_date);
 		if ($buildID)
 		{
-		    if($argsObj->is_open == 1)
-		    {
-		        $targetDate=null;
-		    } 
-		    else
-		    {
-		        $targetDate=date("Y-m-d",$argsObj->closed_on_date);    
-		    }
-	        $buildMgr->setClosedOnDate($buildID,$targetDate);    
+		  if($argsObj->is_open == 1)
+		  {
+		      $targetDate=null;
+		  } 
+		  else
+		  {
+		    $targetDate=date("Y-m-d",$argsObj->closed_on_date);    
+		  }
+	    $buildMgr->setClosedOnDate($buildID,$targetDate);    
 			
-	        // BUGID 3406 - copy tester assignments from chosen source build
-	        if ($argsObj->copy_tester_assignments && $argsObj->source_build_id) {
-	        	$tplanMgr->assignment_mgr->copy_assignments($argsObj->source_build_id, $buildID, $argsObj->userID);
-	        }
+      if ($argsObj->copy_tester_assignments && $argsObj->source_build_id) 
+      {
+	     	$tplanMgr->assignment_mgr->copy_assignments($argsObj->source_build_id, $buildID, $argsObj->userID);
+      }
 	        
 			$op->user_feedback = '';
 			$op->notes = '';
 			$op->template = null;
 			$op->status_ok = 1;
-			logAuditEvent(TLS("audit_build_created",$argsObj->tproject_name,$argsObj->tplan_name,$argsObj->build_name),
+			logAuditEvent(TLS("audit_build_created",$argsObj->testprojectName,$argsObj->tplan_name,$argsObj->build_name),
 							"CREATE",$buildID,"builds");
 		}
 	}
@@ -441,7 +410,7 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
 			$op->notes = '';
 			$op->template = null;
 			$op->status_ok = 1;
-			logAuditEvent(TLS("audit_build_saved",$argsObj->tproject_name,$argsObj->tplan_name,$argsObj->build_name),
+			logAuditEvent(TLS("audit_build_saved",$argsObj->testprojectName,$argsObj->tplan_name,$argsObj->build_name),
 			              "SAVE",$argsObj->build_id,"builds");
 		}
 	}
@@ -527,7 +496,7 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
 
     // exclude this testplan
     $filters = array('tplan2exclude' => $argsObj->tplan_id);
-    $tplanset = $tprojectMgr->get_all_testplans($argsObj->tproject_id,$filters);
+    $tplanset = $tprojectMgr->get_all_testplans($argsObj->testprojectID,$filters);
 
     if(!is_null($tplanset))
     {
@@ -542,6 +511,11 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
     }
 }
 
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_create_build');
+}
+
 /**
  * Initialize the HTML select box for selection of a source build when
  * user wants to copy the user assignments on creation of a new build.
@@ -551,26 +525,28 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
  * @param object $argsObj reference to user input object
  * @return array $htmlMenu array structure with all information needed for the menu
  *
- * @internal revision
- * 20100820 - franciscom - refactoring to remove unneeded support/temp variables and 
- *						   event viewer complain due to foreach() over a null variable.
+ * @internal revisions
  */
-function init_source_build_selector(&$testplan_mgr, &$argsObj) {
+function init_source_build_selector(&$testplan_mgr, &$argsObj) 
+{
 
 	$htmlMenu = array('items' => null, 'selected' => null, 'build_count' => 0);
-	$htmlMenu['items'] = $testplan_mgr->get_builds_for_html_options($argsObj->tplan_id);
+	$htmlMenu['items'] = $testplan_mgr->get_builds_for_html_options($argsObj->tplan_id,null,null,
+                                                                  array('orderByDir' => 'id:DESC'));
 	
 	
 	// get the number of existing execution assignments with each build
 	if( !is_null($htmlMenu['items']) )
 	{
 		$htmlMenu['build_count'] = count($htmlMenu['items']);
-		foreach ($htmlMenu['items'] as $key => $name) {
+		foreach ($htmlMenu['items'] as $key => $name) 
+    {
 			$count = $testplan_mgr->assignment_mgr->get_count_of_assignments_for_build_id($key);
 			$htmlMenu['items'][$key] = $name . " (" . $count . ")"; 
 		}
 		
 		// if no build has been chosen yet, select the newest build by default
+    reset($htmlMenu['items']);
 		if( !$argsObj->source_build_id )
 		{
 			$htmlMenu['selected'] = key($htmlMenu['items']);
@@ -579,16 +555,4 @@ function init_source_build_selector(&$testplan_mgr, &$argsObj) {
 
 	return $htmlMenu;
 } // end of method
-
-
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_create_build'),'and');
-}
 ?>

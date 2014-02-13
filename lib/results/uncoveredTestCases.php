@@ -3,28 +3,30 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource	uncoveredTestCases.php
- * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
+ * @filesource $RCSfile: uncoveredTestCases.php,v $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/09/28 08:44:20 $ by $Author: franciscom $
+ * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list test cases that has no requirement assigned
  * 
- * @internal revisions
+ * rev: 20081109 - franciscom - BUGID 512
  *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("specview.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
+
 $templateCfg = templateConfiguration();
 
 $tables = tlObjectWithDB::getDBTables(array('req_coverage','nodes_hierarchy',
                                             'tcversions','node_types'));
+$args = init_args();
 $tproject_mgr = new testproject($db);
-$args = init_args($tproject_mgr->tree_manager);
-checkRights($db,$_SESSION['currentUser'],$args);
-
 
 // get list of available Req Specification
+// $reqSpec = $tproject_mgr->getOptionReqSpec($args->tproject_id);
 $reqSpec = $tproject_mgr->genComboReqSpec($args->tproject_id);
 $uncovered = null;
 $gui = new stdClass();
@@ -41,13 +43,10 @@ if($gui->has_reqspec)
     foreach($reqSpec as $reqSpecID => $name)
     {
    		if($gui->has_requirements = ($reqSpecMgr->get_requirements_count($reqSpecID) > 0))
-   		{
         	break;
-        }	
     }
     unset($reqSpecMgr);
 }    
-
 if($gui->has_requirements)
 {    
     // get all test cases id (active/inactive) in test project
@@ -108,29 +107,17 @@ $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-function init_args(&$treeMgr)
+function init_args()
 {
 	$args = new stdClass();
-	$args->tproject_name = '';
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-    if($args->tproject_id > 0)
-    {
-    	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
-    	$args->tproject_name = $dummy['name'];
-    }
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     
     return $args;
 }
 
-/**
- * 
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = $argsObj->tproject_id;
-	$env['tplan_id'] = $argsObj->tplan_id;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
+	return $user->hasRight($db,'testplan_metrics');
 }
-
 ?>

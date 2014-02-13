@@ -5,38 +5,14 @@
  * 
  * Functions for support requirement based testing
  *
+ * @filesource	requirements.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.116 2010/11/08 11:30:44 amkhullar Exp $
+ * @copyright 	2007-2013, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
- *
- * 20110525 - Julian - req_link_replace() - BUGID 4487 - allow to specify requirement version 
- * for internal links
- * 20101106 - amitkhullar - BUGID 3978: BTS integration Code getting triggered 
- * 20100919 - franciscom - importReqDataFromCSV() refactoring
- *                         importReqDataFromDocBook() added missing keys on generated map	
- * 20100904 - franciscom - BUGID 0003745: CSV Requirements Import Updates Frozen Requirement
- * 20100828 - franciscom - deprecated functions removed
- * 20100508 - franciscom - BUGID 3447: CVS Import - add new column type 
- * 20100301 - asimon - modified req_link_replace()
- * 20091202 - franciscom - added contribution req_link_replace()
- * 20090815 - franciscom - get_last_execution() call changes
- * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
- * 20090331 - amitkhullar - BUGFIX 2292
- * 20090304 - franciscom - BUGID 2171
- * 20081103 - sisajr - DocBook XML import
- * 20070710 - franciscom - BUGID 939
- * 20070705 - franciscom - improved management of arrReqStatus
- * 20070617 - franciscom - removed include of deprecated file
- * 20070310 - franciscom - changed return type createRequirement()
+ * @internal revisions
  */
-
-/** inlude basic functions for printing Test Specification document */
-//require_once("print.inc.php"); //TODO is this needed here anymore after removal of render functions?
-// BUGID 3978
 
 /**
  * exportReqDataToXML
@@ -236,7 +212,7 @@ function getReqDocIDs(&$db,$srs_id)
  */
 function loadImportedReq($fileName, $importType)
 {
-	$data = null;
+	$retVal = null;
 	switch($importType)
 	{
 		case 'csv':
@@ -251,11 +227,24 @@ function loadImportedReq($fileName, $importType)
 			$pfn = "importReqDataFromDocBook";
 			break;
 	}
+	
 	if ($pfn)
 	{
-		$data = $pfn($fileName);
+		$retVal = $pfn($fileName);
+		if($importType == 'DocBook')
+		{
+			// this structure if useful when importing from CSV
+    		// $retVal = array('userFeedback' => arra(),'info' => null);
+			//
+			// But we need to return same data structure ALWAYS
+			// for DocBook we do not use 'parsedCounter' and 'syntaxError'
+			//
+			$dummy = array('userFeedback' => null, 'info' => $retVal);
+			$retval = $dummy;			   
+		}
 	}
-	return $data;
+	 
+	return $retVal;
 
 }
 
@@ -265,15 +254,14 @@ function loadImportedReq($fileName, $importType)
  */
 function importReqDataFromCSV($fileName)
 {
-  	
   	// CSV line format
-	// $fieldMappings = array("req_doc_id","title","description","type","status","expected_coverage","order");
 	$fieldMappings = array("docid","title","description","type","status","expected_coverage","node_order");
   	
 
 	$options = array('delimiter' => ',' , 'fieldQty' => count($fieldMappings));
-	$reqData = importCSVData($fileName,$fieldMappings,$options);
-
+	$impData = importCSVData($fileName,$fieldMappings,$options);
+	
+	$reqData = &$impData['info'];
 	if($reqData)
 	{
   		// lenght will be adjusted to these values
@@ -292,7 +280,6 @@ function importReqDataFromCSV($fileName)
 				// Adjust Lenght 
 				if( isset($fieldLength[$fieldKey]) )
 				{
-	       			// $reqData[$ddx][$fieldKey] = trim_and_limit($reqData[$ddx][$fieldKey],$fieldLength[$fieldKey]);
 	       			$fieldValue = trim_and_limit($fieldValue,$fieldLength[$fieldKey]);
 				}
 				else if(isset($fieldDefault[$fieldKey]))
@@ -308,11 +295,14 @@ function importReqDataFromCSV($fileName)
 			}
 		}
 	}
-	return $reqData;
+	return $impData;
 }
 
 /**
  * importReqDataFromCSVDoors
+ *
+ * @internal revision
+ * 20110206 - franciscom - return data structure changed.
  *
  */
 function importReqDataFromCSVDoors($fileName)
@@ -322,9 +312,9 @@ function importReqDataFromCSVDoors($fileName)
 					       "Created By","Created On","Last Modified By","Last Modified On");
 	
 	$options = array('delimiter' => ',', 'fieldQty' => count($fieldMappings), 'processHeader' => true);
-	$reqData = importCSVData($fileName,$fieldMappings,$options);
+	$impData = importCSVData($fileName,$fieldMappings,$options);
 
-	return $reqData;
+	return $impData;
 }
 
 /**
@@ -832,14 +822,54 @@ function check_syntax_csv_doors($fileName)
  */
 function req_link_replace($dbHandler, $scope, $tprojectID) 
 {
-	$tree_mgr = new tree($dbHandler);
-	$tproject_mgr = new testproject($dbHandler);
-	$req_mgr = new requirement_mgr($dbHandler);
+
+	// Use this to improve performance when is called in loops
+	static $tree_mgr;
+	static $tproject_mgr;
+	static $req_mgr;
+	static $cfg;
+	static $l18n;
+	static $title;
+	static $tables;
+	
+	if(!$tproject_mgr)
+	{
+		$tproject_mgr = new testproject($dbHandler);
+		$tree_mgr = new tree($dbHandler);
+		$req_mgr = new requirement_mgr($dbHandler);
+
+		$tables = tlObjectWithDB::getDBTables(array('requirements', 'req_specs'));
+
+		$cfg = config_get('internal_links');
+		$l18n['version'] = lang_get('tcversion_indicator');
+
+		$prop2loop = array('req' => array('prop' => 'req_link_title', 'default_lbl' => 'requirement'), 
+						   'req_spec' => array('prop' => 'req_spec_link_title','default_lbl' => 'req_spec_short'));
+		
+
+		// configure link title (first part of the generated link)
+		$title = array();
+		foreach($prop2loop as $key => $elem)
+		{
+			$prop = $elem['prop'];
+			if ($cfg->$prop->type == 'string' && $cfg->$prop->value != '') 
+			{
+				$title[$key] = lang_get($cfg->$prop->value);
+			} 	
+			else if ($cfg->$prop->type == 'none') 
+			{
+				$title[$key] = '';
+			} 
+			else
+			{
+				$title[$key] = lang_get($elem['default_lbl']) . ": ";
+			}
+		} 
+
+	}
+
 	$prefix = $tproject_mgr->getTestCasePrefix($tprojectID);
-	$tables = tlObjectWithDB::getDBTables(array('requirements', 'req_specs'));
-	$cfg = config_get('internal_links');
 	$string2replace = array();
-	$title = array();
 
 	// configure target in which link shall open
 	// use a reasonable default value if nothing is set in config
@@ -849,58 +879,29 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 	{
 		case 'popup':
 			// use javascript to open popup window
-			$string2replace['req'] = '<a href="javascript:openLinkedReqVersionWindow(%s,%s,%s,\'%s\')">%s%s%s</a>';
-			$string2replace['req_spec'] = '<a href="javascript:openLinkedReqSpecWindow(%s,%s,\'%s\')">%s%s</a>';
+			$string2replace['req'] = '<a href="javascript:openLinkedReqVersionWindow(%s,%s,\'%s\')">%s%s%s</a>';
+			$string2replace['req_spec'] = '<a href="javascript:openLinkedReqSpecWindow(%s,\'%s\')">%s%s</a>';
 		break;
 		
 		case 'window':
 	    case 'frame':// open in same frame
 			$target = ($cfg->target == 'window') ? 'target="_blank"' : 'target="_self"';
 			$string2replace['req'] = '<a ' . $target . ' href="lib/requirements/reqView.php?' .
-			                         'tproject_id=%s&item=requirement&requirement_id=%s' .
-			                         '&req_version_id=%s#%s">%s%s%s</a>';
+						             'item=requirement&requirement_id=%s&req_version_id=%s#%s">%s%s%s</a>';
 			$string2replace['req_spec'] = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' .
-			                              'tproject_id=%s&item=req_spec&req_spec_id=%s#%s">%s%s</a>';
+						                  'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
 		break;
     }
-
-    
-	// configure link title (first part of the generated link)
-	// default: use item type as name (localized name for req)
-	$title['req'] = lang_get('requirement') . ": "; 
-	// default: use short item type as name (localized name for req spec)
-	$title['req_spec'] = lang_get('req_spec_short') . ": ";
-	
-	$version_indicator = lang_get('tcversion_indicator');
-
-	if ($cfg->req_link_title->type == 'string' && $cfg->req_link_title->value != '') {
-		$title['req'] = lang_get($cfg->req_link_title->value);
-	} else if ($cfg->req_link_title->type == 'none') {
-		$title['req'] = '';
-	} 
-	
-	// now for the req specs
-	if ($cfg->req_spec_link_title->type == 'string' && $cfg->req_spec_link_title->value != '') {
-		// use user-configured string as link title
-		$title['req_spec'] = lang_get($cfg->req_spec_link_title->value);
-	} else if ($cfg->req_spec_link_title->type == 'none') {
-		$title['req_spec'] = '';
-	} 
 
 	// now the actual replacing
 	$patterns2search = array();
 	$patterns2search['req'] = "#\[req(.*)\](.*)\[/req\]#iU";
 	$patterns2search['req_spec'] = "#\[req_spec(.*)\](.*)\[/req_spec\]#iU";
-	
-	$patternPositions = array('complete_string' => 0,
-	                          'attributes' => 1,
-	                          'doc_id' => 2);
-	
+	$patternPositions = array('complete_string' => 0,'attributes' => 1,'doc_id' => 2);
+
 	$items2search['req'] = array('tproj','anchor','version');
 	$items2search['req_spec'] = array('tproj','anchor');
-	
-	$itemPositions = array ('item' => 0,
-	                        'item_value' => 1);
+	$itemPositions = array ('item' => 0,'item_value' => 1);
 	
 	$sql2exec = array();
 	$sql2exec['req'] = " SELECT id, req_doc_id AS doc_id " .
@@ -911,6 +912,7 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 
 	foreach($patterns2search as $accessKey => $pattern )
 	{
+	
 		$matches = array();
 		preg_match_all($pattern, $scope, $matches);
 		
@@ -920,7 +922,8 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 			continue;
 		}
 		
-		foreach ($matches[$patternPositions['complete_string']] as $key => $matched_string) {
+		foreach ($matches[$patternPositions['complete_string']] as $key => $matched_string) 
+		{
 			
 			$matched = array ();
 			$matched['tproj'] = '';
@@ -937,7 +940,8 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 				}
 			}
 			// set tproj to current project if tproj is not specified in attributes
-			if (!isset($matched['tproj']) || $matched['tproj'] == '') {
+			if (!isset($matched['tproj']) || $matched['tproj'] == '') 
+			{
 				$matched['tproj'] = $prefix;
 			}
 			
@@ -945,35 +949,47 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 			$sql = $sql2exec[$accessKey] . "'{$matches[$patternPositions['doc_id']][$key]}'";
 			$rs = $dbHandler->get_recordset($sql);
 			
-			if (count($rs) > 0) {
-				foreach($rs as $key => $value) {
-					// get root (tproject_id) of linked node and check
-					$real_tproject_id = $tree_mgr->getTreeRoot($value['id']);
-					$matched_tproject_id = $tproject_mgr->get_by_prefix($matched['tproj']);
+			if (count($rs) > 0) 
+			{
+	
+				foreach($rs as $key => $value) 
+				{
+					// get root of linked node and check
+					$real_root = $tree_mgr->getTreeRoot($value['id']);
+					$matched_root_info = $tproject_mgr->get_by_prefix($matched['tproj']);
+					
 					// do only continue if project with the specified project exists and
 					// if the requirement really belongs to the specified project (requirements
 					// with the same doc_id may exist within different projects)
-					if ($real_tproject_id == $matched_tproject_id['id']) {
-						if($accessKey == 'req') {
+					if ($real_root == $matched_root_info['id']) 
+					{
+						if($accessKey == 'req') 
+						{
 							// add version to link title if set
 							$version = '';
 							$req_version_id = 'null';
-							if ($matched['version'] != '') {
+							if ($matched['version'] != '') 
+							{
 								// get requirement version_id of the specified version
 								$req_version = $req_mgr->get_by_id($value['id'],null,$matched['version']);
+						
 								// if version is not set or wrong version was set 
 								// -> show latest version by setting version_id to null
 								$req_version_id = isset($req_version[0]['version_id']) ? $req_version[0]['version_id'] :'null';
+						
 								// if req_version_id exists set the version to show on hyperlink text
-								if ($req_version_id != 'null') {
-									$version = sprintf($version_indicator,$matched['version']);
+								if ($req_version_id != 'null') 
+								{
+									$version = sprintf($l18n['version'],$matched['version']);
 								}
 							}
-							$urlString = sprintf($string2replace[$accessKey], $real_tproject_id, $value['id'], $req_version_id,
+							$urlString = sprintf($string2replace[$accessKey], $value['id'], $req_version_id,
 							                     $matched['anchor'], $title[$accessKey], $value['doc_id'], $version);
-						} else {
+						} 
+						else 
+						{
 							// build urlString for req specs which do not have a version
-							$urlString = sprintf($string2replace[$accessKey], $real_tproject_id, $value['id'],
+							$urlString = sprintf($string2replace[$accessKey], $value['id'],
 							                     $matched['anchor'], $title[$accessKey], $value['doc_id']);
 						}
 						$scope = str_replace($matched_string,$urlString,$scope);

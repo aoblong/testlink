@@ -1,11 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: editExecution.tpl,v 1.3 2010/10/08 12:33:28 asimon83 Exp $
-Authot: francisco.mancardi@gmail.com
+@filesource editExecution.tpl
+@author		francisco.mancardi@gmail.com
 
-Purpose:  
+
 *}
-{include file="inc_head.tpl" editorType=$gui->editorType}
+{include file="inc_head.tpl" openHead='yes' editorType=$gui->editorType}
+{include file="inc_ext_js.tpl"}
+</head>
+
 <body onUnload="storeWindowSize('ExecEditPopup')">
 <h1 class="title">{lang_get s='title_execution_notes'}</h1>
 <div class="workBack">

@@ -4,13 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource  tlIssueTracker.php
- * @package   TestLink
- * @author    franciscom
- * @copyright   2012, TestLink community
- * @link    http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      franciscom
+ * @copyright   2012,2013 TestLink community
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 2.0
+ * @since 1.9.7
+ *
+ * 20130412 - franciscom - TICKET 5632: Issue tracker with blank config - issueTrackerView.php returns blank page
+ *
 **/
 
 /**
@@ -37,20 +40,18 @@ class tlIssueTracker extends tlObject
                         6 =>  array('type' => 'jira', 'api' =>'db', 'enabled' => true, 'order' => -1),
                         8 =>  array('type' => 'fogbugz','api' =>'rest','enabled' => true, 'order' => -1),
                         9 =>  array('type' => 'fogbugz','api' =>'db','enabled' => true, 'order' => -1),
-                       10 =>  array('type' => 'gforge','api' =>'soap','enabled' => true, 'order' => -1),
-                       11 =>  array('type' => 'gforge','api' =>'db','enabled' => true, 'order' => -1),
-                       12 =>  array('type' => 'eventum','api' =>'db', 'enabled' => true, 'order' => -1),
-                       13 =>  array('type' => 'polarion', 'api' =>'soap', 'enabled' => true, 'order' => -1),
+                       10 =>  array('type' => 'gforge','api' =>'soap','enabled' => false, 'order' => -1),
+                       11 =>  array('type' => 'gforge','api' =>'db','enabled' => false, 'order' => -1),
+                       12 =>  array('type' => 'eventum','api' =>'db', 'enabled' => false, 'order' => -1),
+                       13 =>  array('type' => 'polarion', 'api' =>'soap', 'enabled' => false, 'order' => -1),
                        14 =>  array('type' => 'youtrack','api' =>'rest','enabled' => true, 'order' => -1),
                        15 =>  array('type' => 'redmine','api' =>'rest','enabled' => true, 'order' => -1),
-                       16 =>  array('type' => 'redmine','api' =>'db','enabled' => true, 'order' => -1),
-                       17 =>  array('type' => 'seapine','api' =>'soap','enabled' => true, 'order' => -1),
-                       18 =>  array('type' => 'seapine','api' =>'db','enabled' => true, 'order' => -1),
+                       16 =>  array('type' => 'redmine','api' =>'db','enabled' => false, 'order' => -1),
+                       17 =>  array('type' => 'seapine','api' =>'soap','enabled' => false, 'order' => -1),
+                       18 =>  array('type' => 'seapine','api' =>'db','enabled' => false, 'order' => -1),
                        19 =>  array('type' => 'trac','api' =>'xmlrpc','enabled' => true, 'order' => -1),
-                       20 =>  array('type' => 'trackplus','api' =>'soap','enabled' => true, 'order' => -1),
-                       21 =>  array('type' => 'trackplus','api' =>'db','enabled' => true, 'order' => -1));
-  
-  
+                       20 =>  array('type' => 'trackplus','api' =>'soap','enabled' => false, 'order' => -1),
+                       21 =>  array('type' => 'trackplus','api' =>'db','enabled' => false, 'order' => -1));
   
     
   var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');
@@ -62,7 +63,7 @@ class tlIssueTracker extends tlObject
    */
   function __construct(&$db)
   {
-      parent::__construct();
+    parent::__construct();
 
     // populate types property
     $this->getTypes();
@@ -71,11 +72,11 @@ class tlIssueTracker extends tlObject
 
 
 
-  /**
+    /**
    * @return hash
    * 
    * 
-   */
+     */
   function getSystems($opt=null)
   {
     $my = array('options' => null);
@@ -106,7 +107,7 @@ class tlIssueTracker extends tlObject
         $ret[$code] = $elem;
       }
     }
-    return $ret;
+      return $ret;
     }
 
   /**
@@ -120,7 +121,10 @@ class tlIssueTracker extends tlObject
     {
       foreach($this->systems as $code => $spec)
       {
-        $this->types[$code] = $spec['type'] . " (Interface: {$spec['api']})";
+        if($spec['enabled'])
+        {  
+          $this->types[$code] = $spec['type'] . " (Interface: {$spec['api']})";
+        }  
       }
     }
     return $this->types;
@@ -145,7 +149,7 @@ class tlIssueTracker extends tlObject
      */
   function getEntitySpec()
   {
-    return $this->entitySpec;
+        return $this->entitySpec;
   }
 
 
@@ -153,9 +157,9 @@ class tlIssueTracker extends tlObject
    *
    */
   function create($it)
-  {
+    {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'name already exists');
+      $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'name already exists');
     $safeobj = $this->sanitize($it);  
 
     // empty name is not allowed
@@ -169,22 +173,22 @@ class tlIssueTracker extends tlObject
     if( is_null($this->getByName($it->name,array('output' => 'id')) ))
     {
       $sql =  "/* debugMsg */ INSERT  INTO {$this->tables['issuetrackers']} " .
-              " (name,cfg,type) " .
-              " VALUES('" . $safeobj->name . "','" . $safeobj->cfg . "',{$safeobj->type})"; 
+          " (name,cfg,type) " .
+          " VALUES('" . $safeobj->name . "','" . $safeobj->cfg . "',{$safeobj->type})"; 
 
-      if( $this->db->exec_query($sql) )
-      {
+        if( $this->db->exec_query($sql) )
+        {
           // at least for Postgres DBMS table name is needed.
             $itemID=$this->db->insert_id($this->tables['issuetrackers']);
             $ret = array('status_ok' => 1, 'id' => $itemID, 'msg' => 'ok');
-      }
-      else
-      {
+        }
+        else
+        {
           $ret = array('status_ok' => 0, 'id' => 0, 'msg' => $this->db->error_msg());
-      }
+        }
     }
     
-    return $ret;
+      return $ret;
   }
 
 
@@ -286,7 +290,7 @@ class tlIssueTracker extends tlObject
   function getByID($id, $options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      return $this->getByAttr(array('key' => 'id', 'value' => $id),$options);
+    return $this->getByAttr(array('key' => 'id', 'value' => $id),$options);
   }
 
 
@@ -540,20 +544,24 @@ class tlIssueTracker extends tlObject
         $lc = $this->db->fetchRowsIntoMap($sql,'id');
       }
     
+      
       foreach($rs as &$item)
       {
         $item['verbose'] = $item['name'] . " ( {$this->types[$item['type']]} )" ;
         $item['type_descr'] = $this->types[$item['type']];
         $item['env_check_ok'] = true;
         $item['env_check_msg'] = '';
-      	if( $my['options']['checkEnv'] )
-	      {
-        	$impl = $this->getImplementationForType($item['type']);
-	        $dummy = $impl::checkEnv();
-	        $item['env_check_ok'] = $dummy['status'];
-	        $item['env_check_msg'] = $dummy['msg'];
-      	}
-       
+        $item['connection_status'] = '';
+         
+        if( $my['options']['checkEnv'] )
+        {
+           $impl = $this->getImplementationForType($item['type']);
+           $dummy = $impl::checkEnv();
+           $item['env_check_ok'] = $dummy['status'];
+           $item['env_check_msg'] = $dummy['msg'];
+        }
+
+        
         if( !is_null($lc) )
         {
           if( isset($lc[$item['id']]) )
@@ -563,7 +571,7 @@ class tlIssueTracker extends tlObject
         }
       }
     }
-      return $rs;
+    return $rs;
   }
 
 
@@ -608,33 +616,34 @@ class tlIssueTracker extends tlObject
   {
     $its = null;
     $issueT = $this->getLinkedTo($tprojectID);
-    if( !is_null($issueT)  )
+    
+    try
     {
-      $itd = $this->getByID($issueT['issuetracker_id']);
-      $iname = $itd['implementation'];
-      $its = new $iname($itd['implementation'],$itd['cfg']);
+      if( !is_null($issueT)  )
+      {
+        $itd = $this->getByID($issueT['issuetracker_id']);
+        $iname = $itd['implementation'];
+        $its = new $iname($itd['implementation'],$itd['cfg']);
+      }
+      return  $its;
     }
-    return  $its;
-  
+    catch (Exception $e)
+    {
+      echo('Probably there is some PHP Config issue regarding extension<b>');
+      echo($e->getMessage().'<pre>'.$e->getTraceAsString().'</pre>');   
+    }
   }
 
-
-  //function unlinkBadBoys($id)
-  //{
-  //  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    //
-  //  if(is_null($id))
-  //  {
-  //    return;
-    //    }
-    //    
-    //    // Get links
-    //    $dummy = 
-  //  $sql = "/* $debugMsg */ DELETE FROM {$this->tables['testproject_issuetracker']} " .
-  //           " WHERE testproject_id = " . intval($tprojectID) . 
-  //           " AND issuetracker_id = " . intval($id);
-  //  $this->db->exec_query($sql);
-  //}
-
+  /*
+   *
+   *
+   */
+  function checkConnection($its)
+  {
+    $xx = $this->getByID($its);
+    $class2create = $xx['implementation'];
+    $its = new $class2create($xx['type'],$xx['cfg']);
+    return $its->isConnected();
+  }
 } // end class
 ?>

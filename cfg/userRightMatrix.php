@@ -2,17 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * Configuration of the access rights needed for executing pages
- *
  * @filesource	userRightMatrix.php
- *
  * @author Andreas Morsing
  *
+ * Configuration of the access rights needed for executing pages
  *
- * @internal revisions:
  * 
 **/
-
 //user right matrix, 
 //for each file which calls testLinkInitPage it's 
 //possible to set the rights needed to execute the script
@@ -35,8 +31,6 @@ $reports_url='lib/result';
 $tc_admin_url='lib/testcases';
 $cf_admin_url='lib/cfields';
 $print_url='lib/print';
-
-
 
 // 
 $user_admin=array("$user_admin_url/usersassign.php"  => array ("user_role_assignment",));														

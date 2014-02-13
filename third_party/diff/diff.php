@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: diff.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2010/11/28 16:08:38 $  $Author: franciscom $
+ * @version $Revision: 1.1.6.1 $
+ * @modified $Date: 2010/11/28 16:08:12 $  $Author: franciscom $
  * 
  * @internal revision
  * 20101128 - franciscom - declare missing $maxlen variable

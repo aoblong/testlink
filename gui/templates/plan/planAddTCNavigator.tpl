@@ -1,13 +1,22 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	planAddTCNavigator.tpl
+@filesource planAddTCNavigator.tpl
 
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
 @internal revisions
-@since 2.0
+@since 1.9.4
 20110824 - franciscom - TICKET 4721: Left side tree manu - add specific navigator titles
+
+@since 1.9.3    
+20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
+20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
+20101027 - asimon - BUGID 3946: reqirement specification tree size     
+20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
+                    them with new included template inc_tc_filter_panel.tpl
+20100417 - franciscom - BUGID 2498 - filter by test case spec importance
+20100410 - franciscom - BUGID 2797 - filter by test case execution type
 *}
 
 {lang_get var="labels" 
@@ -20,8 +29,9 @@ Scope: show test specification tree for Test Plan related features
 {* BUGID 3301 *}
 {* includes Ext.ux.CollapsiblePanel *}
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
+{literal}
 <script type="text/javascript">
-    {* BUGID 4077 *}
+    // BUGID 4077
 	treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",loader:"", 
 	            enableDD:false, dragDropBackEndUrl:"",children:"" };
 	Ext.onReady(function() {
@@ -45,13 +55,16 @@ Scope: show test specification tree for Test Plan related features
 		});
 	});
 </script>
+{/literal}
 
     {if $gui->ajaxTree->loader == ''}
+        {literal}
         <script type="text/javascript">
-        {* BUGID 4077 *}
+        // BUGID 4077
         treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                     loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
         </script>
+        {/literal}
 
         <script type="text/javascript">
         treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
@@ -62,12 +75,14 @@ Scope: show test specification tree for Test Plan related features
         </script>
         <script type="text/javascript" src='gui/javascript/execTree.js'></script>
     {else}
+        {literal}
         <script type="text/javascript">
-        {* BUGID 4077 *}
+        // BUGID 4077
         treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                     root_testlink_node_type:'',useBeforeMoveNode:false,
                     loader:"", enableDD:false, dragDropBackEndUrl:'' };
         </script>
+        {/literal}
         
         <script type="text/javascript">
         treeCfg.loader = "{$gui->ajaxTree->loader}";
@@ -80,6 +95,7 @@ Scope: show test specification tree for Test Plan related features
         <script type="text/javascript" src="gui/javascript/treebyloader.js">
         </script>
    {/if}
+{literal}
 <script type="text/javascript">
 function pre_submit()
 {
@@ -87,6 +103,7 @@ function pre_submit()
 	return true;
 }
 </script>
+{/literal}
 
 
 {* BUGID 3301 - js include file for simpler code, filter refactoring/redesign *}

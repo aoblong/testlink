@@ -4,9 +4,8 @@
  *
  * @package TestLink
  * @author Erik Eloff
- * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.13 2010/11/24 08:06:02 mx-julian Exp $
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
+ * @copyright 2009,2012 TestLink community
+ * @filesource ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
  *
@@ -16,14 +15,6 @@
  * @link http://www.extjs.com/learn/Extension:NameSpace
  *
  * @internal revisions:
- * 20101018 - eloff - Create class TableToolbar
- *                    Fixed issue that shows all column (including grouped by)
- * 20100921 - eloff - BUGID 3714 - Load cookie state even if referenced columns are missing
- * 20100826 - eloff - BUGID 3714 - Added JsonCookieProvider to use less size
- *                    Added SlimGridPanel
- * 20100124 - eloff - BUGID3088 - added requireSessionAndSubmit()
- * 20100109 - eloff - inital commit of this file
- *                    BUGID 2800: CollapsiblePanel
  **/
 
 /**
@@ -258,10 +249,10 @@ Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
  * before submitting a form.
  *
  * Needed to avoid data loss if session has timed out in background.
- * It operates by making an ajax call to login.php?action=ajaxcheck and gets a
- * response whether the session is still valid or not. If the session is valid
- * submit the form. Otherwise show a login form in a popup to let the user
- * renew the session before submitting.
+ * It operates by making an ajax call to login.php?action=ajaxcheck and 
+ * gets a response whether the session is still valid or not. 
+ * If the session is valid submit the form. 
+ * Otherwise show a login form in a popup to let the user renew the session before submitting.
  *
  * Usage:
  * function validateForm(my_form) {
@@ -366,6 +357,14 @@ Ext.ux.grid.filter.PriorityFilter = Ext.extend(Ext.ux.grid.filter.ListFilter, {
         return ( this.getValue().indexOf(priority) > -1);
     }
 });
+
+Ext.ux.grid.filter.ImportanceFilter = Ext.extend(Ext.ux.grid.filter.ListFilter, {
+    validateRecord: function (record) {
+        var item = record.get(this.dataIndex);
+        return ( this.getValue().indexOf(item) > -1);
+    }
+});
+
 
 Ext.ux.grid.filter.ListSimpleMatchFilter = Ext.extend(Ext.ux.grid.filter.ListFilter, {
     validateRecord: function (record) {

@@ -1,9 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: reqImport.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
 
-@filesource	reqImport.tpl
-
-@internal revisions
+rev:
 *}
 
 {lang_get var="labels" 
@@ -18,12 +17,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              check_uncheck_all_checkboxes_for_rm'}
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_ext_js.tpl"}
-
+{include file="inc_del_onclick.tpl"}
 </head>
 <body>
 <h1 class="title">{$gui->main_descr|escape}</h1>
@@ -32,19 +30,18 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {if  $gui->doAction == 'askFileName' || $gui->file_check.status_ok eq 0}
   <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}">
   	<input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
-  	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
     {include file="inc_gui_import_file.tpl" args=$gui->importFileGui}
   </form>
 {else}
-  {if $gui->importResult != '' && $gui->file_check.status_ok}
+  {if $gui->importResult != '' && $gui->file_check.status_ok }
   	<p class="info">{$gui->importResult}</p>
   	<table class="simple">
-  	{if $gui->items != ''}
   	<tr>
   		<th>{$labels.doc_id_short}</th>
   		<th>{$labels.title}</th>
   		<th style="width: 20%;">{$labels.Result}</th>
   	</tr>
+  	{if $gui->items != ''}
  	    {foreach from=$gui->items key=idx item=import_feedback}
   	  <tr>
   	    <td>{$import_feedback.doc_id|escape}</td>
@@ -59,13 +56,18 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {/if}
 {/if}
 
-{if $gui->refreshTree} {$tlRefreshTreeByReloadJS} {/if}
+{if $gui->refreshTree}
+	{include file="inc_refreshTree.tpl"}
+{/if}
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
+//BUGID 3943: Escape all messages (string)
   alert_message("{$labels.warning|escape:'javascript'}","{$gui->file_check.msg|escape:'javascript'}");
   </script>
 {/if}  
+
+
 </div>
 
 </body>

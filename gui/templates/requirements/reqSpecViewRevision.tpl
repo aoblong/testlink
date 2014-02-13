@@ -4,19 +4,28 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: view requirement spec revision READ ONLY
 
 @internal revisions
+@since 1.9.4
 20110816 - franciscom - TICKET 4703: Req. Spec. View - display log message 
+
 *}
 {config_load file="input_dimensions.conf"}
-{my_style = ""}
+{assign var="my_style" value=""}
 {if $gui->hilite_item_name}
-    {my_style = "background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
+    {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
-{this_template_dir = $smarty.template|dirname}
+{assign var=this_template_dir value=$smarty.template|dirname}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_ext_js.tpl"}
 
 <script type="text/javascript">
+{literal}
+Ext.onReady(function(){ 
+{/literal}
+tip4log({$gui->item.id});
+{literal}
+});
+
 function tip4log(itemID)
 {
 	var fUrl = fRoot+'lib/ajax/getreqspeclog.php?item_id=';
@@ -28,11 +37,7 @@ function tip4log(itemID)
         trackMouse: true
     });
 }
-
-Ext.onReady(function()
-{ 
-	tip4log({$gui->item.id});
-});
+{/literal}
 </script>	
 </head>
 
@@ -54,7 +59,7 @@ Ext.onReady(function()
     {/if}
 	<h2>{$labels.req_spec} {$gui->item.name|escape} </h2>
 {/if}
-{warning_edit_msg = ""}
+{assign var="warning_edit_msg" value=""}
 
 <div>
 	<form method="post" action="" name="reqSpecPrinterFriendly">
@@ -74,13 +79,14 @@ Ext.onReady(function()
 	  	</td>
 	  </tr>
 
+	{* to be enabled on 2.x
     <tr>
-	 {dummy = $gui->item.status}
+	 {assign var="dummy" value=$gui->item.status}
 	  <td>{$labels.status}{$smarty.const.TITLE_SEP}{$gui->itemStatusDomain[$gui->item.status]}</td>
 	</tr>
-
+	*}
 	<tr>
-		{dummy = $gui->item.type}
+		{assign var="dummy" value=$gui->item.type}
 	  <td>{$labels.type}{$smarty.const.TITLE_SEP}{$gui->itemTypeDomain[$dummy]}</td>
 	</tr>
 	<tr>

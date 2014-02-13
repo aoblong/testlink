@@ -1,16 +1,7 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.22 2011/02/11 12:53:43 mx-julian Exp $     
+ @filesource  metricsDashboard.tpl
  Purpose: smarty template - main page / site map                 
-
- rev:
-  20110303 - Julian - added more information to test project report
-  20101014 - Julian - BUGID 3893 - Extended metrics dashboard
-  20101012 - Julian - show "show metrics only for active test plans" checkbox even if there is no resultset. 
-                      This is required if there are no active test plans at all
-  20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
-                                 - use of exttable
-  20090919 - franciscom - added plaftorm information
 *}
 {lang_get var="labels"
           s="generated_by_TestLink_on,testproject,test_plan,platform,show_only_active,
@@ -18,7 +9,7 @@
 {include file="inc_head.tpl" openHead='yes'}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var="tableID" value="$matrix->tableID"}
+  {assign var=tableID value=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -28,19 +19,19 @@
   {$matrix->renderHeadSection()}
 {/foreach}
 
-{assign var="tplan_metric" value=$gui->tplan_metrics}
+{assign var="tplan_metric" value="$gui->tplan_metrics"}
 <script type="text/javascript">
-Ext.onReady(function() {
-	{foreach key=key item=value from=$gui->project_metrics}
-    new Ext.ProgressBar({
-    	text:'&nbsp;&nbsp;{lang_get s=$value.label_key}: {$value.value}% [{$tplan_metric.total.$key}/{$tplan_metric.total.active}]',
+Ext.onReady(function() {ldelim}
+	{foreach key="key" item="value" from="$gui->project_metrics"}
+    new Ext.ProgressBar({ldelim}
+        text:'&nbsp;&nbsp;{lang_get s=$value.label_key}: {$value.value}% [{$tplan_metric.total.$key}/{$tplan_metric.total.active}]',
         width:'400',
         cls:'left-align',
         renderTo:'{$key}',
         value:'{$value.value/100}'
-    });
+    {rdelim});
     {/foreach}
-});
+{rdelim});
 </script>
 
 </head>
@@ -48,7 +39,14 @@ Ext.onReady(function() {
 <body>
 <h1 class="title">{$labels.testproject} {$smarty.const.TITLE_SEP} {$gui->tproject_name|escape}</h1>
 <div class="workBack">
-
+{$tlImages.toggle_direct_link} &nbsp;&nbsp;
+<div class="direct_link" style='display:none'>
+{if $gui->direct_link_ok}  
+  <a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a>
+{else}
+  {$gui->direct_link}
+{/if}
+</div>
 <p><form method="post">
 <input type="checkbox" name="show_only_active" value="show_only_active"
        {if $gui->show_only_active} checked="checked" {/if}
@@ -56,6 +54,9 @@ Ext.onReady(function() {
 <input type="hidden"
        name="show_only_active_hidden"
        value="{$gui->show_only_active}" />
+
+
+
 </form></p><br/>
 
 {if $gui->warning_msg == ''}

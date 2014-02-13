@@ -1,63 +1,63 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	reqEdit.tpl
-
 Purpose: smarty template - create / edit a req  
-
 @internal revisions
+
 *}
+{* ------------------------------------------------------------------------- *}
+
 {lang_get var='labels' 
           s='show_event_history,btn_save,cancel,status,scope,warning,req_doc_id,
              title,warning_expected_coverage,type,warning_expected_coverage_range,
              warning_empty_reqdoc_id,expected_coverage,warning_empty_req_title,
-             insert_last_req_doc_id,suggest_create_revision,revision_log_title,warning_required_cf,
+             insert_last_req_doc_id,suggest_create_revision,revision_log_title,
              please_add_revision_log,suggest_create_revision_html,warning_suggest_create_revision,
              warning_unsaved,stay_here_req'}
              
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_ext_js.tpl"}
-
+{include file="inc_del_onclick.tpl"}
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-var alert_box_title = "{$labels.warning|escape:'javascript'}";
-var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
-var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
-var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
-var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
-var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
-var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
-var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
-var confirm_text = "{$labels.suggest_create_revision_html}";
-var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
+//BUGID 3943: Escape all messages (string)
+	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+	var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
+	var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
+	var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
+	var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
+  var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
+  var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+  // var confirm_title = "{$labels.warning|escape:'javascript'}";
+  var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
+  var confirm_text = "{$labels.suggest_create_revision_html}";
 
-// To manage hide/show expected coverage logic, depending of req type
-var js_expected_coverage_cfg = new Array();
+  // To manage hide/show expected coverage logic, depending of req type
+  var js_expected_coverage_cfg = new Array();
   
-// DOM Object ID (oid)
-// associative array with attributes
-js_attr_cfg = new Array();
+  // DOM Object ID (oid)
+  // associative array with attributes
+  js_attr_cfg = new Array();
   
-// Configuration for expected coverage attribute
-js_attr_cfg['expected_coverage'] = new Array();
-js_attr_cfg['expected_coverage']['oid'] = new Array();
-js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
-js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
+  // Configuration for expected coverage attribute
+  js_attr_cfg['expected_coverage'] = new Array();
+  js_attr_cfg['expected_coverage']['oid'] = new Array();
+  js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
+  js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
 
-{foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
-  js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
-{/foreach}
+  {foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
+    js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
+  {/foreach}
 
-  /**
-   * 
-   *
-   */
+  {literal}
 	function validateForm(f,cfg,check_expected_coverage)
 	{
 	
+	 	var cf_designTime = document.getElementById('custom_field_container');
+
 		if (isWhitespace(f.reqDocId.value)) 
 	  {
 	    alert_message(alert_box_title,warning_empty_req_docid);
@@ -95,15 +95,29 @@ js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_contai
 		    f.expected_coverage.value = 0;
 		  }
 	  }
-
-  if(!checkCustomFields('custom_field_container',alert_box_title,warning_required_cf))
-  {
-	return false;
-  }
-
-
-
 	  
+    /* Validation of a limited type of custom fields */
+	  if (cf_designTime)
+ 	  {
+ 	  	var cfields_container = cf_designTime.getElementsByTagName('input');
+ 	  	var cfieldsChecks = validateCustomFields(cfields_container);
+	  	if(!cfieldsChecks.status_ok)
+	    {
+	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	        return false;
+	  	}
+    
+      /* Text area needs a special access */
+ 	  	cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 	  	cfieldsChecks = validateCustomFields(cfields_container);
+	  	if(!cfieldsChecks.status_ok)
+	    {
+	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	        return false;
+	  	}
+	  }
     if(f.prompt4log.value == 1)
     {
       Ext.Msg.prompt(log_box_title, log_box_text, function(btn, text){
@@ -146,21 +160,27 @@ js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_contai
     // will work with the other propmts.    
 	  return Ext.ux.requireSessionAndSubmit(f);
 	}
+	{/literal}
+	
 	
 	/**
    * 
    *
    */
-window.onload = function()
-{
-  if( document.getElementById('prompt4revision').value == 0 &&  document.getElementById('prompt4log').value == 0) 
+  {literal} 
+	window.onload = function()
   {
+     // BUGID 4152: do not set focus on req doc id if log message window is shown
+     if( document.getElementById('prompt4revision').value == 0 &&  document.getElementById('prompt4log').value == 0) {
 	  focusInputField('reqDocId');
-	}
-  {if $gui->req_cfg->expected_coverage_management}
-    configure_attr('reqType',js_attr_cfg);
-  {/if}
-}
+	 }
+     {/literal}
+     {* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
+     {if $gui->req_cfg->expected_coverage_management}
+      configure_attr('reqType',js_attr_cfg);
+     {/if}
+     {literal}
+  }
  
   
   /*
@@ -214,8 +234,10 @@ function insert_last_doc_id()
 	var field = document.getElementById('reqDocId');
 	field.value = last_id;
 }
+{/literal}
 </script>
 
+{* BUGID 4153 *}
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
@@ -241,7 +263,6 @@ function insert_last_doc_id()
       action="lib/requirements/reqEdit.php" 
       onSubmit="javascript:return validateForm(this,js_attr_cfg,{$gui->req_cfg->expected_coverage_management});">
 
-	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 	<input type="hidden" name="req_version_id" value="{$gui->req_version_id}" />
@@ -253,12 +274,15 @@ function insert_last_doc_id()
 	<input type="hidden" name="do_save" id="do_save" value="{$gui->askForRevision}" />
 	<input type="hidden" name="prompt4revision" id="prompt4revision" value="{$gui->askForRevision}" />
 	
+	{* BUGID 4063 *}
+	{* BUGID 4153 - when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
 	         onclick="show_modified_warning = false; doAction.value='{$gui->operation}';"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-			 onclick="javascript: show_modified_warning = false; location.href='{$gui->actions->req_view}';"/>
+			onclick="javascript: show_modified_warning = false; history.back();"/>
 	</div>
+	{* BUGID 3953 - Only show checkbox to create another requirement on req creation *}
 	{if $gui->doAction == 'create' || $gui->doAction == 'doCreate'}
 	<div class="groupBtn">
 	<input type="checkbox" id="stay_here"  name="stay_here" 
@@ -277,7 +301,7 @@ function insert_last_doc_id()
   	
 	<div><input type="text" name="reqDocId" id="reqDocId"
   		        size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}"
-  		        value="{$gui->req.req_doc_id|escape}" />
+  		        value="{$gui->req.req_doc_id|escape}" required />
   				{include file="error_icon.tpl" field="reqDocId"}
   				
   				{* BUGID 3777 *}
@@ -294,7 +318,7 @@ function insert_last_doc_id()
  	<div class="labelHolder"> <label for="req_title">{$labels.title}</label></div>
   	<div><input type="text" name="req_title" id="req_title"
   		        size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}"
-  		        value="{$gui->req.title|escape}" />
+  		        value="{$gui->req.title|escape}" required />
   		    {include file="error_icon.tpl" field="req_title"}
  	 </div>
   	<br />
@@ -310,13 +334,14 @@ function insert_last_doc_id()
  	<br />
 
 	{if $gui->req.type}
-		{$preSelectedType = $gui->req.type}
+		{assign var="preSelectedType" value=$gui->req.type}
 	{else}
-		{$preSelectedType = $gui->preSelectedType}
+		{assign var="preSelectedType" value=$gui->preSelectedType}
 	{/if}
 
   	<div class="labelHolder" id="reqType_container"> <label for="reqType">{$labels.type}</label>
      	<select name="reqType" id="reqType"
+     	{* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
      	{if $gui->req_cfg->expected_coverage_management}
      	     	  onchange="configure_attr('reqType',js_attr_cfg);"
      	{/if}
@@ -331,14 +356,14 @@ function insert_last_doc_id()
   		<div class="labelHolder" id="expected_coverage_container"> <label for="expected_coverage">{$labels.expected_coverage}</label>
   	
   	{if $gui->req.expected_coverage}
-			{$coverage_to_display = $gui->req.expected_coverage}
+			{assign var="coverage_to_display" value=$gui->req.expected_coverage}
 		{else}
-			{$coverage_to_display = $gui->expected_coverage}
+			{assign var="coverage_to_display" value=$gui->expected_coverage}
 		{/if}
   	
   		<input type="text" name="expected_coverage" id="expected_coverage"
   		        size="{#REQ_EXPECTED_COVERAGE_SIZE#}" maxlength="{#REQ_EXPECTED_COVERAGE_MAXLEN#}"
-  		        value="{$coverage_to_display}" />
+  		        value="{$coverage_to_display}" required />
   		{include file="error_icon.tpl" field="expected_coverage"}
   	
  		</div>
@@ -355,35 +380,45 @@ function insert_last_doc_id()
      <br />
   	{/if}
 
+	{* BUGID 3854 *}
+	{* BUGID 4153 - when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input type="hidden" name="doAction" id="doAction" value="{$gui->operation}" />
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
 	         onclick="show_modified_warning = false; doAction.value='{$gui->operation}';"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-			 onclick="javascript: show_modified_warning = false; location.href='{$gui->actions->req_view}';"/>
+			onclick="javascript: show_modified_warning = false; history.back();"/>
 	</div>
 
   {if isset($gui->askForLog) && $gui->askForLog}
     <script>
     var ddd = '{$gui->req_cfg->expected_coverage_management}';
+    {literal}
     if( document.getElementById('prompt4log').value == 1 )
     {
       validateForm(document.forms['reqEdit'],js_attr_cfg,ddd);
     }
     </script>
+    {/literal}
   {/if}
   
   {if isset($gui->askForRevision) && $gui->askForRevision}
     <script>
     var ddd = '{$gui->req_cfg->expected_coverage_management}';
+    {literal}
     if( document.getElementById('prompt4revision').value == 1 )
     {
       validateForm(document.forms['reqEdit'],js_attr_cfg,ddd);
     }
+    {/literal}
     </script>
   {/if}
 </form>
 </div>
-{if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
+
+{if isset($gui->refreshTree) && $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
+
 </body>
 </html>

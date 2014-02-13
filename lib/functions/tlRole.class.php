@@ -3,12 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package     TestLink
- * @copyright   2004-2009, TestLink community 
- * @filesource  tlRole.class.php
- * @link 		    http://www.teamst.org/index.php
+ * @package 	TestLink
+ * @copyright 	2004-2013, TestLink community 
+ * @filesource	tlRole.class.php
+ * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 
  */
 
 /**
@@ -17,7 +18,14 @@
  */
 class tlRole extends tlDBObject
 {
+	/**
+	 * @var string role name
+	 */
 	public $name;
+	
+	/**
+	 * @var string role description 
+	 */
 	public $description;
 
 	/**
@@ -109,56 +117,61 @@ class tlRole extends tlDBObject
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		if ($this->readFromCache() >= tl::OK)
-		{
+    {  
 			return tl::OK;
     }
+      
 		$this->_clean($options);
-
 		$getFullDetails = ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS);
 		$sql = "SELECT a.id AS role_id,a.description AS role_desc, a.notes ";
 		if ($getFullDetails)
-		{
-			$sql .= " ,c.id AS right_id,c.description ";
-		}
+    {
+      $sql .= " ,c.id AS right_id,c.description ";
+    }  
+		
 		$sql .= " FROM {$this->object_table} a ";
 		
 		if ($getFullDetails)
 		{
 			$sql .= " LEFT OUTER JOIN {$this->tables['role_rights']} b ON a.id = b.role_id " . 
-		          " LEFT OUTER JOIN {$this->tables['rights']}  c ON b.right_id = c.id ";
+			        " LEFT OUTER JOIN {$this->tables['rights']}  c ON b.right_id = c.id ";
 		}
 		
 		$clauses = null;
 		if ($options & self::ROLE_O_SEARCH_BYNAME)
-		{
+    {  
 			$clauses[] = "a.description = '".$db->prepare_string($this->name)."'";
     }
+      
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
-		{
+    {  
 			$clauses[] = "a.id = {$this->dbID}";		
 		}
 		
-		if ($clauses)
-		{
+    if ($clauses)
+    {  
 			$sql .= " WHERE " . implode(" AND ",$clauses);
 		}
-		
+
 		$rightInfo = $db->get_recordset($sql);			 
 		if ($rightInfo)
 		{
 			$this->dbID = $rightInfo[0]['role_id'];
 			$this->name = $rightInfo[0]['role_desc'];
 			$this->description = $rightInfo[0]['notes'];
+
 			if ($getFullDetails)
-			{
-				$this->rights = $this->buildRightsSet($rightInfo);
-			}	
+      {
+        $this->rights = $this->buildRightsArray($rightInfo);
+      }  
 		}
+
 		$readSucceeded = $rightInfo ? tl::OK : tl::ERROR;
 		if ($readSucceeded >= tl::OK)
-		{
+    {  
 			$this->addToCache();
 		}
+
 		return $readSucceeded;
 	}
 
@@ -191,15 +204,19 @@ class tlRole extends tlDBObject
 			{
 				$sql = "INSERT INTO {$this->object_table} (description,notes) " .
 				       " VALUES ('".$db->prepare_string($this->name)."',".
-					   "'" . $db->prepare_string($this->description)."')";
+					     "'" . $db->prepare_string($this->description)."')";
 				$result = $db->exec_query($sql);	
 				if($result)
+        {  
 					$this->dbID = $db->insert_id($this->object_table);
+        }  
 			}
 			
 			$result = $result ? tl::OK : self::E_DBERROR;
 			if ($result >= tl::OK)
+      {  
 				$result = $this->addRightsToDB($db);
+      }  
 		}
 		
 		return $result;
@@ -215,19 +232,14 @@ class tlRole extends tlDBObject
 		
 		$result = tl::OK;
 		if (!sizeof($this->rights))
-		{
 			$result = self::E_EMPTYROLE;
-		}
 		
-		if ($result >= tl::OK)
-		{
+    if ($result >= tl::OK)
 			$result = self::checkRoleName($this->name);
-		}
 		
-		if ($result >= tl::OK)
-		{
+    if ($result >= tl::OK)
 			$result = self::doesRoleExist($db,$this->name,$this->dbID) ? self::E_NAMEALREADYEXISTS : tl::OK;
-		}
+		
 		return $result;
 	}
 	
@@ -239,9 +251,9 @@ class tlRole extends tlDBObject
 		$role = new tlRole();
 		$role->name = $name;
 		if ($role->readFromDB($db,self::ROLE_O_SEARCH_BYNAME) >= tl::OK && $role->dbID != $id)
-		{
+    {  
 			return $role->dbID;
-    }
+    }  
 		return null;
 	}
 	
@@ -453,27 +465,26 @@ class tlRole extends tlDBObject
 	
 	protected function readRights(&$db)
 	{
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$sql = "/* {$debugMsg} */ " .
-		       " SELECT right_id,description FROM {$this->tables['role_rights']} ROLERIGHTS " .
-		       " JOIN {$this->tables['rights']} RIGHTS ON ROLERIGHTS.right_id = RIGHTS.id " .
-		       " WHERE role_id = {$this->dbID}";
+		$sql = "SELECT right_id,description FROM {$this->tables['role_rights']} a " .
+		       "JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
+		         "WHERE role_id = {$this->dbID}";
 		$rightInfo = $db->get_recordset($sql);
-		$this->rights = $this->buildRightsSet($rightInfo);
+		$this->rights = buildRightsArray($rightInfo);
+		
 		return tl::OK;
 	}	
 	
-	protected function buildRightsSet($rightInfo)
+	protected function buildRightsArray($rightInfo)
 	{
-		$items = null;
-		$loop2do = sizeof($rightInfo);
-		for($idx = 0;$idx < $loop2do; $idx++)
+		$rights = null;
+		for($i = 0;$i < sizeof($rightInfo);$i++)
 		{
-			$right = new tlRight($rightInfo[$idx]['right_id']);
-			$right->name = $rightInfo[$idx]['description'];
-			$items[$right->name] = $right;
+			$id = $rightInfo[$i];
+			$right = new tlRight($id['right_id']);
+			$right->name = $id['description'];
+			$rights[] = $right;
 		}
-		return $items;
+		return $rights;
 	}
 	
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
@@ -487,12 +498,11 @@ class tlRole extends tlDBObject
 		$tables  = tlObject::getDBTables("roles");
 		$sql = "SELECT id FROM {$tables['roles']} ";
 		if (!is_null($whereClause))
-		{
 			$sql .= ' '.$whereClause;
-		}
 		$sql .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
 	
 		$roles = tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
+		
 		$inheritedRole = new tlRole(TL_ROLES_INHERITED);
 		$inheritedRole->name = "<inherited>";
 		$roles[TL_ROLES_INHERITED] = $inheritedRole;
@@ -513,67 +523,18 @@ class tlRole extends tlDBObject
  	 */
 	static public function getRoleColourCfg(&$db)
 	{
-    $role_colour = config_get('role_colour');
+    	$role_colour = config_get('role_colour');
 		$tables  = tlObject::getDBTables("roles");
 		$sql = "SELECT description FROM {$tables['roles']} ";
-    $roles = $db->fetchColumnsIntoArray($sql,"description");
-    foreach($roles as $description)
-    {
-        if(!isset($role_colour[$description]))
-        {
-            $role_colour[$description] = '';
-        }
-    }
-    return $role_colour;
+        $roles = $db->fetchColumnsIntoArray($sql,"description");
+    	foreach($roles as $description)
+    	{
+    	    if(!isset($role_colour[$description]))
+    	    {
+    	        $role_colour[$description] = '';
+    	    }
+    	}
+    	return $role_colour;
 	}
-
-
-  static function getRoleErrorMessage($code)
-  {
-  	$msg = 'ok';
-  	switch($code)
-  	{
-  		case tlRole::E_NAMEALREADYEXISTS:
-  			$msg = lang_get('error_duplicate_rolename');
-  			break;
-  		
-  		case tlRole::E_NAMELENGTH:
-  			$msg = lang_get('error_role_no_rolename');
-  			break;
-  			
-  		case tlRole::E_EMPTYROLE:
-  			$msg = lang_get('error_role_no_rights');
-  			break;
-  		
-  		case tl::OK:
-  			break;
-  		
-  		case ERROR:
-  		case tlRole::E_DBERROR:
-  		default:
-  			$msg = lang_get('error_role_not_updated');
-  	}
-  	return $msg;
-  }
-
-
-  function delete(&$dbHandler)
-  {
-  	$userFeedback = '';
-  	$id = $this->dbID;
-  	$this->readFromDb($dbHandler);
-  	if ($this->deleteFromDB($dbHandler) < tl::OK)
-  	{
-  		$userFeedback = lang_get("error_role_deletion");
-  	}
-  	else
-  	{
-  		logAuditEvent(TLS("audit_role_deleted",$this->getDisplayName()),"DELETE",$id,"roles");
-  	}
-  	
-  	return $userFeedback;
-  }
-
-
 }
 ?>

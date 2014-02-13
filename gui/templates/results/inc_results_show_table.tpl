@@ -1,9 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-
-@internal revisions:
-20110407 - Julian - BUGID 4387 - Tables in "general testplan metrics" made sortable
-
+$Id: inc_results_show_table.tpl,v 1.1 2008/03/03 18:53:20 franciscom Exp $ 
 *}
 
 {assign var="args_title" value=$args_title|default:""}

@@ -3,22 +3,29 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource  platformsView.php
- * @package 	TestLink
- * @copyright 	2003-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * Filename $RCSfile: platformsView.php,v $
+ *
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/09/12 15:16:09 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  * @internal revisions
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
+
 $templateCfg = templateConfiguration();
 $args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
 
-$gui = initializeGui($db,$args);
+$platform_mgr = new tlPlatform($db, $args->testproject_id);
+
+$gui = new stdClass();
+$gui->platforms = $platform_mgr->getAll(array('include_linked_count' => true));
+
+$gui->canManage = $args->currentUser->hasRight($db,"platform_management");
+$gui->user_feedback = null;
+
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -32,30 +39,14 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
 	$args = new stdClass();
+	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->currentUser = $_SESSION['currentUser']; 
-
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 
 	return $args;
 }
 
-
-function initializeGui(&$dbHandler,&$argsObj)
+function checkRights(&$db,&$user)
 {
-	$platform_mgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
-	
-	$guiObj = new stdClass();
-	$guiObj->platforms = $platform_mgr->getAll(array('include_linked_count' => true));
-	$guiObj->canManage = $argsObj->currentUser->hasRight($dbHandler,"platform_management",$argsObj->tproject_id);
-	$guiObj->user_feedback = null;
-	$guiObj->tproject_id = $argsObj->tproject_id;
-	return $guiObj;
-}
-
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('platform_management','platform_view'),'or');
+	return ($user->hasRight($db,'platform_management') || $user->hasRight($db,'platform_view'));
 }
 ?>

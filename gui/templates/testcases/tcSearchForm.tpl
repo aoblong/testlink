@@ -1,23 +1,19 @@
-t{* 
+{* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.21 2010/10/26 13:11:34 mx-julian Exp $
+@filesource tcSearchForm.tpl
 Purpose: show form for search through test cases in test specification
 
 @internal revisions
-20101026 - Julian - no validation for dates -> no manual input - input only via datepicker
-20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-20100707 - Julian - BUGID 3584: replaced cf names by cf labels
-20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
-20100409 - franciscom - BUGID 3371 Search Test Cases based on Test Importance
-20100124 - franciscom - BUGID 3077 - search on preconditions
+@since 1.9.7
+
 *}
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 
-          s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,
-             th_title,summary,steps,expected_results,keyword,custom_field,
-             search_type_like,preconditions,filter_mode_and,test_importance,
+          s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,edited_by,
+             th_title,summary,steps,expected_results,keyword,custom_field,created_by,
+             search_type_like,preconditions,filter_mode_and,test_importance,search_prefix_ignored,
              creation_date_from,creation_date_to,modification_date_from,modification_date_to,
              custom_field_value,btn_find,requirement_document_id,show_calender,clear_date'}
 
@@ -29,11 +25,17 @@ Purpose: show form for search through test cases in test specification
 
 <h1 class="title">{$gui->mainCaption|escape}</h1>
 <div style="margin: 1px;">
-<form method="post" action="lib/testcases/tcSearch.php?tproject_id={$gui->tprojectID}" target="workframe">
+<form method="post" action="lib/testcases/tcSearch.php" target="workframe">
 	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form}</caption>
 		<tr>
 		 <td colspan="2"><img src="{$tlImages.info}"> {$labels.filter_mode_and} </td>
+		</tr>
+		<tr>
+		 <td colspan="2">{$gui->search_important_notice|escape}<br>{$labels.search_prefix_ignored|escape}</td>
+		</tr>
+		<tr>
+		 <td colspan="2">&nbsp;</td>
 		</tr>
 		<tr>
 			<td>{$labels.th_tcid}</td>
@@ -48,6 +50,16 @@ Purpose: show form for search through test cases in test specification
 		<tr>
 			<td>{$labels.th_title}</td>
 			<td><input type="text" name="name" size="{#TCNAME_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
+		</tr>
+		<tr>
+			<td>{$labels.created_by}</td>
+			<td><input type="text" name="created_by" id="created_by"  
+				       size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
+		</tr>
+		<tr>
+			<td>{$labels.edited_by}</td>
+			<td><input type="text" name="edited_by" id ="edited_by" 
+				       size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<td>{$labels.summary}</td>
@@ -73,14 +85,13 @@ Purpose: show form for search through test cases in test specification
 		<tr>
 			<td>{$labels.creation_date_from}</td>
 			<td>
-				{* BUGID 3716 *}
                 <input type="text" 
                        name="creation_date_from" id="creation_date_from" 
 				       value="{$gui->creation_date_from}" 
 				       onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" readonly />
-				<img title="{$labels.show_calender}" src="{$tlImages.calendar}"
+				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" >
-				<img title="{$labels.clear_date}" src="{$tlImages.delete}"
+				<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
 			         onclick="javascript:var x = document.getElementById('creation_date_from'); x.value = '';" >
 				<div id="creation_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
@@ -88,7 +99,6 @@ Purpose: show form for search through test cases in test specification
 		<tr>
 			<td>{$labels.creation_date_to}</td>
 			<td>
-				{* BUGID 3716 *}
            	    <input type="text" 
                        name="creation_date_to" id="creation_date_to" 
 				       value="{$gui->creation_date_to}" 
@@ -131,7 +141,7 @@ Purpose: show form for search through test cases in test specification
 		  </td>
 		</tr>
 		
-    {if $gui->testPriorityEnabled}
+    {if $session['testprojectOptions']->testPriorityEnabled}
 		  <tr>
 		  	<td>{$labels.test_importance}</td>
 		  	<td>

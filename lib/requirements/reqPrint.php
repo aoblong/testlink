@@ -12,6 +12,11 @@
  * create printer friendly information for ONE requirement
  *
  * @internal revisions:
+ * 20110308 - asimon - backported this file from master to branch 1.9
+ * 20110306 - franciscom - 	BUGID 4273: Option to print single requirement
+ *							added revision number 
+ *
+ * 20110305 - franciscom - 	BUGID 4273: Option to print single requirement
  */
 
 require_once("../../config.inc.php");
@@ -22,10 +27,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
-$args = init_args($tree_mgr);
-checkRights($db,$_SESSION['currentUser'],$args);
-
-
+$args = init_args();
 $node = $tree_mgr->get_node_hierarchy_info($args->req_id);
 $node['version_id'] = $args->req_version_id;
 $node['revision'] = $args->req_revision;
@@ -64,7 +66,7 @@ echo $text2print;
   returns: 
 
 */
-function init_args(&$treeMgr)
+function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -73,26 +75,9 @@ function init_args(&$treeMgr)
     $args->req_version_id = isset($_REQUEST['req_version_id']) ? intval($_REQUEST['req_version_id']) : 0;
     $args->req_revision = isset($_REQUEST['req_revision']) ? intval($_REQUEST['req_revision']) : 0;
 
-	$args->tproject_name = '';
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-	if($args->tproject_id > 0)
-	{
-		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
-		$args->tproject_name = $dummy['name'];    
-	}
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+    $args->tproject_name = $_SESSION['testprojectName'];
 
     return $args;
-}
-
-
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
 ?>

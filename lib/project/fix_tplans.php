@@ -1,10 +1,12 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
- * @filesource	fix_tplans.php
+ * @filesource $RCSfile: fix_tplans.php,v $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/08/03 08:15:43 $  $Author: franciscom $
  * @author asielb
  *
- * fixes BUGID 1021
+ * fixes bug 1021
 **/
  
 require_once('../../config.inc.php');
@@ -15,7 +17,7 @@ require_once('configCheck.php');
 testlinkInitPage($db);
 $template_dir='project/';
 
-$can_manage_tprojects = $_SESSION['currentUser']->haRight($db,'mgt_modify_product');
+$can_manage_tprojects=has_rights($db,'mgt_modify_product');
 
 // make sure the user has rights to manage test projects
 if ($can_manage_tprojects)

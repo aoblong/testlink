@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNotes.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/09/04 19:22:37 $ by $Author: schlundus $
  *
  * Edit an execution note
  *
@@ -74,15 +74,11 @@ function doUpdate(&$dbHandler,&$argsObj)
 */
 function init_args()
 {
-	$iParams = array("exec_id" => array(tlInputParameter::INT_N),
+    $iParams = array("exec_id" => array(tlInputParameter::INT_N),
 		             "doAction" => array(tlInputParameter::STRING_N,0,100),
    		             "notes" => array(tlInputParameter::STRING_N));
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
-    
-    // BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
     return $args; 
 }
 

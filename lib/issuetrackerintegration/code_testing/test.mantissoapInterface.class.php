@@ -14,34 +14,42 @@ require_once('common.php');
 $it_mgr = new tlIssueTracker($db);
 $itt = $it_mgr->getTypes();
 
-$cfg = "<issuetracker>\n" .
-  		 "<username>u0113</username>\n" .
-  		 "<password>tesi</password>\n" .
-  		 "<uriwsdl>http://localhost:8080/development/closet/mantisbt-1.2.11/api/soap/mantisconnect.php?wsdl</uriwsdl>\n" .
-  		 "<project>TestLinkACCESS</project>\n" .
-  		 "<category>KATA</category>\n" .
-  		 "</issuetracker>\n";
-
-//  		 "<project>NET MON COCACOLA</project>\n" .
-// NET MON COCACOLA
-//  		 "<project>TestLinkACCESS</project>\n" .
-//  		 "<category>BUGFROMSOAP</category>\n" .
+// last test ok: 20121210
+$cfg = "<!-- Template mantissoapInterface -->\n" .
+       "<issuetracker>\n" .
+       "<username>u0113</username>\n" .
+       "<password>tesi</password>\n" .
+       "<uribase>http://localhost:8080/development/closet/mantisbt-1.2.11/</uribase>\n" .
+       "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
+       "<resolvedstatus>\n" .
+       "<status><code>80</code><verbose>resolved</verbose></status>\n" .
+       "<status><code>90</code><verbose>closed</verbose></status>\n" .
+       "</resolvedstatus>\n".
+       "</issuetracker>\n";
 
 echo '<hr><br>';
-echo "<b>Testing  BST Integration - mantis SOAP </b>";
+echo "<b>Testing  Issue Tracker Integration - mantissoapInterface </b>";
 echo '<hr><br>';
 echo "Configuration settings<br>";
 echo "<pre><xmp>" . $cfg . "</xmp></pre>";
 
 echo '<hr><br><br>';
+echo 'Creating INTERFACE<br>';
 
-$its = new mantissoapInterface(1,$cfg);
-var_dump($its);
+$its = new mantissoapInterface(5,$cfg);
 
+echo 'Connection OK?<br>';
+var_dump($its->isConnected());
 if( $its->isConnected() )
 {
 	echo '<b>Connected !</br></b>';
-  $zx = $its->addIssue('subject','description');
-  var_dump($zx);
+	
+	echo '<b>get resolved status configuration</br></b>';
+	new dBug($its->getResolvedStatusCfg());
+	
+	echo '<b>get issue </br></b>';
+	new dBug($its->getIssue(102575));
+	new dBug($its->getIssue(102529));
+	
 }
 ?>

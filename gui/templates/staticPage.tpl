@@ -15,6 +15,9 @@
 <div class="workBack">
 {$gui->pageContent}
 </div>
-{if $gui->refreshTree} {$tlRefreshTreeByReloadJS} {/if}
+
+{if $gui->refreshTree}
+   {include file="inc_refreshTree.tpl"}
+{/if}
 </body>
 </html>

@@ -1,24 +1,43 @@
-{* 
-TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	reqExport.tpl
-req export initial page
-
-@internal revisions
+{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
+{* $Id: reqExport.tpl,v 1.8 2010/11/06 11:42:47 amkhullar Exp $ *}
+{* Purpose: smarty template - req export initial page *}
+{* revisions:
 *}
 {lang_get var="labels"
           s="warning_empty_filename,title_req_export,warning,btn_export,btn_cancel,
              view_file_format_doc,req_spec,export_filename,file_type"}
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_ext_js.tpl"}
+{assign var="req_module" value='lib/requirements/'}
+{assign var="url_args" value="reqExport.php"}
+{assign var="req_export_url" value="$req_module$url_args"}
 
+{assign var="url_args" value="reqSpecView.php?req_spec_id="}
+{assign var="req_spec_view_url" value="$basehref$req_module$url_args"}
+
+{if $gui->req_spec_id == 0}
+  {assign var="dummy" value=$gui->tproject_id}
+  {assign var="targetUrl" value="lib/project/project_req_spec_mgmt.php?id="}
+  {assign var="xurl" value="$basehref$targetUrl"}
+  {assign var="cancelUrl" value="$xurl$dummy"}
+{else}
+  {assign var="req_spec_view_url" value="$basehref$req_module$url_args"}
+  {assign var="dummy" value=$gui->req_spec_id}
+  {assign var="cancelUrl" value="$req_spec_view_url$dummy"}
+{/if}
+
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
+
+{literal}
 <script type="text/javascript">
+{/literal}
+// BUGID 3943: Escape all messages (string)
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 var alert_box_title = "{$labels.warning}";
-
+{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
@@ -30,6 +49,7 @@ function validateForm(f)
   return true;
 }
 </script>
+{/literal}
 </head>
 
 <body>
@@ -38,7 +58,7 @@ function validateForm(f)
 <div class="workBack">
 <h1 class="title">{$labels.title_req_export}</h1>
 
-<form method="post" enctype="multipart/form-data" action="{$gui->actions->req_export}"
+<form method="post" enctype="multipart/form-data" action="{$req_export_url}"
       onSubmit="javascript:return validateForm(this);">
     <table>
     <tr>
@@ -68,8 +88,13 @@ function validateForm(f)
 		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="submit" id="export" name="export" value="{$labels.btn_export}" 
 		       onclick="doAction.value='doExport'" />
+    {*       
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
-			onclick="javascript: location.href='{$gui->actions->req_spec_view}';" />
+			onclick="javascript: location.href='{$req_spec_view_url}{$gui->req_spec_id}';" />
+    *} 
+    <input type="button" name="cancel" value="{$labels.btn_cancel}" 
+      onclick="javascript: location.href='{$cancelUrl}';" />
+      
 	 </div>
 </form>
 

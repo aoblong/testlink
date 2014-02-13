@@ -1,7 +1,9 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-@filesource inc_update.tpl
-Purpose: show message after an SQL operation
+
+show message after an SQL operation
+@filesource	inc_update.tpl
+
 *}
 {* 
   INPUT: $result (mandatory) = [ok, sql_error_description] 
@@ -23,7 +25,7 @@ Purpose: show message after an SQL operation
 
 {if $user_feedback neq ''}
     {if $feedback_type != ""}
-    	<div class="warning_{$feedback_type}">	
+    	<div class="{$feedback_type}">
   	{else}
      <div class="user_feedback">
   	 {/if}
@@ -34,6 +36,7 @@ Purpose: show message after an SQL operation
 
 {else}
   {if $result eq "ok"}
+  
     {lang_get s=$action var='action'}
   	{lang_get s=$item var='item'}
   	
@@ -71,4 +74,7 @@ Purpose: show message after an SQL operation
   	{/if}
   {/if}
 {/if}  {* user_feedback*}
-{if $result eq "ok" && isset($refresh) && $refresh} {$tlRefreshTreeJS} {/if}
+
+{if $result eq "ok" && isset($refresh) && $refresh}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}

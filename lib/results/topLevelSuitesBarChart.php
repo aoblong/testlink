@@ -4,19 +4,18 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	topLevelSuitesBarChart.php
- * 
+ *
+ * @author	Kevin Levy
+ *
  * @internal revisions
- * 20101210 - franciscom - BUGID 4090 
- * 20100912 - franciscom - BUGID 2215
+ * @since 1.9.4
+ *
  *
  */
 require_once('../../config.inc.php');
+require_once('common.php');
 require_once('charts.inc.php');
-testlinkInitPage($db);
-
-$args = init_args($db);
-checkRights($db,$_SESSION['currentUser'],$args);
-
+testlinkInitPage($db,false,false,"checkRights");
 
 $cfg = new stdClass();
 $cfg->scale = new stdClass();
@@ -31,7 +30,13 @@ $cfg->beginX = $chart_cfg['beginX'];
 $cfg->beginY = $chart_cfg['beginY'];
 $cfg->scale->legendXAngle = $chart_cfg['legendXAngle'];
 
-$info = getDataAndScale($db);
+$args = init_args();
+$info = getDataAndScale($db,$args);
+if( property_exists($args,'debug') )
+{
+	new dBug($info);
+	die();
+}
 createChart($info,$cfg);
 
 
@@ -43,37 +48,46 @@ createChart($info,$cfg);
   returns: 
 
 */
-function getDataAndScale(&$dbHandler)
+function getDataAndScale(&$dbHandler,$argsObj)
 {
     $obj = new stdClass(); 
     $totals = null; 
     $resultsCfg = config_get('results');
+	$metricsMgr = new tlTestPlanMetrics($dbHandler);
 
-    $dataSet = $_SESSION['statistics']['getTopLevelSuites'];
-    $mapOfAggregate = $_SESSION['statistics']['getAggregateMap'];
+    $dataSet = $metricsMgr->getRootTestSuites($argsObj->tplan_id,$argsObj->tproject_id);
+    $dummy = $metricsMgr->getStatusTotalsByTopLevelTestSuiteForRender($argsObj->tplan_id);
+    $obj->canDraw = !is_null($dummy->info);
+    
+	if( property_exists($argsObj,'debug') )
+	{
+    	new dBug($dummy->info);
+    }
      
-    $obj->canDraw = !is_null($dataSet);
     if($obj->canDraw) 
-    {
-        // Process to enable alphabetical order
-        foreach($dataSet as $tsuite)
-        {
-            $item_descr[$tsuite['name']] = $tsuite['id'];
-        }  
+    {    
+        //// Process to enable alphabetical order
+		$item_descr = array_flip($dataSet);
         ksort($item_descr);
-        
         foreach($item_descr as $name => $tsuite_id)
         {
-            $items[]=htmlspecialchars($name);
-            $rmap = $mapOfAggregate[$tsuite_id];
-             
-            unset($rmap['total']);
-        	foreach($rmap as $key => $value)
+            if( isset($dummy->info[$tsuite_id]) )
+            {
+            	$items[]=htmlspecialchars($name);
+	            $rmap = $dummy->info[$tsuite_id]['details'];
+	        	foreach($rmap as $key => $value)
+	        	{
+	        		$totals[$key][]=$value['qty'];  
+	        	}
+        	}
+        	else
         	{
-        		$totals[$key][]=$value;  
+        		// make things work, but create log this is not ok
+        		tlog(__FILE__ . '::' . __FUNCTION__ . 'Missing item: name/id:' . 
+        		     "$name/$tsuite_id", 'DEBUG');
         	}
         }
-    }
+    }   
     
     $obj->xAxis = new stdClass();
     $obj->xAxis->values = $items;
@@ -84,7 +98,6 @@ function getDataAndScale(&$dbHandler)
     {
        $obj->chart_data[] = $values;
        $obj->series_label[] = lang_get($resultsCfg['status_label'][$status]);
-       // BUGID 4090
  	   if( isset($resultsCfg['charts']['status_colour'][$status]) )
        {	
 			$obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
@@ -95,42 +108,20 @@ function getDataAndScale(&$dbHandler)
 }
 
 
-
-function init_args(&$dbHandler)
+function init_args()
 {
-	$iParams = array("tproject_id" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N));
-	
-	$args = new stdClass();
-	R_PARAMS($iParams,$args);
-	
-    $treeMgr = new tree($dbHandler);
-    
-    $args->tproject_name = '';
-    if($args->tproject_id > 0)
-    {
-		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
-    	$args->tproject_name = $dummy['name'];
-    }
-
-    $args->tplan_name = '';
-    if($args->tplan_id > 0)
-    {
-		$dummy = $treeMgr->get_node_hierarchy_info($args->tplan_id);
-		$args->tplan_name = $dummy['name'];  
-    }
-    
-    return $args;
+	$argsObj = new stdClass();
+	$argsObj->tproject_id = intval($_REQUEST['tproject_id']);
+	$argsObj->tplan_id = intval($_REQUEST['tplan_id']);
+	if( isset($_REQUEST['debug']) )
+	{
+		$argsObj->debug = 'yes';
+	}
+	return $argsObj;
 }
 
-/**
- * 
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
+function checkRights(&$db,&$user)
 {
-	$env['tproject_id'] = $argsObj->tproject_id;
-	$env['tplan_id'] = $argsObj->tplan_id;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
+	return $user->hasRight($db,'testplan_metrics');
 }
 ?>

@@ -1,29 +1,30 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource	tc_exec_unassign_all.tpl
+$Id: tc_exec_unassign_all.tpl,v 1.3 2010/07/26 19:01:13 asimon83 Exp $
 Purpose: show a confirmation before unassigning all testers from the test cases in a build.
 
-@internal revisions
+rev :
+
 *}
 
 {lang_get var="labels" s='btn_remove_all_tester_assignments'}
 
 {include file="inc_head.tpl" openHead='yes'}
 
-{$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
-
+{assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
+{include file="inc_del_onclick.tpl" openHead="yes"}
 
 <script type="text/javascript">
+{literal}
+
 /**
  * submit the form to confirm deletion of all tester assignments
  *
  *
  */
-function remove_testers(btn) 
-{
-	if (btn == "yes") 
-	{
+function remove_testers(btn) {
+	if (btn == "yes") {
 		document.getElementById("delete_tc_exec_assignments").submit();
 	}
 }
@@ -33,18 +34,21 @@ function remove_testers(btn)
  *
  * 
  */
-function warn_remove_testers(msgbox_title, msgbox_content) 
-{
+function warn_remove_testers(msgbox_title, msgbox_content) {
 	Ext.Msg.confirm(msgbox_title, msgbox_content, function(btn) {
 		remove_testers(btn);
 	});
 }					
 
+{/literal}
 </script>
+
 </head>
 
 <body>
+
 <h1 class="title">{$gui->title|escape}</h1>
+
 <div class="workBack">
 
 {$gui->message|escape}
@@ -62,7 +66,11 @@ function warn_remove_testers(msgbox_title, msgbox_content)
 		</form>
 	</div> <!-- groupBtn -->
 {/if}
-{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
+
+{if $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
+
 </div> <!-- workback -->
   
 </body>

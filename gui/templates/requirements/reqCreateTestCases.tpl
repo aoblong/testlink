@@ -1,12 +1,21 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource	reqCreateTestCases.tpl
+$Id: reqCreateTestCases.tpl,v 1.18.2.1 2010/11/12 07:45:43 mx-julian Exp $
 
-@internal revisions
-20101111 - Julian - BUGID 4003 - Minor Improvements to table layout
+   Purpose: smarty template - view a requirement specification
+   Author: Martin Havlat 
+
+   rev:
+   20101111 - Julian - BUGID 4003 - Minor Improvements to table layout
+   20100403 - francisco - adding #SCOPE_TRUNCATE#
+   20091209 - asimon - contrib for testcase creation, BUGID 2996
+   20110314 - Julian - BUGID 4317 - Added Contribution from user frl for an easy
+                                    way to set amount of test cases to create to
+                                    the number of test cases still required to
+                                    fully cover the requirement(s)
 *}
-{$req_module='lib/requirements/'}
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="req_module" value='lib/requirements/'}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get s='select_at_least_one_req' var="check_msg"}
@@ -17,11 +26,15 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
+{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_del_onclick.tpl"}
 
+{literal}
 <script type="text/javascript">
+{/literal}
+// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-
+{literal}
 /*
   function: check_action_precondition
 
@@ -84,12 +97,13 @@ function cs_all_coverage_in_div(div_id, input_id_prefix, default_id_prefix, memo
 }
 
 </script>
+{/literal}
 </head>
 
 <body>
 
 
-{$cfg_section=$smarty.template|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">
@@ -157,13 +171,13 @@ function cs_all_coverage_in_div(div_id, input_id_prefix, default_id_prefix, memo
 													   value="{$gui->all_reqs[row].id}"/></td>{/if}
 			<td style="padding:2px;">
 				<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-				     onclick="javascript:openLinkedReqWindow({$gui->tproject_id},{$gui->all_reqs[row].id});"
+				     onclick="javascript:openLinkedReqWindow({$gui->all_reqs[row].id});"
 				     title="{$labels.requirement}" />
 				{$gui->all_reqs[row].req_doc_id|escape}{$gsmarty_gui->title_separator_1}{$gui->all_reqs[row].title|escape}
 			</td>
-			{$req_status=$gui->all_reqs[row].status}
+			{assign var="req_status" value=$gui->all_reqs[row].status }
 			<td style="padding:2px;">{$gui->reqStatusDomain.$req_status|escape}</td>
-			{$req_type=$gui->all_reqs[row].type}
+			{assign var="req_type" value=$gui->all_reqs[row].type }
 			<td style="padding:2px;">{$gui->reqTypeDomain.$req_type|escape}</td>
 			<td style="padding:2px;"><input name="testcase_count[{$gui->all_reqs[row].id}]" id="testcase_count{$gui->all_reqs[row].id}" type="text" size="3" maxlength="3" value="1"></td>
 			{if $gui->req_cfg->expected_coverage_management}

@@ -1,26 +1,25 @@
 <?php
-
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	reqSearchForm.php
  * @package 	TestLink
  * @author		asimon
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: reqSearchForm.php,v 1.4 2010/10/21 14:57:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search formular for requirements.
  *
  * @internal revisions
- * @since 2.0
+ *
+ * @since 1.9.4
  * 20110815 - franciscom - 	TICKET 4700: Req Search Improvements - search on log message and 
  *							provide link/url to multiple results
  *
- * 20110425 - franciscom - 	BUGID 4429: Code refactoring to remove global coupling as much as possible
- *							BUGID 4339: Working with two different projects within one Browser (same session) 
- *							is not possible without heavy side-effects
- *
+ * @since 1.9.3
+ * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
+ * 20100323 - asimon - added searching for req relation types (BUGID 1748)
  */
 
 require_once("../../config.inc.php");
@@ -33,26 +32,25 @@ $tproject_mgr = new testproject($db);
 $req_mgr = new requirement_mgr($db);
 $tcase_cfg = config_get('testcase_cfg');
 
-$args = init_args($tproject_mgr);
-checkRights($db,$_SESSION['currentUser'],$args);
-
+$args = init_args();
 $gui = new stdClass();
-$gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
+
+$gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
 $gui->tcasePrefix .= $tcase_cfg->glue_character;
-$gui->mainCaption = lang_get('testproject') . " " . $args->tproject_name;
-$gui->tproject_id = $args->tproject_id;
+$gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
+
+$enabled = 1;
+$no_filters = null;
 $gui->creation_date_from = null;
 $gui->creation_date_to = null;
 $gui->modification_date_from = null;
 $gui->modification_date_to = null;
 
-$enabled = 1;
-$no_filters = null;
-$gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tproject_id,$enabled,
-                 $no_filters,'requirement');
+$gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tprojectID,$enabled,
+                 														  $no_filters,'requirement');
 
-$gui->keywords = $tproject_mgr->getKeywords($args->tproject_id);
-$reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tproject_id,testproject::GET_NOT_EMPTY_REQSPEC);
+$gui->keywords = $tproject_mgr->getKeywords($args->tprojectID);
+$reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tprojectID,testproject::GET_NOT_EMPTY_REQSPEC);
 
 $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
 $gui->filter_by['keyword'] = !is_null($gui->keywords);
@@ -67,8 +65,7 @@ $gui->reqStatus = init_labels($reqCfg->status_labels);
 
 $gui->filter_by['relation_type'] = $reqCfg->relations->enable;
 $gui->req_relation_select = $req_mgr->init_relation_type_select();
-foreach ($gui->req_relation_select['equal_relations'] as $key => $oldkey) 
-{
+foreach ($gui->req_relation_select['equal_relations'] as $key => $oldkey) {
 	// set new key in array and delete old one
 	$new_key = (int)str_replace("_source", "", $oldkey);
 	$gui->req_relation_select['items'][$new_key] = $gui->req_relation_select['items'][$oldkey];
@@ -81,29 +78,13 @@ $smarty->display($templateCfg->template_dir . 'reqSearchForm.tpl');
 
 
 
-function init_args(&$tprojectMgr)
+function init_args()
 {              
   	$args = new stdClass();
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-    
-    $args->tproject_name = '';
-    if($args->tproject_id > 0 )
-    {
-		$dummy = $tprojectMgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
-		$args->tproject_name = $dummy['name'];    
-    } 
+    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
        
     return $args;
 }
 
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
-{
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
-}
 ?>

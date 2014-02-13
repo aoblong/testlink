@@ -3,18 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	attachmentupload.php
+ * Filename $RCSfile: attachmentupload.php,v $
+ *
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/12/28 08:52:06 $ by $Author: franciscom $
  *
  * Upload dialog for attachments
  *
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
-testlinkInitPage($db);
+require_once('../functions/attachments.inc.php');
+testlinkInitPage($db,false,false,"checkRights");
 	
 $args = init_args();
-checkRights($db,$_SESSION['currentUser'],$args);
-
 $gui = new stdClass();
 $gui->uploaded = false;
 $gui->msg = null;
@@ -34,12 +36,12 @@ if ($args->bPostBack)
 		$fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
 		if ($fSize && $fTmpName != "")
 		{
-			$repo = tlAttachmentRepository::create($db);
-			$gui->uploaded = $repo->insertAttachment($id,$gui->tableName,$args->title,$fInfo);
-			// if ($gui->uploaded)
-			// {
-			// 	logAuditEvent(TLS("audit_attachment_created",$args->title,$fInfo['name']),"CREATE",$id,"attachments");
-			// }	
+			$attachmentRepository = tlAttachmentRepository::create($db);
+			$gui->uploaded = $attachmentRepository->insertAttachment($id,$gui->tableName,$args->title,$fInfo);
+			if ($gui->uploaded)
+			{
+				logAuditEvent(TLS("audit_attachment_created",$args->title,$fInfo['name']),"CREATE",$id,"attachments");
+			}	
 		}
 		else
 		{
@@ -48,8 +50,7 @@ if ($args->bPostBack)
 	}
 }
 else
-{                           
-  // Try to understand if we can remove this code - 20121102
+{
 	$_SESSION['s_upload_tableName'] = $args->tableName;
 	$_SESSION['s_upload_id'] = $args->id;
 }
@@ -74,22 +75,18 @@ function init_args()
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
 	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$args->bPostBack = sizeof($_POST);
 	
 	return $args;
 }
 
 /**
+ * @param $db resource the database connection handle
+ * @param $user the current active user
+ * @return boolean returns true if the page can be accessed
  */
-function checkRights(&$db,&$userObj,$argsObjs)
+function checkRights(&$db,&$user)
 {
-	if(!(config_get("attachments")->enabled))
-	{
-		redirect($_SESSION['basehref'],"top.location");
-		exit();
-	}
+	return (config_get("attachments")->enabled);
 }
 ?>

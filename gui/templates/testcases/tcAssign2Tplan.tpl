@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-
-@filesource	tcAssign2Tplan.tpl
+$Id: tcAssign2Tplan.tpl,v 1.8 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: manage assignment of A test case version to N test plans 
          while working on test specification 
  
-@internal revisions    
+rev: BUGID 2378
+    
 *}
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,please_select_one_testplan,platform,btn_cancel,
@@ -13,11 +13,14 @@ Purpose: manage assignment of A test case version to N test plans
              execution_history'}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
+{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-var check_msg="{$labels.please_select_one_testplan|escape:'javascript'}";
-var alert_box_title = "{$labels.warning|escape:'javascript'}";
+//BUGID 3943: Escape all messages (string)
+	var check_msg="{$labels.please_select_one_testplan|escape:'javascript'}";
+	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+{literal}
 
 function check_action_precondition(container_id,action)
 {
@@ -29,10 +32,14 @@ function check_action_precondition(container_id,action)
 	return true;
 }
 </script>
-</head>
+{/literal}
 
+
+</head>
 <body>
+
 <h1 class="title"> {$gui->pageTitle|escape} 
+	{*  {include file="inc_help.tpl" helptopic="hlp_planTcModified" show_help_icon=true} *}
 </h1>
 
 <div class="workBack">
@@ -46,7 +53,7 @@ function check_action_precondition(container_id,action)
       onclick="javascript:openExecHistoryWindow({$gui->tcase_id});"
       title="{$labels.execution_history}" />
 <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-     onclick="javascript:openTCaseWindow({$gui->tproject_id},{$gui->tcase_id});"
+     onclick="javascript:openTCaseWindow({$gui->tcase_id});"
      title="{$labels.design}" />
 {$gui->tcaseIdentity|escape}
 <br /><br />

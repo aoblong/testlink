@@ -1,12 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-
-@filesource	platformsImport.tpl
-
+$Id: platformsImport.tpl,v 1.4 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - manage import of platforms
 
-@internal revisions
- 
+rev: 
 *}
 
 {lang_get var="labels"
@@ -14,16 +11,18 @@ Purpose: smarty template - manage import of platforms
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
              btn_goback,not_imported,warning_empty_filename,imported,btn_cancel'}
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_ext_js.tpl"}
-
+{include file="inc_del_onclick.tpl"}
+{literal}
 <script type="text/javascript">
+{/literal}
+// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-
+{literal}
 function validateForm(f)
 {
 	if (isWhitespace(f.targetFilename.value)) 
@@ -35,6 +34,7 @@ function validateForm(f)
 	return true;
 }
 </script>
+{/literal}
 </head>
 <body>
 <h1 class="title">{$gui->page_title|escape}</h1>
@@ -55,7 +55,6 @@ function validateForm(f)
 	  {/if} 
 		<form method="post" action="{$SCRIPT_NAME}">
 			<br />
-    	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" /> 
 	  		<input type="button" name="goback" value="{$labels.btn_goback}"
     			{if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
     		    {else} onclick="javascript:history.back();" {/if} />
@@ -84,9 +83,8 @@ function validateForm(f)
     	</table>
     	<p>{$gui->max_size_import_file_msg}</p>
     	<div class="groupBtn">
-    	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" /> 
     		<input type="hidden" name="doAction" id="doAction" value="doImport" />
-    		<input type="hidden" name="goback_url" value="{$gui->goback_url|escape}" />
+    		<input type="hidden" name="goback_url" value="{ $gui->goback_url|escape}" />
     		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
     		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		                     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"

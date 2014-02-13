@@ -1,53 +1,47 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-@filesource	usersView.tpl
 
-Purpose: smarty template - users overview
-
+users overview
+@filesource usersView.tpl
 @internal revisions
 *}
+
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_action_onclick.tpl"}
+{include file="inc_del_onclick.tpl"}
 
-{$userActionMgr = "lib/usermanagement/usersEdit.php"}
-{$createUserAction ="$userActionMgr?doAction=create"}
-{$editUserAction ="$userActionMgr?doAction=edit&user_id="}
-
-{lang_get s='warning_disable_user' var="warning_msg"}
-{lang_get s='disable' var="del_msgbox_title"}
+{$userActionMgr="lib/usermanagement/usersEdit.php"}
+{$createUserAction="$userActionMgr?doAction=create"}
+{$exportUsersAction="lib/usermanagement/usersExport.php"}
 
 <script type="text/javascript">
-var target_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
-
-function toggleRowByClass(oid,className,displayValue)
-{
-  var trTags = document.getElementsByTagName("tr");
-  var cbox = document.getElementById(oid);
-  
-  for( idx=0; idx < trTags.length; idx++ ) 
-  {
-    if( trTags[idx].className == className ) 
-    {
-      if( displayValue == undefined )
-      {
-        if( cbox.checked )
-        {
-          trTags[idx].style.display = 'none';
-        }
-        else
-        {
-          trTags[idx].style.display = 'table-row';
-        }
-      } 
-      else
-      {
-        trTags[idx].style.display = displayValue;
-      }
-    }
-  }
-
-}
+var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 </script>
+
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+  {assign var=tableID value=$matrix->tableID}
+  {if $smarty.foreach.initializer.first}
+    {$matrix->renderCommonGlobals()}
+    {if $matrix instanceof tlExtTable}
+        {include file="inc_ext_js.tpl" bResetEXTCss=1}
+        {include file="inc_ext_table.tpl"}
+    {/if}
+  {/if}
+  {$matrix->renderHeadSection()}
+{/foreach}
+
+<style type=text/css>
+.x-action-col-cell img.normal_user {ldelim}
+    height: 16px;
+    width: 16px;
+    background-image: url({$tlImages.delete});
+{rdelim}
+
+.x-action-col-cell img.special_user {ldelim}
+    height: 16px;
+    width: 16px;        
+    background-image: url({$tlImages.demo_mode});
+{rdelim}
+</style>
 </head>
 
 
@@ -56,130 +50,56 @@ function toggleRowByClass(oid,className,displayValue)
              th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
              disable,alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
              show_inactive_users,hide_inactive_users,alt_disable_user,order_by_login,
-             order_by_login_dir,alt_active_user,demo_create_user_disabled,demo_special_user"}
+             order_by_login_dir,alt_active_user,demo_special_user,btn_export"}
 
-<body {$gui->body_onload}>
-
+<body>
 {if $gui->grants->user_mgmt == "yes"}
 
 	<h1 class="title">{$labels.title_user_mgmt}</h1>
-	{***** TABS *****}
+	{assign var=grants value=$gui->grants}  {* transitional code *}
   {include file="usermanagement/tabsmenu.tpl"}
-
-	{***** existing users form *****}
 	<div class="workBack">
-		<form method="post" action="lib/usermanagement/usersView.php" name="usersview" id="usersview">
-		<input type="hidden" id="operation" name="operation" value="" />
-		<input type="hidden" id="order_by_role_dir" name="order_by_role_dir" value="{$gui->order_by_role_dir}" />
-		<input type="hidden" id="order_by_login_dir" name="order_by_login_dir" value="{$gui->order_by_login_dir}" />
-		<input type="hidden" id="user_order_by" name="user_order_by" value="{$gui->user_order_by}" />
 
-	  {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
-    {$labels.hide_inactive_users}
-    <input name="hide_inactive_users" id="hide_inactive_users" type="checkbox" {$gui->checked_hide_inactive_users} 
-           value="on" onclick="toggleRowByClass('hide_inactive_users','inactive_user')">
-		<table class="simple">
-			<tr>
-				<th {if $gui->user_order_by == 'order_by_login'}style="background-color: #c8dce8;color: black;"{/if}>
-				    {$labels.th_login}
-				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$gui->order_by_login_dir}.gif"
-				         title="{$labels.order_by_login} {lang_get s=$gui->order_by_login_dir}"
-						     alt="{$labels.order_by_role_descr} {lang_get s=$gui->order_by_role_dir}"
-				         onclick="usersview.operation.value='order_by_login';
-				                  usersview.user_order_by.value='order_by_login';
-				                  usersview.submit();" />
-				</th>
-
-				<th>{$labels.th_first_name}</th>
-				<th>{$labels.th_last_name}</th>
-				<th>{$labels.th_email}</th>
-
-				<th {if $gui->user_order_by == 'order_by_role'}style="background-color: #c8dce8;color: black;"{/if}>
-				    {$labels.th_role}
-	    			<img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$gui->order_by_role_dir}.gif"
-	    			     title="{$labels.order_by_role_descr} {lang_get s=$gui->order_by_role_dir}"
-						 alt="{$labels.order_by_role_descr} {lang_get s=$gui->order_by_role_dir}"
-	    			     onclick="usersview.operation.value='order_by_role';
-	    			              usersview.user_order_by.value='order_by_role';
-	      			            usersview.submit();" />
-				</th>
-
-				<th>{$labels.th_locale}</th>
-				<th style="width:50px;">{$labels.th_active}</th>
-				<th style="width:50px;">{$labels.disable}</th>
-			</tr>
-
-      {foreach from=$gui->users item=userObj}
-		{$r_n =$userObj->globalRole->name}
-		{$r_d =$userObj->globalRole->getDisplayName()}
-        {if $userObj->isActive eq 1}
-          {$user_row_class =''}
-        {else}
-          {$user_row_class ='class="inactive_user"'}
-        {/if}
-				<tr {$user_row_class} {if $gui->role_colour[$r_n] != ''} style="background-color: {$gui->role_colour[$r_n]};" {/if}>
-				<td><a href="{$editUserAction}{$userObj->dbID}">
-				    {$userObj->login|escape}
-			      {if $gsmarty_gui->show_icon_edit}
-				      <img title="{$labels.alt_edit_user}"
-				           alt="{$labels.alt_edit_user}" src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
-				    {/if}
-				    </a>
-				</td>
-				<td>{$userObj->firstName|escape}</td>
-				<td>{$userObj->lastName|escape}</td>
-				<td>{$userObj->emailAddress|escape}</td>
-				<td>{$r_d|escape}</td>
-				<td>
-				 {* BUGID 3802 *}
-				 {$user_locale = $userObj->locale}
-				 {$optLocale.$user_locale|escape}
-				</td>
-				<td align="center">
-					{if $userObj->isActive eq 1}
-				  		<img style="border:none" title="{$labels.alt_active_user}" alt="{$labels.alt_active_user}"  
-				  		     src="{$tlImages.checked}"/>
-  			  {else}
-  				    &nbsp;
-        	{/if}
-				</td>
-				<td align="center">
-				{if $userObj->isDemoSpecial}
-					<img style="border:none;cursor: pointer;" alt="{$labels.demo_special_user}"
-						 title="{$labels.demo_special_user}" src="{$tlImages.demo_mode}">	
-				{else}		
-				  <img style="border:none;cursor: pointer;" alt="{$labels.alt_disable_user}"
-					     title="{$labels.alt_disable_user}" src="{$tlImages.delete}"
-					     onclick="action_confirmation({$userObj->dbID},'{$userObj->login|escape:'javascript'|escape}',
-					                                  '{$del_msgbox_title}','{$warning_msg}');" />
-			    {/if}		                                  
-				</td>
-			</tr>
-			{/foreach}
-		</table>
-		</form>
+	  {include file="inc_update.tpl" result=$gui->result item="user" 
+	           action=$gui->action user_feedback=$gui->user_feedback}
+	           
+	  {foreach from=$gui->tableSet key=idx item=matrix}
+      {$matrix->renderBodySection()}
+    {/foreach}
 
 		<div class="groupBtn">
+		<span style="float:left;">	
 		<form method="post" action="{$createUserAction}" name="launch_create">
-			<input type="submit" name="doCreate"  value="{$labels.btn_create}" />
+		  <input type="hidden" id="operation" name="operation" value="" />
+		  <input type="submit" name="doCreate"  value="{$labels.btn_create}" />
   		</form>
+  	    </span>
+
+  	    <span>
+		<form method="post" action="{$exportUsersAction}" name="launch_export" style="inline;">
+		  <input type="submit" id="export"  name="export" value="{$labels.btn_export}" style="margin-left: 3px;" name="export_cf">
+  		</form>
+  	    </span>
 		</div>
 	</div>
 	
-	{*  BUGID 0000103: Localization is changed but not strings *}
-	{if $gui->update_title_bar == 1}
+	{if $update_title_bar == 1}
+	{literal}
 	<script type="text/javascript">
 		parent.titlebar.location.reload();
 	</script>
+	{/literal}
 	{/if}
-	{if $gui->reload == 1}
+	{if $reload == 1}
+	{literal}
 	<script type="text/javascript">
 		top.location.reload();
 	</script>
+	{/literal}
 	{/if}
 {else}
 	{$labels.no_permissions_for_action}<br />
-	<a href="{$base_href}" alt="Home">Home</a>
+	<a href="{$gui->basehref}" alt="Home">Home</a>
 {/if}
 </body>
 </html>

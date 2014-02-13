@@ -1,14 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource planUpdateTC.tpl
-
-Author: franciscom
 
 Purpose: generate a list of Test Cases linked to Test Plan 
          that have a newer available version.
-         
-rev:
-    20110626 - Julian - BUGID 3110 - Quick TC Version Compare for Bulk Update
+
+@filesource	planUpdateTC.tpl,v 1.15 2010/11/06 11:42:47 amkhullar Exp $
+@author		franciscom
+@internal revisions
 *}
 {lang_get var='labels'
           s='no_testcase_available,test_plan,update_testcase_versions,
@@ -21,12 +19,15 @@ rev:
              compare,design,execution_history'}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"} {* includes ext-js*}
+{include file="inc_del_onclick.tpl"}
+{include file="inc_jsCheckboxes.tpl"}
 
+{literal}
 <script type="text/javascript">
+{/literal}
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_no_testcase_checked = "{$labels.no_testcase_checked|escape:'javascript'}";
-
+{literal}
 function validateForm(f)
 {
   if( checkbox_count_checked(f.id) == 0)
@@ -38,18 +39,12 @@ function validateForm(f)
   return true;
 }
 </script>
+{/literal}
 
 </head>
 
-
-{if $gui->buttonAction=='doUpdate'}
-  {$action_descr=$labels.update_testcase_versions}
-{else}
-  {$action_descr=$labels.update_all_testcase_versions}
-{/if}
-
-{$update_cb="achecked_tc"} {* prefix for checkboxs *}
-{$item_number=0}
+{assign var="update_cb" value="achecked_tc"} {* prefix for checkboxs *}
+{assign var="item_number" value=0}
 
 <body class="testlink">
 <h1 class="title">{$labels.test_plan}{$smarty.const.TITLE_SEP}{$gui->testPlanName|escape}</h1>
@@ -57,7 +52,7 @@ function validateForm(f)
 {if $gui->hasItems}
   <form name="updateTcForm" id="updateTcForm" method="post"
         onSubmit="javascript:return validateForm(this);">
-     <h1 class="title">{$action_descr}</h1>
+     <h1 class="title">{$gui->action_descr}</h1>
      {include file="inc_update.tpl" result=$sqlResult}
 
     <div class="workBack">
@@ -73,15 +68,14 @@ function validateForm(f)
     <input type="hidden" name="update_all_value"  id="update_all_value"  value="0" />
 
   	{foreach from=$gui->items item=ts}
-  	  {$item_number=$item_number+1}
-  	  {$ts_id=$ts.testsuite.id}
-  	  {$div_id="div_$ts_id"}
+  	  {assign var="item_number" value=$item_number+1}
+  	  {assign var="ts_id" value=$ts.testsuite.id}
+  	  {assign var="div_id" value="div_$ts_id"}
   	
   	  <div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
   	    <h3 class="testlink">
         {if $item_number ==1}
-  	    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-  	               alt="{$labels.check_uncheck_all}" 
+  	    <img src="{$tlImages.toggle_all}" border="0" alt="{$labels.check_uncheck_all}" 
                    title="{$labels.check_uncheck_all}" 
                    onclick="cs_all_checkbox_in_div('updateTcForm','{$update_cb}','update_all_value');" />
         {/if}
@@ -92,18 +86,17 @@ function validateForm(f)
        <input type="hidden" name="update_value_{$ts_id}"  id="update_value_{$ts_id}"  value="0" />
               
        {* ------------------------------------------------------------------------- *}      
-       {if $ts.testcase_qty gt 0 || $ts.linked_testcase_qty gt 0}
-          
+       {if $ts.testcase_qty gt 0 || $ts.linked_testcase_qty gt 0 }
           <table border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
             <tr style="background-color:blue;font-weight:bold;color:white">
   			     <th class="clickable_icon">
-  			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
-  			              onclick='cs_all_checkbox_in_div("{$div_id}","{$update_cb}","update_value_{$ts_id}");'
-                      title="{$labels.check_uncheck_all_checkboxes}" />
+  			         <img src="{$tlImages.toggle_all}" title="{$labels.check_uncheck_all_checkboxes}"
+  			              onclick='cs_all_checkbox_in_div("{$div_id}","{$update_cb}","update_value_{$ts_id}");' />
   			     </th>
-  			     <th>{$labels.th_test_case}</th>
-  			     <th>{$labels.version}</th>
-  			     <th>{$labels.update_to_version}</th>
+  			     <th style="width:45%">{$labels.th_test_case}</th>
+  			     <th class="clickable_icon">{$labels.version}</th>
+  			     <th>&nbsp;</th>
+  			     <th style="width:15%">{$labels.update_to_version}</th>
   			     <th>&nbsp;</th>
             </tr>   
             
@@ -112,83 +105,57 @@ function validateForm(f)
               {* some conditional design logic *}
               {assign var='is_active' value=0}
               {assign var='is_linked' value=0}
-              {$draw_update_inputs=0}
-              
-              {if $tcase.linked_version_id != 0}
+              {if $tcase.linked_version_id != 0 }
                  {assign var='is_linked' value=1}
               {/if}
               
-              {if $is_linked}
-                 {if $tcase.tcversions_active_status[$tcase.linked_version_id] == 1}             
-                   {assign var='is_active' value=1}
-                 {/if}
-              {else}
-                 {if $tcase.tcversions_qty != 0}
-                   {assign var='is_active' value=1}
-                 {/if}
-              {/if}      
-              
-              {* BUGID 1504 - {if $tcase.executed == 'no' && $is_active==1} *}
-              {if $is_active==1}    
-                  {$draw_update_inputs=1}
-              {/if}    
               {* ------------------------------------------------ *}
-  
-              {if $is_active || $is_linked}  
-     				    {if $is_linked}
+     		  {if $is_linked }
       			    <tr class="testlink">
       			      <td width="20">
-        				    {if $draw_update_inputs}
-        				      <input type='checkbox' 
-        				             name='{$update_cb}[{$tcase.id}]' 
-        				             id='{$update_cb}{$tcase.id}' 
-        				             value='{$tcase.linked_version_id}' /> 
-        				    {/if}
         				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.linked_version_id}' />
+        				    {if $tcase.canUpdateVersion }
+        				      <input type='checkbox' name='{$update_cb}[{$tcase.id}]' 
+        				             id='{$update_cb}{$tcase.id}' value='{$tcase.linked_version_id}' /> 
+        				    {/if}
       			      </td>
 					<td>
-						<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+						<img class="clickable" src="{$tlImages.history_small}"
 						     onclick="javascript:openExecHistoryWindow({$tcase.id});"
 						     title="{$labels.execution_history}" />
-						<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-						     onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id});"
+						<img class="clickable" src="{$tlImages.edit}"
+						     onclick="javascript:openTCaseWindow({$tcase.id});"
 						     title="{$labels.design}" />
 						{$gui->testCasePrefix|escape}{$tcase.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
       			      </td>
   
-                  <td>
-           				  <select name="tcversion_for_tcid[{$tcase.id}]"
-        			          {if $tcase.linked_version_id ne 0} disabled	{/if}>
-           				      {html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
-           				  </select>
+                  <td style="text-align:center;">
+                  	{$tcase.tcversions[$tcase.linked_version_id]}
+                  </td>
+                  <td style="text-align:center;">
+                  	&nbsp;
                   </td>
   
-                  <td>
-                    {if $draw_update_inputs} 
+                  <td style="text-align:center;">
+                  	  {if $tcase.updateTarget != ''}	
                       <select name="new_tcversion_for_tcid[{$tcase.id}]">
-           				       {html_options options=$tcase.tcversions disabled=disabled}
-           				    </select>
-                    {/if}
+           				       {html_options options=$tcase.updateTarget disabled=disabled}
+           			  </select>
+           			  {/if}
                   </td>
          
                   {* ------------------------------------------------------------------------- *}      
-                  {if $ts.linked_testcase_qty gt 0}
-            				<td>
-                       {if $tcase.executed eq 'yes'}
+                  {if $ts.linked_testcase_qty gt 0 }
+           				<td>
+                       {if $tcase.executed == 'yes'}
                               &nbsp;&nbsp;&nbsp;{$labels.has_been_executed}
                        {/if}    
-                       {if $is_active eq 0}
-                             &nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}
-                       {/if}
-            				</td>
+           				</td>
                   {/if}
                   {* ------------------------------------------------------------------------- *}      
-   
                 </tr>
-              {/if}  {* $tcase.tcversions_qty *}
              {/if} 
-    	      {/foreach}
-        
+    	     {/foreach}
           </table>
           
           <br />
@@ -217,7 +184,7 @@ function validateForm(f)
 	      </tr>   
 	    
 	      {foreach from=$gui->testcases item=tc}
-	     	{$item_number=$item_number+1}
+	     	{assign var="item_number" value=$item_number+1}
 	      <tr class="testlink">
 	      	<td width="20">
       		 	<input type='checkbox' name='{$update_cb}[{$tc.tc_id}]' id='{$update_cb}{$tc.tc_id}' 
@@ -230,7 +197,7 @@ function validateForm(f)
 			       onclick="javascript:openExecHistoryWindow({$tc.tc_id});"
 			       title="{$labels.execution_history}" />
 			  <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-			       onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tc.tc_id});"
+			       onclick="javascript:openTCaseWindow({$tc.tc_id});"
 			       title="{$labels.design}" />
 			    {$tc.path}{$gui->testCasePrefix|escape}{$tc.tc_external_id|escape}:{$tc.name|escape} </td>  
 			  <td align="center"> {$tc.version|escape} </td>
@@ -245,6 +212,7 @@ function validateForm(f)
 	      </tr>
 	  	  {/foreach}
 	  	</table>
+
   {/if}
  
     <br>   
@@ -255,6 +223,16 @@ function validateForm(f)
 {else}
   	<h2>{$gui->user_feedback}</h2>
 {/if}
-{if $gui->refreshTree}{$tlRefreshTreeJS}{/if}
+
+
+{* 
+ refresh is useful when operating in full_control=0 => just remove,
+ because tree is test plan tree.
+*}
+{if $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+	{*include file="inc_refreshTree.tpl"*}
+{/if}
+
 </body>
 </html>

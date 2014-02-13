@@ -3,12 +3,13 @@ Testlink: smarty template -
 @filesource	usersEdit.tpl
 
 @internal revisions
+@since 1.9.7
 *}
 
 {config_load file="input_dimensions.conf" section='login'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 {lang_get var="labels"
           s='warning_empty_login,warning_empty_first_name,warning,btn_save,
@@ -21,7 +22,9 @@ Testlink: smarty template -
              th_role,th_locale,th_active,password_mgmt_is_external,demo_update_user_disabled,
              btn_upd_user_data,btn_add,btn_cancel,button_reset_password,demo_reset_password_disabled'}
 
+{literal}
 <script type="text/javascript">
+{/literal}
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_login      = "{$labels.warning_empty_login|escape:'javascript'}";
 var warning_empty_first_name = "{$labels.warning_empty_first_name|escape:'javascript'}";
@@ -32,9 +35,13 @@ var warning_empty_email_address = "{$labels.empty_email_address|escape:'javascri
 var warning_no_good_email_address = "{$labels.no_good_email_address|escape:'javascript'}"; 
 
 
+{literal}
 function validateForm(f,check_password)
 {
+  {/literal}
    var email_check = {$tlCfg->validation_cfg->user_email_valid_regex_js};
+
+  {literal}
   var email_warning;
   var show_email_warning=false;
 
@@ -93,7 +100,8 @@ function validateForm(f,check_password)
   return true;
 }
 </script>
-{$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+{/literal}
+{assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 </head>
 
@@ -101,29 +109,31 @@ function validateForm(f,check_password)
 
 <h1 class="title">{$labels.title_user_mgmt} - {$labels.title_account_settings} </h1>
 
-{$user_id=''}
-{$user_login=''}
-{$user_login_readonly=''}
-{$reset_password_enabled=0}
-{$show_password_field=1}
-{if $gui->operation == 'doCreate'}
-   {$check_password=1}
-   {if $gui->user neq null}
-       {$user_login=$gui->user->login}
+{assign var="user_id" value=''}
+{assign var="user_login" value=''}
+{assign var="user_login_readonly" value=''}
+{assign var="reset_password_enabled" value=0}
+{assign var="show_password_field" value=1}
+
+
+{if $operation == 'doCreate'}
+   {assign var="check_password" value=1}
+   {if $userData neq null}
+       {assign var="user_login" value=$userData->login}
    {/if}
 {else}
-   {$check_password=0}
-   {$user_id=$gui->user->dbID}
-   {$user_login=$gui->user->login}
-   {$user_login_readonly='readonly="readonly" disabled="disabled"'}
-   {$reset_password_enabled=1}
-   {$show_password_field=0}
+   {assign var="check_password" value=0}
+   {assign var="user_id" value=$userData->dbID}
+   {assign var="user_login" value=$userData->login}
+   {assign var="user_login_readonly" value='readonly="readonly" disabled="disabled"'}
+   {assign var="reset_password_enabled" value=1}
+   {assign var="show_password_field" value=0}
 {/if}
 
-{if $gui->external_password_mgmt == 1}
-  {$check_password=0}
-  {$reset_password_enabled=0}
-  {$show_password_field=0}
+{if $external_password_mgmt eq 1}
+  {assign var="check_password" value=0}
+  {assign var="reset_password_enabled" value=0}
+  {assign var="show_password_field" value=0}
 {/if}
 
 
@@ -131,7 +141,7 @@ function validateForm(f,check_password)
 {***** TABS *****}
 {include file="usermanagement/tabsmenu.tpl"}
 
-{include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$gui->user_feedback}
+{include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
 <div class="workBack">
 <form method="post" action="lib/usermanagement/usersEdit.php" class="x-form" name="useredit" 
@@ -142,7 +152,7 @@ function validateForm(f,check_password)
   <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
   <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
   {$labels.caption_user_details}
-  {if $gui->mgt_view_events eq "yes" && $user_id}
+  {if $mgt_view_events eq "yes" && $user_id}
 	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
 	     onclick="showEventHistoryFor('{$user_id}','users')"
 	     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
@@ -152,20 +162,20 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_login}</th>
 			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}"
-			{$user_login_readonly} value="{$gui->user->login|escape}" />
+			{$user_login_readonly} value="{$userData->login|escape}" required />
       {include file="error_icon.tpl" field="login"}
 			 </td>
 		</tr>
 		<tr>
 			<th style="background:none;">{$labels.th_first_name}</th>
-			<td><input type="text" name="firstName" value="{$gui->user->firstName|escape}"
-			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
+			<td><input type="text" name="firstName" value="{$userData->firstName|escape}"
+			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
 			     {include file="error_icon.tpl" field="firstName"}
 			</td></tr>
 		<tr>
 			<th style="background:none;">{$labels.th_last_name}</th>
-			<td><input type="text" name="lastName" value="{$gui->user->lastName|escape}"
-			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
+			<td><input type="text" name="lastName" value="{$userData->lastName|escape}"
+			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
  			     {include file="error_icon.tpl" field="lastName"}
 			     </td>
 		</tr>
@@ -176,7 +186,7 @@ function validateForm(f,check_password)
  			      <th style="background:none;">{$labels.th_password}</th>
 		        <td><input type="password" id="password" name="password"
 		                   size="{#PASSWD_SIZE#}"
-		                   maxlength="{#PASSWD_SIZE#}" />
+		                   maxlength="{#PASSWD_SIZE#}" required />
 		            {include file="error_icon.tpl" field="password"}
 		        </td>
 		      {/if}
@@ -186,20 +196,20 @@ function validateForm(f,check_password)
 
 		<tr>
 			<th style="background:none;">{$labels.th_email}</th>
-			<td><input type="text" id="email" name="emailAddress" value="{$gui->user->emailAddress|escape}"
-			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
+			<td><input type="text" id="email" name="emailAddress" value="{$userData->emailAddress|escape}"
+			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" required />
           {include file="error_icon.tpl" field="emailAddress"}
 			</td>
 		</tr>
 		<tr>
 			<th style="background:none;">{$labels.th_role}</th>
 			<td>
-		  	{$selected_role=$gui->user->globalRoleID}
-			  {if $gui->user->globalRoleID eq 0}
- 			      {$selected_role=$tlCfg->default_roleid}
+		  	{assign var=selected_role value=$userData->globalRoleID}
+			  {if $userData->globalRoleID eq 0}
+ 			      {assign var=selected_role value=$tlCfg->default_roleid}
 			  {/if}
-				<select name="role_id" id="role_id">
-				{foreach key=role_id item=role from=$gui->optRoles}
+				<select name="rights_id">
+				{foreach key=role_id item=role from=$optRights}
 		        <option value="{$role_id}" {if $role_id == $selected_role} selected="selected" {/if}>
 					{$role->getDisplayName()|escape}
 				</option>
@@ -211,9 +221,9 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_locale}</th>
 			<td>
-        {$selected_locale=$gui->user->locale}
-        {if $gui->user->locale|count_characters eq 0}
-           {$selected_locale=$locale}
+        {assign var=selected_locale value=$userData->locale}
+        {if $userData->locale|count_characters eq 0}
+           {assign var=selected_locale value=$locale}
         {/if}
 
 				<select name="locale">
@@ -225,33 +235,31 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_active}</th>
 			<td>
-			  <input type="checkbox"  name="user_is_active" {if $gui->user->isActive == 1} checked {/if} />
+			  <input type="checkbox"  name="user_is_active" {if $userData->isActive eq 1} checked {/if} />
 			</td>
 		</tr>
 
-    {if $gui->external_password_mgmt == 1}
+    {if $external_password_mgmt eq 1}
       <td>{$labels.password_mgmt_is_external}</td>
     {/if}
 
 	</table>
 
-	{$submitEnabled="1"}
+	{assign var="submitEnabled" value="1"}
 	{if $tlCfg->demoMode}
-		{if $gui->operation == 'doUpdate'}
-			{$submitEnabled="0"}
-		{/if}
-    {/if}
-
+		{if $operation == 'doUpdate'}
+			{assign var="submitEnabled" value="0"}
+		{/if}	
+	{/if}
 	<div class="groupBtn">
 	{if $submitEnabled}
-		<input type="hidden" name="doAction" id="doActionUserEdit" value="{$gui->operation}" />
+		<input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}" />
 		<input type="submit" name="do_update"   value="{$labels.btn_save}" />
 	{else}
 		{$labels.demo_update_user_disabled}<br>
 	{/if}
-	
 	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-		   onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
+			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
 
 	</div>
 </fieldset>
@@ -260,13 +268,13 @@ function validateForm(f,check_password)
 {if $reset_password_enabled}
 <br />
 <form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
-	<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
-	<input type="hidden" name="user_id" value="{$user_id}" />
-
-	{if !$tlCfg->demoMode}
+	{if $tlCfg->demoMode}
+		{$labels.demo_reset_password_disabled}
+	{else}
+		<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
+		<input type="hidden" name="user_id" value="{$user_id}" />
 		<input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
-	{/if}
-		
+	{/if}	
 </form>
 {/if}
 

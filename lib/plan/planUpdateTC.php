@@ -1,38 +1,34 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * @filesource planUpdateTC.php
+ *
+ * Author: franciscom
  *
  * Allows for NON executed test cases linked to a test plan, update of Test Case versions
  * following user choices.
- * 
- *
- * @filesource	planUpdateTC.php
- * @package 	TestLink
- * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * Test Case Execution assignments will be auto(magically) updated.
  *
  * 	@internal revisions:
- *	20101024 - francisco - method renamed to getFilteredSpecView() + changes in interfa 
- *  20100726 - asimon - fixed bug in processTestPlan(): "All linked Test Case Versions are current" 
- *                      was always displayed on bulk update of linked versions 
- *                      even when there were newer versions
- *	
+ *	@since 1.9.4
+ *	20120410 - franciscom - TICKET 4888: Unable to update test plan with last version of testcase
+ *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("specview.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
+$tree_mgr = new tree($db);
+$tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 
 $templateCfg = templateConfiguration();
 
 $args = init_args($tplan_mgr);
-checkRights($db,$_SESSION['currentUser'],$args);
-
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
 {
@@ -56,11 +52,11 @@ $out = null;
 $gui->show_details = 0;
 $gui->operationType = 'standard';
 $gui->hasItems = 0;        	
-        	
+
 switch($args->level)
 {
 	case 'testcase':
-	    $out = processTestCase($db,$args,$keywordsFilter,$tplan_mgr);
+	    $out = processTestCase($db,$args,$keywordsFilter,$tplan_mgr,$tree_mgr);
 		break;
 
 	case 'testsuite':
@@ -68,7 +64,7 @@ switch($args->level)
 		break;
 
 	case 'testplan':
-        $itemSet = processTestPlan($db,$args,$keywordsFilter,$tplan_mgr);
+        $itemSet = processTestPlan($db,$args,$tplan_mgr);
         $gui->testcases = $itemSet['items'];
         $gui->user_feedback = $itemSet['msg'];
 		$gui->instructions = lang_get('update2latest');
@@ -91,6 +87,15 @@ if(!is_null($out))
 {
 	$gui->hasItems = $out['num_tc'] > 0 ? 1 : 0;
 	$gui->items = $out['spec_view'];
+}
+
+if($gui->buttonAction == 'doUpdate')
+{
+	$gui->action_descr = lang_get('update_testcase_versions');
+}
+else
+{
+	$gui->action_descr = lang_get('update_all_testcase_versions');
 }
 
 $smarty = new TLSmarty();
@@ -119,51 +124,48 @@ function init_args(&$tplanMgr)
     $args->newVersionSet = isset($_REQUEST['new_tcversion_for_tcid']) ? $_REQUEST['new_tcversion_for_tcid'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
 
-    $args->tproject_name = '';
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-	if($args->tproject_id > 0)
-	{
-		$dummy = $tplanMgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
-		$args->tproject_name = $dummy['name'];
-	}  
+    $args->tproject_id = $_SESSION['testprojectID'];
+    $args->tproject_name = $_SESSION['testprojectName'];
 
-    // BUGID 3516
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	
 	$mode = 'plan_mode';
+	
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
 	                ? $_SESSION[$mode][$form_token] : null;
 	
 	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
-	$args->tplan_name = '';
 	if($args->tplan_id == 0) 
 	{
-		$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+		$args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+		$args->tplan_name = $_SESSION['testplanName'];
 	} 
-	
-	if($args->tplan_id > 0)
+	else 
 	{
-		$dummy = $tplanMgr->get_by_id($args->tplan_id);  
-		$args->tplan_name = $dummy['name'];
+		$tpi = $tplanMgr->get_by_id($args->tplan_id);  
+		$args->tplan_name = $tpi['name'];
 	}
 
-	$uk = 'setting_refresh_tree_on_action';
-	$args->refreshTree = isset($session_data[$uk]) ? $session_data[$uk] : 0;
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
+                         $session_data['setting_refresh_tree_on_action'] : 0;
     
     $args->keyword_id = 0;
 	$fk = 'filter_keywords';
-	if (isset($session_data[$fk])) {
+	if (isset($session_data[$fk])) 
+	{
 		$args->keyword_id = $session_data[$fk];
-		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) 
+		{
 			$args->keyword_id = $args->keyword_id[0];
 		}
 	}
 	
 	$args->keywordsFilterType = null;
 	$ft = 'filter_keywords_filter_type';
-	if (isset($session_data[$ft])) {
+	if (isset($session_data[$ft])) 
+	{
 		$args->keywordsFilterType = $session_data[$ft];
 	}
 	
@@ -215,22 +217,16 @@ function doUpdate(&$dbObj,&$argsObj)
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
-
     $gui = new stdClass();
-
     $gui->refreshTree=false;
     $gui->instructions='';
+    $gui->buttonAction="doUpdate";
+    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
+    $gui->testCasePrefix .= $tcase_cfg->glue_character;
     $gui->user_feedback = '';
+    $gui->testPlanName = $argsObj->tplan_name;
     $gui->items = null;
     $gui->has_tc = 1;  
-
-    $gui->buttonAction="doUpdate";
-    $gui->testCasePrefix = 	$tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id) . 
-    						$tcase_cfg->glue_character;
-
-    $gui->testPlanName = $argsObj->tplan_name;
-    $gui->tproject_id=$argsObj->tproject_id;
-    $gui->tplan_id=$argsObj->tplan_id;
     
     return $gui;
 }
@@ -246,8 +242,9 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 */
 function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
-    $filters = array('keywordsFilter' => $keywordsFilter);
-    $out = getFilteredSpecView($dbHandler,$argsObj,$tplanMgr,$tcaseMgr,$filters);
+	// hmm  need to document why we use ONLY $keywordsFilter
+    $out = getFilteredSpecView($dbHandler,$argsObj,$tplanMgr,$tcaseMgr,array('keywordsFilter' => $keywordsFilter));
+	tideUpForGUI($out);
     return $out;
 }
 
@@ -263,8 +260,6 @@ function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tca
 function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
 {
   $qty=0;
-  // 
-  // $linkedItems=$tplanMgr->get_linked_tcversions($argsObj->tplan_id);
   $linkedItems = $tplanMgr->get_linked_items_id($argsObj->tplan_id);
   if( is_null($linkedItems) )
   {
@@ -322,23 +317,24 @@ function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
  * 
  *
  */
-function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
+function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$treeMgr)
 {
-	$my_path = $tplanMgr->tree_manager->get_path($argsObj->id);
+    $xx = $tplanMgr->getLinkInfo($argsObj->tplan_id,$argsObj->id,null,
+    							 array('output' => 'tcase_info', 'collapse' => true));
+	$linked_items[$xx['tc_id']][0] = $xx; // adapt data structure to gen_spec_view() desires
+	
+	$my_path = $treeMgr->get_path($argsObj->id);
 	$idx_ts = count($my_path)-1;
 	$tsuite_data = $my_path[$idx_ts-1];
-	$filters = array('tcase_id' => $argsObj->id);
-	$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
 
-	$dummy_items = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);		
-
-    // 20100131 - franciscom
-	// adapt data structure to gen_spec_view() desires
-	$linked_items[key($dummy_items)][0] = current($dummy_items);
+	// Again here need to understand why we seems to consider ONLY keywords filter.
 	$filters = array('keywords' => $argsObj->keyword_id, 'testcases' => $argsObj->id);
-   
+	$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
 	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 	                     $linked_items,null,$filters,$opt);
+
+	// need new processing
+	tideUpForGUI($out);
 	return $out;
 }
 
@@ -346,24 +342,20 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
  * 
  *
  * @internal revisions:
- *  20100726 - asimon - fixed bug: "All linked Test Case Versions are current" 
- *                      was always displayed on bulk update of linked versions 
- *                      even when there were newer versions of linked TCs
  */
-function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
+function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
 {
 	$set2update = array('items' => null, 'msg' => '');
-    $filters = array('keywords' => $argsObj->keyword_id);
-	$linked_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);
-	$set2update['msg'] = lang_get('testplan_seems_empty');
-    if( count($linked_tcases) > 0 )
+	$check = $tplanMgr->getLinkedCount($argsObj->tplan_id);
+	$set2update['msg'] = $check == 0 ? lang_get('testplan_seems_empty') : 
+									   lang_get('no_newest_version_of_linked_tcversions');
+	
+    $set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
+    if( count($set2update['items']) > 0 )
     {
-        $testCaseSet = array_keys($linked_tcases);
-    	$set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id,$testCaseSet);
-		// 20100726 - asimon
-		$set2update['msg'] = '';
 		if( !is_null($set2update['items']) && count($set2update['items']) > 0 )
 		{
+			$set2update['msg'] = '';
 			$itemSet=array_keys($set2update['items']);
 			$path_info=$tplanMgr->tree_manager->get_full_path_verbose($itemSet);
 			foreach($set2update['items'] as $tcase_id => $value)
@@ -373,23 +365,69 @@ function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
 				$path[]='';
 				$set2update['items'][$tcase_id]['path']=implode(' / ',$path);
 			}
-		} else {
-			// 20100726 - asimon
-			$set2update['msg'] = lang_get('no_newest_version_of_linked_tcversions');
-		}
+		} 
     }
     return $set2update;
 }
 
 
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$userObj,$argsObj)
+function tideUpForGUI(&$output)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,$env,array('testplan_planning'),'and');
+    // We are going to loop over test suites
+    $loop2do = count($output['spec_view']);
+    for($idx=0; $idx < $loop2do; $idx++)
+    {
+    	$itemSet = &$output['spec_view'][$idx]['testcases'];
+    	if( count($itemSet) > 0)
+    	{
+    		$key2loop = array_keys($itemSet);
+    		foreach($key2loop as $tcaseID)
+    		{
+    			// want to understand
+    			// How many active test case versions exist
+    			// if we have ONLY one active test case version
+    			//       is this version the ALREADY LINKED one ?
+    			// if we have ZERO ACTIVE VERSIONS
+    			//
+    			$active = 0;
+    			$total = count($itemSet[$tcaseID]['tcversions_active_status']);
+    			foreach($itemSet[$tcaseID]['tcversions_active_status'] as $status)
+    			{
+    				if($status)
+    				{
+    					$active++;
+    				}	
+    			}
+
+				$itemSet[$tcaseID]['updateTarget'] = $itemSet[$tcaseID]['tcversions'];				
+				$lnItem = $itemSet[$tcaseID]['linked_version_id'];
+				$itemSet[$tcaseID]['canUpdateVersion'] = ($active != 0);
+				if($active == 1)
+				{
+					// linked_version_id
+					if( $lnItem == key($itemSet[$tcaseID]['tcversions']) )
+					{
+						$itemSet[$tcaseID]['canUpdateVersion'] = FALSE;
+					}
+				}
+				if( !is_null($lnItem) && isset($itemSet[$tcaseID]['tcversions'][$lnItem]) )
+				{
+					unset($itemSet[$tcaseID]['updateTarget'][$lnItem]);
+					if(count($itemSet[$tcaseID]['updateTarget']) == 0)
+					{
+						$itemSet[$tcaseID]['updateTarget'] = null;
+					}
+				}	
+    		}
+    	}
+    
+    } 
+}
+
+
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_planning');
 }
 ?>

@@ -14,12 +14,13 @@ INPUT:
   $user_feedback['message']: a localized message
   		                       empty string disable it
   
-*}
+ --------------------------------------------------------------------------- *}
+
 {if $user_feedback.message != ''}
     {if $user_feedback.type === 'ERROR'}
-		  {$divClass = "error"}
+		  {assign var="divClass" value="error"}
   	{else}
-		  {$divClass = "user_feedback"}
+		  {assign var="divClass" value="user_feedback"}
     {/if}
     <div class="{$divClass}">
 		<p>{$user_feedback.message|escape}</p>

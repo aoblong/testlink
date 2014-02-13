@@ -3,11 +3,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Compare requirement specifications revisions
 
-@internal revisions
+@internal revision
 *}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 {lang_get var="labels"
           s="title_compare_revisions_rspec,compare,modified,modified_by,
@@ -28,25 +28,26 @@ var warning_selected_items = "{$labels.warning_selected_revisions|escape:'javasc
 var warning_same_selected_items = "{$labels.warning_same_selected_revisions|escape:'javascript'}";
 var warning_context = "{$labels.warning_context|escape:'javascript'}";
 
-
-{* 
-Developer NOTICE: on smarty 3.0 and up:
-if we remove space in "autoLoad:{ url: fUrl+itemID }," smarty compiler will generate an error because
-when it found a curly brackets WITHOUT space, consider this SMARTY CODE not JS code
-*}
-
+{literal}
 function tip4log(itemID)
 {
 	var fUrl = fRoot+'lib/ajax/getreqspeclog.php?item_id=';
 	new Ext.ToolTip({
         target: 'tooltip-'+itemID,
         width: 500,
-        autoLoad:{ url: fUrl+itemID },
+        autoLoad:{url: fUrl+itemID},
         dismissDelay: 0,
         trackMouse: true
     });
 }
 
+Ext.onReady(function(){ 
+{/literal}
+{foreach from=$gui->items key=idx item=info}
+  tip4log({$info.item_id});
+{/foreach}
+{literal}
+});
 
 function switchDisplay(oid,on_off) 
 {
@@ -81,6 +82,8 @@ function valButton(btn)
 
 function validateForm(f) 
 {
+
+	// alert('DEBUG:f.context.value:' + f.context.value);
 	if (isWhitespace(f.context.value)) 
 	{
 	    alert_message(alert_box_title,warning_empty_context);
@@ -101,6 +104,8 @@ function validateForm(f)
 		}
 	}
 	
+	//alert(valButton(f.left_item_id));
+	//alert(valButton(f.right_item_id));
 	// Check two items has been selected
 	if (!valButton(f.left_item_id) || !valButton(f.right_item_id)) 
 	{
@@ -110,6 +115,11 @@ function validateForm(f)
 	
 	for (var idx=f.left_item_id.length-1; idx > -1; idx--) 
 	{
+		//alert('LEN:' + f.left_item_id.length-1);
+		//alert('IDX:' + idx);
+		//alert('LI:' + f.left_item_id[idx].checked);
+		//alert('RI:' +f.right_item_id[idx].checked);
+		
         if (f.left_item_id[idx].checked && f.right_item_id[idx].checked) 
         {
         	alert_message(alert_box_title,warning_same_selected_items);
@@ -118,15 +128,9 @@ function validateForm(f)
     }
 }
 
-
-Ext.onReady(function()
-{ 
-{foreach from=$gui->items key=idx item=info}
-  tip4log({$info.item_id});
-{/foreach}
-});
-
 </script>
+{/literal}
+
 </head>
 <body>
 
@@ -134,7 +138,7 @@ Ext.onReady(function()
 
 	<h1 class="title">{$labels.title_compare_revisions_rspec}</h1> 
 			
-	<div class="workBack" style="width:99%; overflow:auto;">	
+		<div class="workBack" style="width:99%; overflow:auto;">	
 	{$gui->subtitle}
     {if $gui->attrDiff != ''}
       <h2>{$labels.attributes}</h2>
